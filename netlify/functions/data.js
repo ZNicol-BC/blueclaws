@@ -19,7 +19,12 @@ exports.handler = async (event) => {
 
   try {
     const { getStore } = await import("@netlify/blobs");
-    const store = getStore({ name: "blueclaws-iq-data", consistency: "strong" });
+    const store = getStore({
+      name: "blueclaws-iq-data",
+      consistency: "strong",
+      siteID: process.env.BLOBS_SITE_ID,
+      token: process.env.BLOBS_TOKEN
+    });
 
     if (event.httpMethod === "GET") {
       const data = (await store.get("overrides", { type: "json" })) || {};
