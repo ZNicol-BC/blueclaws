@@ -2,3 +2,7 @@
   publish = "."
   functions = "netlify/functions"
   command = "npm install"
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = "bash promote-index.sh && npm install"
