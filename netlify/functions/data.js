@@ -14,8 +14,13 @@
 // split — the split only changes where NEW writes go, it doesn't clean up what
 // was already there. Added a one-time reset switch below to clear it out.
 //
+// CHANGED AGAIN (July 2026): added a third bucket, "photos", for the Photo
+// Library — same reasoning as the logos split. Photo uploads are large, so they
+// get their own blob instead of bloating "overrides" the same way logos did.
+//
 // GET  ?bucket=overrides (default) -> returns the current shared sponsor-edit object
 // GET  ?bucket=logos              -> returns the current shared logo object
+// GET  ?bucket=photos             -> returns the current shared photo library object
 // GET  ?bucket=overrides&reset=yes-really -> WIPES that bucket back to {} and returns
 //      confirmation. Use this ONCE to clear a stuck/oversized blob, then remove the
 //      reset visit — nothing on any browser is lost, each browser's edits still live
@@ -28,8 +33,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
   "Content-Type": "application/json"
 };
-const VALID_BUCKETS = new Set(["overrides", "logos"]);
-
+const VALID_BUCKETS = new Set(["overrides", "logos", "photos"]);
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
@@ -42,21 +46,17 @@ exports.handler = async (event) => {
       siteID: process.env.BLOBS_SITE_ID,
       token: process.env.BLOBS_TOKEN
     });
-
     if (event.httpMethod === "GET") {
       const params = event.queryStringParameters || {};
       const bucketParam = params.bucket || "overrides";
       const bucket = VALID_BUCKETS.has(bucketParam) ? bucketParam : "overrides";
-
       if (params.reset === "yes-really") {
         await store.setJSON(bucket, {});
         return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ reset: bucket, ok: true }) };
       }
-
       const data = (await store.get(bucket, { type: "json" })) || {};
       return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(data) };
     }
-
     if (event.httpMethod === "POST") {
       let payload;
       try {
@@ -74,10 +74,8 @@ exports.handler = async (event) => {
       await store.setJSON(bucket, data);
       return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(data[id]) };
     }
-
     return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: "Method not allowed" }) };
   } catch (e) {
     return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: e.message, stack: e.stack }) };
   }
 };
-const VALID_BUCKETS = new Set(["overrides", "logos", "photos"]);
