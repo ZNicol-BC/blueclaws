@@ -80,3 +80,4 @@ exports.handler = async (event) => {
     return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: e.message, stack: e.stack }) };
   }
 };
+const VALID_BUCKETS = new Set(["overrides", "logos", "photos"]);
