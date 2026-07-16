@@ -89,7 +89,7 @@ button, select { cursor: pointer; }
 .topbar { height: 67px; padding: 0 34px; display: flex; align-items: center; gap: 22px; justify-content: flex-start; border-bottom: 2px solid var(--gold); background: var(--paper); position: sticky; top: 0; z-index: 15; }
 .breadcrumb { display: flex; align-items: center; gap: 9px; font-size: 11px; }.breadcrumb span { color: var(--muted); }.breadcrumb b { color: var(--ink-300); }.breadcrumb strong { font-weight: 700; font-family: "Manrope"; }
 .topbar-actions { display: flex; gap: 10px; align-items: center; margin-left: auto; }
-.topbar-quick-links { margin-bottom: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+#quickLinks.topbar-quick-links { margin-bottom: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 .topbar-quick-links .quick-link-btn { padding: 6px 12px; font-size: 9px; white-space: nowrap; border-radius: var(--radius-pill); border-color: var(--ink-150); background: var(--ink-100); }
 .topbar-quick-links .quick-link-btn:hover { background: var(--card); }
 .topbar-quick-links .quick-link-btn .qicon { width: 16px; height: 16px; font-size: 8px; border-radius: 50%; }
@@ -716,12 +716,15 @@ button, input, select, textarea,
 .data-banner, .inventory-source-note, .directory-note, .sponsor-info-block,
 .sponsor-asset-group, .agenda-meta div, .pipeline-card, .picker-list,
 .valuation-result, .advisory-callout, .commercial-story, .source-row,
+#backupModal, .cal-cell, .option-item-card,
+.opt-line-item, .opt-line-compact {
+  border-radius: var(--radius-sm);
+}
 .recommendation > span, .attention-icon, .kpi-icon, .folder-icon,
 .report-icon, .contact-avatar, .brand-mark-sample, .sport-mark, .heat-score,
-.fit-score, .intel-avatar, #backupModal, .cal-cell, .option-item-card,
-.opt-line-item, .opt-line-compact, .proposal-logo, .archive-logo,
+.fit-score, .intel-avatar, .proposal-logo, .archive-logo,
 .sponsor-logo-thumb {
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
 }
 .calendar-day.today .day-number, .fit-score, .intel-avatar, .avatar,
 .club-badge, .heat-score, .ai-orb, .brand-mark, .status-dot {
