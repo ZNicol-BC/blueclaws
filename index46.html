@@ -48,6 +48,7 @@ button, select { cursor: pointer; }
 .sidebar { position: sticky; top: 0; height: 100vh; padding: 0 14px 10px; color: white; background: var(--ink); display: flex; flex-direction: column; z-index: 20; overflow: hidden; }
 .sidebar-watermark { display: block; position: absolute; left: -20px; bottom: 40px; width: 230px; height: 230px; object-fit: contain; opacity: .12; pointer-events: none; z-index: 0; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 55%, #000 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 55%, #000 100%); }
 .sidebar > * { position: relative; z-index: 1; }
+.sidebar > .sidebar-watermark { position: absolute; z-index: 0; }
 .brand { height: 67px; box-sizing: border-box; display: flex; gap: 11px; align-items: center; padding: 0 6px; margin: 0 -14px; padding-left: 20px; border-bottom: 2px solid var(--gold); }
 .brand-mark { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.08); font: 800 12px/1 "Manrope"; letter-spacing: -.5px; }
 .brand strong, .brand span { display: block; }
