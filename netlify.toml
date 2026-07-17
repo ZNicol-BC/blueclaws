@@ -1,4 +1,4 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  command = "npm install"
+  command = "npm install && chmod +x promote-index.sh && ./promote-index.sh"
