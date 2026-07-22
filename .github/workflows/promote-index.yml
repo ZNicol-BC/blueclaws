@@ -1,16 +1,12 @@
 name: Promote Latest Index File
-
-# Runs whenever you push a new index*.html file (or any .html at repo root)
+# Runs whenever you push a new index*.html file at repo root
 on:
   push:
     branches: [main]
     paths:
       - 'index*.html'
-      - 'index (*.html'
-
 permissions:
   contents: write
-
 jobs:
   promote:
     runs-on: ubuntu-latest
@@ -20,58 +16,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Promote highest-numbered index file
-        run: |
-          set -euo pipefail
-          shopt -s nullglob nocaseglob
-
-          baseline=0
-          if [ -f index.html ]; then
-            marker=$(grep -oE '<!-- *BUILD_VERSION: *[0-9]+ *-->' index.html | head -1 || true)
-            if [ -n "$marker" ]; then
-              baseline=$(echo "$marker" | grep -oE '[0-9]+')
-            fi
-          fi
-          echo "Current index.html version: $baseline"
-
-          best_num=$baseline
-          best_file=""
-          leftovers=()
-
-          for f in index*.html "index (*"*.html; do
-            [ "$f" = "index.html" ] && continue
-            num=$(echo "$f" | grep -oE '[0-9]+' | head -1) || true
-            if [ -n "${num:-}" ]; then
-              leftovers+=("$f")
-              if [ "$num" -gt "$best_num" ]; then
-                best_num=$num
-                best_file=$f
-              fi
-            fi
-          done
-
-          if [ -n "$best_file" ]; then
-            echo "Promoting '$best_file' (version $best_num) over current version $baseline"
-            { echo "<!-- BUILD_VERSION: $best_num -->"; cat "$best_file"; } > index.html.new
-            mv index.html.new index.html
-            echo "PROMOTED=true" >> "$GITHUB_ENV"
-          else
-            echo "Nothing beat version $baseline, index.html left as is"
-            echo "PROMOTED=false" >> "$GITHUB_ENV"
-          fi
-
-          # Delete every numbered index file (including the one just promoted)
-          # so the repo only ever carries index.html at any given time.
-          for f in "${leftovers[@]}"; do
-            echo "Removing leftover file: $f"
-            git rm -q -- "$f"
-          done
+      - name: Promote latest index file
+        run: bash promote-index.sh --clean
 
       - name: Commit and push
         if: env.PROMOTED == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "chore: promote latest index file [skip ci]"
+          git add -A
+          git commit -m "chore: promote latest index file [skip actions]"
           git push
