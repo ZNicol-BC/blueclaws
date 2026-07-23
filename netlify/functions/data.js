@@ -14,13 +14,18 @@
 // split — the split only changes where NEW writes go, it doesn't clean up what
 // was already there. Added a one-time reset switch below to clear it out.
 //
-// CHANGED AGAIN (July 2026): added a third bucket, "photos", for the Photo
-// Library — same reasoning as the logos split. Photo uploads are large, so they
-// get their own blob instead of bloating "overrides" the same way logos did.
+// CHANGED AGAIN (July 2026): added a fourth bucket, "displays", for Ballpark
+// Displays board photos/artwork. This data used to ride inside "overrides" as
+// a whole-store channel — but board photos are large and only grow over time,
+// so it hit the exact same problem logos did before their split: the shared
+// "overrides" blob (polled every 8 seconds by every open browser) got big
+// enough to risk 502 timeouts. Board photos now sync on their own slower
+// (60-second) poll, isolated from sponsor-edit traffic.
 //
 // GET  ?bucket=overrides (default) -> returns the current shared sponsor-edit object
 // GET  ?bucket=logos              -> returns the current shared logo object
 // GET  ?bucket=photos             -> returns the current shared photo library object
+// GET  ?bucket=displays           -> returns the current shared Ballpark Displays object
 // GET  ?bucket=overrides&reset=yes-really -> WIPES that bucket back to {} and returns
 //      confirmation. Use this ONCE to clear a stuck/oversized blob, then remove the
 //      reset visit — nothing on any browser is lost, each browser's edits still live
@@ -33,7 +38,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
   "Content-Type": "application/json"
 };
-const VALID_BUCKETS = new Set(["overrides", "logos", "photos"]);
+const VALID_BUCKETS = new Set(["overrides", "logos", "photos", "displays"]);
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
