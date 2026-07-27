@@ -2574,6 +2574,12 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             </div>
 
             <aside class="sm-rail">
+              <section class="card">
+                <h2 class="panel-title">Also sold, not on the map</h2>
+                <p class="sm-parkwide-note">Sold park-wide, not drawn on the seating chart. Same detail, one click.</p>
+                <div class="sm-parkwide-list" id="smQuickLinks" role="group" aria-label="Inventory with no single spot on the chart"></div>
+              </section>
+
               <section class="card sm-detail" id="stadiumResultsSide" aria-label="Selected location" aria-live="polite">
                 <div id="smDetailIdle">
                   <h2 class="panel-title">Selected location</h2>
@@ -2594,12 +2600,6 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
                   <div class="sm-photos" id="smPhotos"></div>
                   <button class="sm-manage" id="stadiumResultsManageBtn" type="button">Manage this display &#8594;</button>
                 </div>
-              </section>
-
-              <section class="card">
-                <h2 class="panel-title">Not pinned on this chart</h2>
-                <p class="sm-parkwide-note">Sold park-wide, or not drawn on the seating chart. Same detail, one click.</p>
-                <div class="sm-parkwide-list" id="smQuickLinks" role="group" aria-label="Inventory with no single spot on the chart"></div>
               </section>
 
               <section class="card" id="stadiumFactsCard">
@@ -14291,12 +14291,12 @@ const stadiumHiddenCats = new Set();
 function stadiumMarkerTitle(m) {
   return m.title || (STADIUM_LOCATIONS[m.id] && STADIUM_LOCATIONS[m.id].title) || m.label || m.id;
 }
-// Park-wide categories, plus the two point assets the chart does not draw.
+// Park-wide categories with no single spot on the chart. Scoreboard & rotators
+// is covered by the Digital Display Network pins already on the map, and
+// Pocket Schedule & Print at Home isn't shown here at all (7/27/26 decision).
 const STADIUM_QUICKLINKS = [
-  { label:"Scoreboard & rotators", kind:"category", category:"Scoreboard & Rotators" },
   { label:"Table displays", kind:"category", category:"Table Displays" },
   { label:"Plaza displays", kind:"category", category:"Plaza Displays" },
-  { label:"Pocket schedule & print at home", kind:"category", category:"Pocket Schedule & Print at Home" },
 ];
 // ---------------------------------------------------------------------------
 // Hotspot geometry, in the chart's own pixel space (1200 x 882).
