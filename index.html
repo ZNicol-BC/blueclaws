@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 20 -->
+<!-- BUILD_VERSION: 21 -->
 <!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
 <!-- BUILD_VERSION: 56 -->
@@ -2943,10 +2943,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
 
           <div class="segmented" id="deckTabs">
             <button class="active" data-subtab="reporttracker">Report Tracker</button>
-            <button data-subtab="midphotos">Mid-Season Report Assets</button>
-            <button data-subtab="midtracker">Mid-Season Photo Tracker</button>
-            <button data-subtab="photocheck">Annual Report Assets</button>
-            <button data-subtab="annualtracker">Annual Photo Tracker</button>
+            <button data-subtab="annual">Annual</button>
             <button data-subtab="log">Digideck &amp; Report Log</button>
           </div>
 
@@ -2965,6 +2962,10 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           </div>
 
           <div id="photoCheckPane" style="display:none; margin-top:var(--space-14);">
+            <div class="segmented" id="annualModeTabs" style="margin-bottom:var(--space-12);">
+              <button class="active" type="button" data-annualmode="assets">Report Assets</button>
+              <button type="button" data-annualmode="tracker">Photo Tracker</button>
+            </div>
             <p id="photoCheckIntro" style="color:var(--muted); font-size:var(--text-xs); margin:0 0 var(--space-10);"></p>
             <div class="recent-strip" id="annualRecentStrip"></div>
             <div class="filter-bar">
@@ -14001,15 +14002,25 @@ document.getElementById("historySort").addEventListener("change", e => { hState.
 document.querySelectorAll("#deckTabs button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll("#deckTabs button").forEach(x => x.classList.toggle("active", x === b));
   document.getElementById("deckPane").style.display = b.dataset.subtab === "log" ? "block" : "none";
-  const photoTabs = ["photocheck", "midphotos", "annualtracker", "midtracker"];
-  document.getElementById("photoCheckPane").style.display = photoTabs.includes(b.dataset.subtab) ? "block" : "none";
+  const isAnnual = b.dataset.subtab === "annual";
+  document.getElementById("photoCheckPane").style.display = isAnnual ? "block" : "none";
   document.getElementById("checklistPane").style.display = b.dataset.subtab === "reporttracker" ? "block" : "none";
-  if (photoTabs.includes(b.dataset.subtab)) {
-    pcState.report = b.dataset.subtab.startsWith("mid") ? "mid" : "annual";
-    pcState.mode = b.dataset.subtab.endsWith("tracker") ? "tracker" : "assets";
+  if (isAnnual) {
+    // Mid-season is condensed out; this box is annual-only. The Report Assets / Photo Tracker
+    // choice lives in the inner #annualModeTabs toggle, so we keep whatever mode it's on.
+    pcState.report = "annual";
+    if (pcState.mode !== "assets" && pcState.mode !== "tracker") pcState.mode = "assets";
     pcState.expanded = null;
     renderPhotoCheckList();
   }
+}));
+// Inner toggle for the Annual box: Report Assets (checklist) vs Photo Tracker (gap prep list).
+document.querySelectorAll("#annualModeTabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#annualModeTabs button").forEach(x => x.classList.toggle("active", x === b));
+  pcState.report = "annual";
+  pcState.mode = b.dataset.annualmode;
+  pcState.expanded = null;
+  renderPhotoCheckList();
 }));
 document.getElementById("addDeckBtn").addEventListener("click", () => openDeckModal(null));
 document.getElementById("photoCheckSearch").addEventListener("input", e => { pcState.search = e.target.value; renderPhotoCheckList(); });
