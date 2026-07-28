@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 14 -->
+﻿<!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
 <!-- BUILD_VERSION: 56 -->
 <!-- BUILD_VERSION: 150 -->
@@ -1729,6 +1729,38 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
 }
 .signing-open:hover { border-color: var(--blue-text); background: var(--blue-soft); }
 .signing-note { margin: var(--space-10) 0 0; color: var(--muted); font-size: var(--text-xs); line-height: 1.5; }
+.overview-top-grid {
+  display: grid; grid-template-columns: minmax(260px, .52fr) minmax(0, 1.48fr);
+  gap: var(--space-11); align-items: stretch; margin-bottom: var(--space-11);
+}
+.overview-top-grid .signing-card, .overview-top-grid .kpi-grid { margin-bottom: 0; }
+.overview-top-grid .kpi-grid { height: 100%; }
+.signing-card { padding: var(--space-15); }
+.signing-card .card-header { align-items: center; }
+.signing-card .text-button { white-space: nowrap; }
+.signing-card .signing-board { margin-top: var(--space-8); display: flex; flex-direction: column; gap: var(--space-6); }
+.signing-card .signing-row {
+  grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6) var(--space-9);
+  padding: var(--space-8) var(--space-10); border-radius: var(--radius-sm);
+}
+.signing-card .signing-row.is-latest { margin-bottom: 0; padding-top: var(--space-17); }
+.signing-card .signing-flag { top: var(--space-4); left: var(--space-10); }
+.signing-card .signing-rep { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--space-6); }
+.signing-card .signing-rep-name { font-size: var(--text-sm); }
+.signing-card .signing-nick { min-height: 20px; padding: 0 var(--space-6); font-size: 10px; }
+.signing-card .signing-account { grid-column: 1; }
+.signing-card .signing-account strong { font-size: var(--text-xs); }
+.signing-card .signing-account small, .signing-card .signing-value small { display: none; }
+.signing-card .signing-value { grid-column: 2; text-align: right; }
+.signing-card .signing-value strong { font-size: var(--text-xs); }
+.signing-card .signing-open { display: none; }
+.signing-card .signing-rest { gap: var(--space-4); max-height: 242px; overflow: auto; padding-right: var(--space-3); }
+.signing-card .signing-rest .signing-row { padding: var(--space-7) var(--space-9); }
+.signing-card .signing-note { display: none; }
+@media (max-width: 980px) {
+  .overview-top-grid { grid-template-columns: 1fr; }
+  .signing-card .signing-rest { max-height: none; overflow: visible; padding-right: 0; }
+}
 
 /* ============ By type / by rep, promoted out of the narrow column ============
    These were in the 280px right-hand rail, where four columns of numbers could not fit —
@@ -2369,17 +2401,18 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             </div>
           </div>
 
-          <article class="card signing-card">
-            <div class="card-header">
-              <div><span class="card-kicker">ON THE BOARD</span><h2>Last 10 signed</h2></div>
-              <button class="text-button" data-jump="sponsors">Full ledger →</button>
-            </div>
-            <div class="signing-board" id="signingScoreboard"></div>
-          </article>
+          <div class="overview-top-grid">
+            <article class="card signing-card">
+              <div class="card-header">
+                <div><span class="card-kicker">ON THE BOARD</span><h2>Last 10 signed</h2></div>
+                <button class="text-button" data-jump="sponsors">Full ledger â†’</button>
+              </div>
+              <div class="signing-board" id="signingScoreboard"></div>
+            </article>
 
-          <div class="kpi-grid" id="kpiGrid"></div>
-
-          <article class="card trend-card">
+            <div class="kpi-grid" id="kpiGrid"></div>
+          </div>
+<article class="card trend-card">
             <div class="card-header">
               <div><span class="card-kicker">PORTFOLIO TREND</span><h2>Active value by season</h2></div>
             </div>
