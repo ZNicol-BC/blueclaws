@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 156 -->
+<!-- BUILD_VERSION: 157 -->
 <!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
 <!-- BUILD_VERSION: 56 -->
@@ -843,6 +843,64 @@ details.sdsection > summary.sdsection-title::before {
 .fulfillment-status.need-to-do, .fulfillment-status.selected.need-to-do { color: var(--red); background: var(--red-soft); border-color: var(--red); }
 .fulfillment-status:not(.selected) { background: var(--card); color: var(--muted); border-color: var(--line); }
 .fulfillment-note { width: 100%; min-height: 34px!important; font-size: var(--text-xs)!important; padding: var(--space-7) var(--space-8)!important; }
+.ff-dates-band, .ff-notes-band { display: flex; align-items: flex-start; gap: var(--space-10); margin-top: var(--space-7); }
+.ff-band-label { flex: 0 0 66px; font-size: var(--text-xs); font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; padding-top: var(--space-9); }
+.ff-dates-wrap { display: flex; flex-wrap: wrap; gap: var(--space-7); flex: 1 1 auto; min-width: 0; }
+.ff-date-box { width: 138px; font-family: var(--font-body); font-size: var(--text-xs); padding: var(--space-8) var(--space-9); border: 1px solid var(--line); border-bottom: 2px solid var(--blue); border-radius: var(--radius-sm); background: var(--card); color: var(--ink); }
+.ff-date-box:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue-text); }
+.ff-dates-note { font-size: var(--text-xs); color: var(--muted); font-style: italic; padding-top: var(--space-9); }
+.ff-notes-band textarea { flex: 1 1 auto; min-width: 0; }
+/* ---- Sponsor Process map ---- */
+.proc-legend { display: flex; flex-wrap: wrap; gap: var(--space-14); margin-bottom: var(--space-14); font-size: var(--text-xs); color: var(--muted); }
+.proc-legend span { display: inline-flex; align-items: center; gap: var(--space-6); }
+.proc-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.proc-map { display: flex; flex-wrap: wrap; gap: var(--space-12); align-items: stretch; }
+.proc-stage { position: relative; flex: 1 1 250px; min-width: 250px; max-width: 360px; border: 1px solid var(--line); border-top: 3px solid var(--blue); border-radius: var(--radius-md); background: var(--card); padding: var(--space-12) var(--space-14); display: flex; flex-direction: column; }
+.proc-stage.st-done { border-top-color: var(--blue); }
+.proc-stage.st-current { border-top-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+.proc-stage.st-renewal { border-top-color: var(--navy-700); }
+.proc-stage-head { display: flex; align-items: center; gap: var(--space-8); }
+.proc-stage-num { flex: 0 0 24px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 800 11px/1 var(--font-display); background: var(--ink-100); color: var(--ink); }
+.proc-stage.st-done .proc-stage-num { background: var(--blue); color: #fff; }
+.proc-stage.st-current .proc-stage-num { background: var(--gold); color: var(--ink); }
+.proc-stage-title { font: 800 13px/1.25 var(--font-display); color: var(--ink); flex: 1; min-width: 0; }
+button.proc-stage-title { text-align: left; border: 0; background: none; cursor: pointer; padding: 0; }
+button.proc-stage-title:hover { color: var(--blue-text); }
+.proc-badge { font: 800 8.5px/1 var(--font-body); text-transform: uppercase; letter-spacing: .05em; padding: 3px 6px; border-radius: var(--radius-pill); flex: 0 0 auto; }
+.proc-badge.done { background: var(--blue-soft); color: var(--blue-text); }
+.proc-badge.current { background: var(--gold-soft); color: var(--amber); }
+.proc-badge.anytime { background: var(--ink-100); color: var(--muted); }
+.proc-sub { list-style: none; margin: var(--space-10) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-6); }
+.proc-sub li { font-size: var(--text-xs); color: var(--ink); line-height: 1.42; display: flex; gap: var(--space-7); align-items: flex-start; }
+.proc-sub li.sub-indent { margin-left: var(--space-16); }
+.proc-step-btn { flex: 0 0 auto; width: 16px; height: 16px; border: 1.5px solid var(--ink-300); border-radius: 4px; background: var(--card); cursor: pointer; display: grid; place-items: center; font-size: 10px; line-height: 1; color: transparent; margin-top: 1px; }
+.proc-step-btn.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.proc-step-static { flex: 0 0 auto; color: var(--ink-300); margin-top: 1px; }
+.proc-open { align-self: flex-start; margin-top: var(--space-12); font-size: var(--text-xs); font-weight: 800; color: var(--blue-text); background: var(--blue-soft); border: 1px solid var(--blue-text); border-radius: var(--radius-sm); padding: 3px 9px; cursor: pointer; text-decoration: none; }
+.proc-open:hover { background: var(--blue); color: #fff; }
+.proc-req { display: flex; align-items: center; gap: var(--space-8); margin-top: var(--space-10); flex-wrap: wrap; }
+.proc-req .proc-badge { margin: 0; }
+.proc-partner-bar { display: flex; align-items: center; gap: var(--space-14); background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-12) var(--space-16); margin-bottom: var(--space-14); }
+.proc-progress { flex: 1 1 auto; height: 8px; background: var(--ink-100); border-radius: var(--radius-pill); overflow: hidden; }
+.proc-progress > i { display: block; height: 100%; background: var(--blue); border-radius: var(--radius-pill); }
+/* ---- Breakdown Generator ---- */
+.bk-actions { display: flex; gap: var(--space-8); flex-wrap: wrap; margin-bottom: var(--space-14); }
+.bk-doc { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--card); overflow: hidden; }
+.bk-head { background: var(--ink); color: #fff; padding: var(--space-16) var(--space-18); display: flex; justify-content: space-between; gap: var(--space-16); align-items: flex-start; flex-wrap: wrap; }
+.bk-head h2 { margin: 0; font: 800 20px/1.1 var(--font-display); color: #fff; }
+.bk-head .bk-sub { color: #b9c4da; font-size: var(--text-xs); margin-top: var(--space-4); }
+.bk-head .bk-total { text-align: right; }
+.bk-head .bk-total strong { font: 800 22px/1 var(--font-display); color: var(--gold); display: block; }
+.bk-head .bk-total span { color: #b9c4da; font-size: var(--text-xs); }
+.bk-table { width: 100%; border-collapse: collapse; }
+.bk-table th, .bk-table td { text-align: left; padding: var(--space-9) var(--space-14); border-bottom: 1px solid var(--line); font-size: var(--text-xs); vertical-align: top; }
+.bk-table th { color: var(--muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 800; }
+.bk-cat-row td { background: var(--ink-100); font-weight: 800; color: var(--ink); text-transform: uppercase; letter-spacing: .04em; font-size: 11px; }
+.bk-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bk-subtotal-row td { font-weight: 800; color: var(--muted); background: #faf9f6; }
+.bk-total-row td { font-weight: 800; border-top: 2px solid var(--ink); border-bottom: 0; font-size: 14px; }
+.bk-val-input { width: 116px; text-align: right; font-family: var(--font-body); font-size: var(--text-xs); padding: var(--space-6) var(--space-8); border: 1px solid var(--line); border-bottom: 2px solid var(--blue); border-radius: var(--radius-sm); background: var(--card); color: var(--ink); }
+.bk-val-input:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
 .sdrawer-foot { position: sticky; bottom: 0; background: var(--paper); border-top: 1px solid var(--line); padding: var(--space-15) var(--space-26); display: flex; justify-content: space-between; align-items: center; gap: var(--space-10); flex-shrink: 0; }
 .save-hint { font-size: var(--text-xs); color: var(--muted); }
 
@@ -2407,6 +2465,17 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           </div>
         </div>
 
+        <div class="nav-chapter" data-chapter="process-hub" data-open="true">
+          <button class="chapter-head" data-chapter-main="process-hub">
+            <span class="nav-icon">&#9680;</span> Sponsor Process
+          </button>
+          <div class="chapter-body">
+            <button class="nav-item" data-view="process">
+              <span class="nav-icon">&#9654;</span> Process Tracker
+            </button>
+          </div>
+        </div>
+
         <div class="nav-chapter" data-chapter="ballpark-info" data-open="true">
           <button class="chapter-head" data-chapter-main="ballpark-info">
             <span class="nav-icon">&#8962;</span> Ballpark Info
@@ -2469,6 +2538,9 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <button class="nav-item" data-view="agreements">
               <span class="nav-icon">&#9998;</span> Agreement Generator
             </button>
+            <button class="nav-item" data-view="breakdown">
+              <span class="nav-icon">$</span> Breakdown Generator
+            </button>
             <button class="nav-item" data-view="requests">
               <span class="nav-icon">&#8644;</span> Requests &amp; Tasks
               <span class="nav-count" id="requestsCount">0</span>
@@ -2485,8 +2557,8 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
       </nav>
       <!-- Team chat. Deliberately small: this is a nudge channel ("who's covering the 5pm shoot?"),
            not a replacement for Slack. It rides the same cross-browser sync as everything else. -->
-      <section class="side-chat" id="sideChat" aria-label="Team chat">
-        <button type="button" class="side-chat-head" id="sideChatToggle" aria-expanded="true" aria-controls="sideChatBody">
+      <section class="side-chat collapsed" id="sideChat" aria-label="Team chat">
+        <button type="button" class="side-chat-head" id="sideChatToggle" aria-expanded="false" aria-controls="sideChatBody">
           <span class="side-chat-title">Team chat</span>
           <span class="side-chat-badge" id="sideChatBadge" hidden>0</span>
           <span class="side-chat-caret" aria-hidden="true">⌄</span>
@@ -2506,7 +2578,6 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           <p class="side-chat-note" id="sideChatNote"></p>
         </div>
       </section>
-      <img class="sidebar-watermark" data-crest-copy src="" alt="">
     </aside>
 
     <main class="main" id="mainContent">
@@ -2936,6 +3007,46 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           </div>
           <div class="mini-kpis" id="fulfillmentKpis"></div>
           <div id="fulfillmentEditor"></div>
+        </section>
+
+        <!-- ============ SPONSOR PROCESS ============ -->
+        <section class="view" id="processView">
+          <div class="overview-hero">
+            <div class="overview-hero-brand">
+              <img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws">
+              <div>
+                <div class="eyebrow">SPONSOR PROCESS<span class="season-badge">2026 SEASON</span></div>
+                <h1 class="overview-hero-title">Every deal, start to finish.</h1>
+                <p>The full sponsorship workflow as one map. Pick a partner to see exactly where they are and move the deal forward, step by step.</p>
+              </div>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <select id="processSponsorPicker" aria-label="Partner"><option value="">General view — all stages</option></select>
+            <div class="search-box">&#9906; <input id="processSearch" type="search" placeholder="Search partners"></div>
+          </div>
+          <div class="mini-kpis" id="processKpis"></div>
+          <div id="processBody"></div>
+        </section>
+
+        <!-- ============ BREAKDOWN GENERATOR ============ -->
+        <section class="view" id="breakdownView">
+          <div class="overview-hero">
+            <div class="overview-hero-brand">
+              <img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws">
+              <div>
+                <div class="eyebrow">BREAKDOWN GENERATOR<span class="season-badge">2026 SEASON</span></div>
+                <h1 class="overview-hero-title">Where every dollar goes.</h1>
+                <p>Build the finance-ready package breakdown &mdash; each asset a partner gets and the value allocated to it, checked against the agreement total.</p>
+              </div>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <select id="breakdownSponsorPicker" aria-label="Partner"><option value="">Select partner</option></select>
+            <div class="search-box">&#9906; <input id="breakdownSearch" type="search" placeholder="Search partners"></div>
+          </div>
+          <div class="mini-kpis" id="breakdownKpis"></div>
+          <div id="breakdownBody"></div>
         </section>
 
         <!-- ============ GAMEDAY ============ -->
@@ -6570,6 +6681,8 @@ const VIEW_TITLES = {
   displays: "Ballpark Displays",
   stadiummap: "Stadium Map",
   fulfillment: "Sponsor Fulfillment",
+  process: "Sponsor Process",
+  breakdown: "Breakdown Generator",
   gameday: "Gameday",
   options: "Options Creator",
   agreements: "Agreement Generator",
@@ -6590,10 +6703,11 @@ const VIEW_TITLES = {
 const VIEW_CHAPTER = {
   overview: "overview-hub", schedule: "overview-hub", reports: "overview-hub",
   sponsors: "sponsor-hub", statusview: "sponsor-hub", renewals: "sponsor-hub", history: "sponsor-hub", prospecting: "sponsor-hub",
+  process: "process-hub",
   stadiummap: "ballpark-info", displays: "ballpark-info", inventory: "ballpark-info",
   digideck: "digideck-hub", photolibrary: "digideck-hub",
   assetprep: "assetprep-hub",
-  fulfillment: "operations-hub", gameday: "operations-hub", options: "operations-hub", agreements: "operations-hub", requests: "operations-hub", mytasks: "operations-hub", service: "operations-hub"
+  fulfillment: "operations-hub", breakdown: "operations-hub", gameday: "operations-hub", options: "operations-hub", agreements: "operations-hub", requests: "operations-hub", mytasks: "operations-hub", service: "operations-hub"
 };
 function showView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
@@ -6612,6 +6726,8 @@ function showView(name) {
   if (name === "inventory") { renderAssetLibrary(); }
   if (name === "displays") { initBallparkControls(); try { renderBallparkDisplays(); } catch(e) { console.error("Ballpark Displays render failed",e); const b=document.getElementById("displayBoard"); if(b)b.innerHTML=`<div class="display-empty"><strong>Ballpark Displays could not render.</strong><br>${escDisplay(e?.message||e)}<br><button onclick="resetBallparkView()">Restore sourced board layout</button></div>`; } }
   if (name === "fulfillment") renderFulfillmentView();
+  if (name === "process") renderProcessView();
+  if (name === "breakdown") renderBreakdownView();
   if (name === "gameday") renderGamedayView();
   if (name === "options") renderOptionsView();
   if (name === "agreements") renderAgreementGeneratorView();
@@ -7170,6 +7286,421 @@ function renderSponsorGrid() {
   wireCardQuickActions(grid);
 }
 
+/* ================= SPONSOR PROCESS =================
+   The full sponsorship deal workflow as a single map. General view shows every stage and
+   its sub-steps; picking a partner turns each sub-step into a checkbox and tracks where the
+   deal sits. State lives in override.process = { stage:<key>, steps:{ "<stageKey>.<i>":true } }
+   so it rides the same cross-browser sync as everything else. */
+let procState = { sponsorId: "", search: "" };
+const PROCESS_STAGES = [
+  { key: "first-meeting", label: "First Meeting Presentation", view: "digideck", sub: [
+    "Sales Rep requests First Meeting Presentation",
+    "Service Rep claims First Meeting Presentation assignment",
+    "Service Rep creates the presentation and alerts Sales Rep",
+    "Sales Rep has the meeting and/or sends out the First Meeting Presentation"
+  ]},
+  { key: "options", label: "Customized Options (Options Creator)", view: "options", sub: [
+    "Sales Rep requests Customized Options",
+    "Service Rep claims the Options Creator assignment",
+    "Service Rep builds the Customized Options",
+    "Sent out for approval — approve, deny, or suggest revisions",
+    "Once approved, a Customized Partnership Presentation auto-assigns to the Service Team"
+  ]},
+  { key: "partnership-presentation", label: "Customized Partnership Presentation", view: "digideck", sub: [
+    "Service Rep claims the Partnership Presentation assignment",
+    "Service Rep builds the presentation in Digideck",
+    "Sent via Requests & Tasks for approval — approve, deny, or suggest revisions",
+    "Once approved, Sales Rep sends the Digideck presentation to the partner"
+  ]},
+  { key: "term-sheet", label: "Term Sheet (Unofficial Agreement Review)", view: "agreements", sub: [
+    "Sales Rep requests the Term Sheet",
+    "Service Rep claims the Term Sheet assignment",
+    "Service Rep creates the Term Sheet",
+    "Sent via Requests & Tasks for approval — approve, deny, or suggest revisions",
+    "Once approved, Sales Rep sends the Term Sheet to the partner"
+  ]},
+  { key: "partnership-agreement", label: "Partnership Agreement", view: "agreements", sub: [
+    "Sales Rep requests the Partnership Agreement",
+    "Service Rep claims the Partnership Agreement assignment",
+    "Service Rep creates the Partnership Agreement",
+    "Sent via Requests & Tasks for approval — approve, deny, or suggest revisions",
+    "Once approved, Sales Rep sends the Partnership Agreement to the partner"
+  ]},
+  { key: "contract-signed", label: "Contract Signed", view: "requests", sub: [
+    "Once signed, Sales Rep alerts the whole Sponsorship Team",
+    { t: "Confirm / Update Partner Details — Account, Deal, Assets, Contacts, Upload Agreement", view: "sponsors" },
+    { t: "Create Breakdown & Update Score (Breakdown approved by Rob Vota only; confirm Score updated)", view: "breakdown" },
+    { t: "Create Asset Prep Email Generator", view: "assetprep" }
+  ]},
+  { key: "asset-prep", label: "Asset Prep", view: "assetprep", sub: [
+    "Service Rep sends the Asset Prep email to the partner"
+  ]},
+  { key: "fulfillment", label: "Sponsor Fulfillment", view: "fulfillment", sub: [
+    "Service Rep updates Sponsor Fulfillment manually throughout the season"
+  ]},
+  { key: "mid-season", label: "Mid-Season Report", view: "digideck", sub: [
+    "Service Team updates Mid-Season Report assets from April through early July",
+    "Zack Nicol and Greg Millaway review each and mark approved when ready",
+    "Zack sends out Mid-Season Reports via email in mid-July"
+  ]},
+  { key: "annual", label: "Annual Report", view: "digideck", sub: [
+    "Service Team updates Annual Report assets from July through September",
+    "Zack Nicol and Greg Millaway review each and mark approved when ready"
+  ]},
+  { key: "renewal", label: "Renewal Process", view: "renewals", nonLinear: true, sub: [
+    "Not linear — can happen anytime: re-engage the partner for next season"
+  ]}
+];
+function subText(s) { return typeof s === "string" ? s : s.t; }
+function subView(s) { return typeof s === "string" ? null : s.view; }
+function processTotalSteps() { return PROCESS_STAGES.reduce((n, s) => n + s.sub.length, 0); }
+function getProcess(r) { return (r && r.process) || {}; }
+function processStepKey(stage, i) { return stage.key + "." + i; }
+function processStepDone(r, stage, i) { return !!(getProcess(r).steps || {})[processStepKey(stage, i)]; }
+function stageAllDone(r, stage) { return stage.sub.length > 0 && stage.sub.every((_, i) => processStepDone(r, stage, i)); }
+function stageAnyDone(r, stage) { return stage.sub.some((_, i) => processStepDone(r, stage, i)); }
+function processCheckedCount(r) { return Object.values(getProcess(r).steps || {}).filter(Boolean).length; }
+function processPct(r) { const t = processTotalSteps(); return t ? Math.round((processCheckedCount(r) / t) * 100) : 0; }
+/* Each process stage that has a real counterpart in Requests & Tasks is mapped here, so the
+   tracker can start the actual request and mirror its live status instead of only manual ticks. */
+const PROC_REQ_TYPE = { "first-meeting": "first_meeting", "options": "custom_options", "partnership-presentation": "custom_presentation", "term-sheet": "term_sheet", "partnership-agreement": "agreement", "asset-prep": "asset_prep" };
+const PROC_REQ_STATUS_CLS = { requested: "current", in_progress: "current", ready_for_review: "current", approved: "done", complete: "done", cancelled: "anytime" };
+function latestRequestFor(sponsorId, type) {
+  return loadRequests().filter(r => r.sponsorId === sponsorId && r.type === type)
+    .sort((a, b) => String(b.requestedAt || "").localeCompare(String(a.requestedAt || "")))[0] || null;
+}
+function stageReqComplete(r, stage) {
+  const t = PROC_REQ_TYPE[stage.key]; if (!t) return false;
+  const req = latestRequestFor(r.id, t); return !!(req && req.status === "complete");
+}
+/* A stage counts done when every manual sub-step is ticked OR its linked request is complete. */
+function stageDone(r, stage) { return stageAllDone(r, stage) || stageReqComplete(r, stage); }
+function currentStageIndex(r) {
+  const stored = getProcess(r).stage;
+  if (stored) { const i = PROCESS_STAGES.findIndex(s => s.key === stored); if (i >= 0) return i; }
+  const firstIncomplete = PROCESS_STAGES.findIndex(s => !s.nonLinear && !stageDone(r, s));
+  return firstIncomplete < 0 ? PROCESS_STAGES.length - 1 : firstIncomplete;
+}
+function setProcessStage(id, key) {
+  const r = getRecord(id); if (!r) return;
+  updateOverride(id, { process: Object.assign({}, getProcess(r), { stage: key }) });
+  renderProcessView();
+}
+function toggleProcessStep(id, stage, i) {
+  const r = getRecord(id); if (!r) return;
+  const cur = getProcess(r);
+  const steps = Object.assign({}, cur.steps || {});
+  const k = processStepKey(stage, i);
+  steps[k] = !steps[k];
+  updateOverride(id, { process: Object.assign({}, cur, { steps }) });
+  renderProcessView();
+}
+function dealFlowSponsorList(q) {
+  let list = pipelineSeasonRecords().filter(r => isActiveForSelectedSeason(r) || hasSeason(r, String(Number(sState.season) - 1)) || dealAssetsFor(r).length || fulfillmentAssetsFor(r).length);
+  const s = (q || "").trim().toLowerCase();
+  if (s) list = list.filter(r => [r.sponsor, r.rep, r.type, r.department].filter(Boolean).some(v => String(v).toLowerCase().includes(s)));
+  return list.sort((a, b) => (a.sponsor || "").localeCompare(b.sponsor || ""));
+}
+function processStageCardHTML(stage, sIdx, r, curIdx) {
+  const editable = !!r;
+  let stateCls = "", badge = "";
+  if (stage.nonLinear) { stateCls = "st-renewal"; badge = `<span class="proc-badge anytime">Anytime</span>`; }
+  else if (editable && stageDone(r, stage)) { stateCls = "st-done"; badge = `<span class="proc-badge done">Done</span>`; }
+  else if (editable && sIdx === curIdx) { stateCls = "st-current"; badge = `<span class="proc-badge current">In progress</span>`; }
+  const title = editable
+    ? `<button type="button" class="proc-stage-title" data-proc-setstage="${stage.key}" title="Set as current stage">${esc(stage.label)}</button>`
+    : `<span class="proc-stage-title">${esc(stage.label)}</span>`;
+  const subs = stage.sub.map((s, i) => {
+    const txt = esc(subText(s));
+    const box = editable
+      ? `<button type="button" class="proc-step-btn ${processStepDone(r, stage, i) ? "on" : ""}" data-proc-step="${stage.key}" data-proc-i="${i}" aria-pressed="${processStepDone(r, stage, i)}">${processStepDone(r, stage, i) ? "✓" : ""}</button>`
+      : `<span class="proc-step-static">○</span>`;
+    const v = subView(s);
+    const link = v ? ` <a class="proc-inline-open" href="#" data-proc-open="${v}" style="color:var(--blue-text); font-weight:700; white-space:nowrap;">open ▸</a>` : "";
+    return `<li>${box}<span>${txt}${link}</span></li>`;
+  }).join("");
+  const stageLink = stage.view ? `<a class="proc-open" href="#" data-proc-open="${stage.view}">Open ${esc(VIEW_TITLES[stage.view] || stage.view)} ▸</a>` : "";
+  let reqAction = "";
+  const reqType = editable ? PROC_REQ_TYPE[stage.key] : null;
+  if (reqType) {
+    const req = latestRequestFor(r.id, reqType);
+    if (req) {
+      const cls = PROC_REQ_STATUS_CLS[req.status] || "current";
+      const lbl = (typeof REQ_STATUSES !== "undefined" && REQ_STATUSES[req.status]) ? REQ_STATUSES[req.status].label : req.status;
+      reqAction = `<div class="proc-req"><span class="proc-badge ${cls}" title="Live status from Requests & Tasks">● ${esc(lbl)}</span><a class="proc-open" href="#" data-proc-openreq="1">Open request ▸</a></div>`;
+    } else {
+      reqAction = `<div class="proc-req"><button type="button" class="proc-open" data-proc-newreq="${reqType}">＋ Start in Requests &amp; Tasks</button></div>`;
+    }
+  }
+  return `<div class="proc-stage ${stateCls}">
+    <div class="proc-stage-head"><span class="proc-stage-num">${sIdx + 1}</span>${title}${badge}</div>
+    <ul class="proc-sub">${subs}</ul>
+    ${reqAction}
+    ${stageLink}
+  </div>`;
+}
+function renderProcessView() {
+  updateSeasonBadges();
+  populateGlobalSeasonSelect();
+  const picker = document.getElementById("processSponsorPicker");
+  const searchEl = document.getElementById("processSearch");
+  if (!picker) return;
+  const list = dealFlowSponsorList(procState.search);
+  picker.innerHTML = `<option value="">General view — all stages</option>` + list.map(r => `<option value="${esc(r.id)}">${esc(r.sponsor)}</option>`).join("");
+  if (procState.sponsorId && !list.some(r => r.id === procState.sponsorId)) procState.sponsorId = "";
+  picker.value = procState.sponsorId;
+  picker.onchange = e => { procState.sponsorId = e.target.value; renderProcessView(); };
+  if (searchEl && searchEl.value !== procState.search) searchEl.value = procState.search;
+  if (searchEl) searchEl.oninput = e => { procState.search = e.target.value; renderProcessView(); };
+
+  const r = procState.sponsorId ? getRecord(procState.sponsorId) : null;
+  const kpis = document.getElementById("processKpis");
+  const body = document.getElementById("processBody");
+
+  if (!r) {
+    const inProgress = list.filter(x => processCheckedCount(x) > 0 && processPct(x) < 100).length;
+    const done = list.filter(x => processPct(x) === 100).length;
+    kpis.innerHTML = `
+      <div class="mini-kpi"><span>Stages in the process</span><strong>${PROCESS_STAGES.length}</strong></div>
+      <div class="mini-kpi"><span>Partners tracked</span><strong>${list.length}</strong></div>
+      <div class="mini-kpi"><span>Deals in progress</span><strong>${inProgress}</strong></div>
+      <div class="mini-kpi"><span>Fully worked through</span><strong>${done}</strong></div>`;
+    body.innerHTML = `
+      <div class="proc-legend">
+        <span><i style="background:var(--blue)"></i>Completed step</span>
+        <span><i style="background:var(--gold)"></i>Current stage</span>
+        <span><i style="background:var(--navy-700)"></i>Renewal (non-linear)</span>
+        <span style="color:var(--muted);">Pick a partner above to track their deal against this map.</span>
+      </div>
+      <div class="proc-map">${PROCESS_STAGES.map((s, i) => processStageCardHTML(s, i, null, -1)).join("")}</div>`;
+  } else {
+    const curIdx = currentStageIndex(r);
+    const pct = processPct(r);
+    const stageLabel = PROCESS_STAGES[curIdx] ? PROCESS_STAGES[curIdx].label : "—";
+    kpis.innerHTML = `
+      <div class="mini-kpi"><span>Current stage</span><strong style="font-size:14px;">${esc(stageLabel)}</strong></div>
+      <div class="mini-kpi"><span>Steps complete</span><strong>${processCheckedCount(r)} / ${processTotalSteps()}</strong></div>
+      <div class="mini-kpi"><span>Overall progress</span><strong>${pct}%</strong></div>`;
+    body.innerHTML = `
+      <div class="proc-partner-bar">
+        <div style="min-width:0;"><strong style="font-size:14px;">${esc(r.sponsor)}</strong><small style="display:block; color:var(--muted); font-size:var(--text-xs);">${esc(r.rep || "No rep")} · ${esc(r.type || "—")} · ${esc(sState.season)} season</small></div>
+        <div class="proc-progress"><i style="width:${pct}%;"></i></div>
+        <strong style="flex:0 0 auto; font:800 15px/1 var(--font-display);">${pct}%</strong>
+      </div>
+      <div class="proc-legend">
+        <span style="color:var(--muted);">Click a stage title to mark it the current stage · tick each sub-step as it's finished.</span>
+      </div>
+      <div class="proc-map">${PROCESS_STAGES.map((s, i) => processStageCardHTML(s, i, r, curIdx)).join("")}</div>`;
+    body.querySelectorAll("[data-proc-setstage]").forEach(b => b.addEventListener("click", () => setProcessStage(r.id, b.dataset.procSetstage)));
+    body.querySelectorAll("[data-proc-step]").forEach(b => b.addEventListener("click", () => {
+      const stage = PROCESS_STAGES.find(s => s.key === b.dataset.procStep);
+      if (stage) toggleProcessStep(r.id, stage, +b.dataset.procI);
+    }));
+    body.querySelectorAll("[data-proc-newreq]").forEach(b => b.addEventListener("click", () => {
+      const sid = r.id, type = b.dataset.procNewreq;
+      showView("requests");
+      setTimeout(() => { try { openReqForm(sid, type); } catch (e) {} }, 60);
+    }));
+    body.querySelectorAll("[data-proc-openreq]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); showView("requests"); }));
+  }
+  body.querySelectorAll("[data-proc-open]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); showView(a.dataset.procOpen); }));
+}
+
+/* ================= BREAKDOWN GENERATOR =================
+   Finance-facing package breakdown: every asset a partner receives and the dollar value
+   allocated to it, grouped by category, checked against the agreement total. Reads/writes the
+   same dealAssets[].breakdownValue that Partner Details uses, so allocations stay in one place. */
+let bkState = { sponsorId: "", search: "" };
+let _bkCatMap = null;
+function catalogCategoryFor(name) {
+  if (!_bkCatMap) { _bkCatMap = {}; try { getFullCatalog().forEach(a => { const k = String(a.asset || "").toLowerCase(); if (a.asset && !_bkCatMap[k]) _bkCatMap[k] = a.category || "Other"; }); } catch (e) {} }
+  return _bkCatMap[String(name || "").toLowerCase()] || "Other / Unassigned";
+}
+function breakdownRowsFor(r) {
+  return dealAssetsFor(r).filter(a => a.asset).map(a => ({
+    asset: a.asset, qty: a.qty || "1", notes: a.notes || "",
+    value: parseTotal(a.breakdownValue), raw: (a.breakdownValue || "").trim(),
+    category: catalogCategoryFor(a.asset)
+  }));
+}
+function breakdownGrouped(rows) {
+  const order = [], byCat = {};
+  rows.forEach(row => { if (!byCat[row.category]) { byCat[row.category] = []; order.push(row.category); } byCat[row.category].push(row); });
+  return order.map(cat => ({ category: cat, rows: byCat[cat], subtotal: byCat[cat].reduce((t, x) => t + x.value, 0) }));
+}
+function breakdownTarget(r) { return selectedSeasonTotal(r) || parseTotal(r.total) || 0; }
+function saveBreakdownValue(id, idx, val) {
+  const r = getRecord(id); if (!r) return;
+  const rows = dealAssetsFor(r).map((a, i) => i === idx ? Object.assign({}, a, { breakdownValue: val }) : a);
+  updateOverride(id, { dealAssets: cleanDealAssets(rows) });
+  renderBreakdownView();
+}
+function breakdownPlainText(r) {
+  const rows = breakdownRowsFor(r), groups = breakdownGrouped(rows);
+  const target = breakdownTarget(r), sum = rows.reduce((t, x) => t + x.value, 0);
+  let out = `PACKAGE BREAKDOWN — ${r.sponsor}\n${sState.season} Season · ${r.rep || "No rep"} · ${r.type || "—"}\n`;
+  out += `Agreement total: ${fmtMoney(target)}\n\n`;
+  groups.forEach(g => {
+    out += `${g.category.toUpperCase()} — ${fmtMoney(g.subtotal)}\n`;
+    g.rows.forEach(x => { out += `  • ${x.asset}${x.qty && x.qty !== "1" ? ` (x${x.qty})` : ""}: ${x.raw ? fmtMoney(x.value) : "—"}\n`; });
+    out += `\n`;
+  });
+  out += `ALLOCATED TOTAL: ${fmtMoney(sum)}`;
+  if (target) out += `  (agreement ${fmtMoney(target)}${Math.abs(sum - target) < 0.5 ? " — matches" : `, ${sum > target ? "over" : "under"} by ${fmtMoney(Math.abs(sum - target))}`})`;
+  return out;
+}
+function breakdownCSV(r) {
+  const rows = breakdownRowsFor(r);
+  const esc2 = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  let csv = "Category,Asset,Quantity,Allocated Value,Notes\n";
+  rows.forEach(x => { csv += [esc2(x.category), esc2(x.asset), esc2(x.qty), esc2(x.value), esc2(x.notes)].join(",") + "\n"; });
+  csv += [esc2(""), esc2("ALLOCATED TOTAL"), esc2(""), esc2(rows.reduce((t, x) => t + x.value, 0)), esc2("")].join(",") + "\n";
+  return csv;
+}
+function copyBreakdown(r) {
+  const txt = breakdownPlainText(r);
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast("Copied", "Breakdown copied for finance."), () => toast("Copy failed", "Select and copy manually."));
+  else toast("Copy unavailable", "Use Download or Print instead.");
+}
+function downloadBreakdownCSV(r) {
+  const blob = new Blob([breakdownCSV(r)], { type: "text/csv" });
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = `Breakdown_${(r.sponsor || "partner").replace(/[^a-z0-9]+/gi, "_")}_${sState.season}.csv`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function printBreakdown(r) {
+  const rows = breakdownRowsFor(r), groups = breakdownGrouped(rows);
+  const target = breakdownTarget(r), sum = rows.reduce((t, x) => t + x.value, 0);
+  const rowsHTML = groups.map(g => `
+    <tr class="cat"><td colspan="3">${esc(g.category)}</td><td class="num">${fmtMoney(g.subtotal)}</td></tr>
+    ${g.rows.map(x => `<tr><td></td><td>${esc(x.asset)}</td><td class="num">${esc(x.qty)}</td><td class="num">${x.raw ? fmtMoney(x.value) : "—"}</td></tr>`).join("")}
+  `).join("");
+  const reconTxt = !target ? "No agreement total on file." : Math.abs(sum - target) < 0.5 ? "Matches the agreement total." : `${sum > target ? "Over" : "Under"} the agreement total by ${fmtMoney(Math.abs(sum - target))}.`;
+  const doc = `<!doctype html><html><head><meta charset="utf-8"><title>Breakdown — ${esc(r.sponsor)}</title>
+    <style>
+      body{font-family:Arial,Helvetica,sans-serif;color:#0d1d41;margin:32px;}
+      h1{font-size:22px;margin:0;} .meta{color:#5a6373;font-size:12px;margin:4px 0 18px;}
+      .totbox{float:right;text-align:right;} .totbox b{font-size:22px;color:#0971ce;display:block;}
+      table{width:100%;border-collapse:collapse;margin-top:8px;} th,td{padding:7px 10px;border-bottom:1px solid #ddd;font-size:12px;text-align:left;}
+      th{background:#0d1d41;color:#fff;text-transform:uppercase;letter-spacing:.4px;font-size:10px;}
+      td.num,th.num{text-align:right;white-space:nowrap;} tr.cat td{background:#eef1f6;font-weight:bold;text-transform:uppercase;font-size:11px;}
+      tr.total td{border-top:2px solid #0d1d41;font-weight:bold;font-size:14px;} .recon{margin-top:14px;font-size:12px;color:#5a6373;}
+    </style></head><body>
+    <div class="totbox"><span style="font-size:11px;color:#5a6373;">Agreement total</span><b>${fmtMoney(target)}</b></div>
+    <h1>Package Breakdown — ${esc(r.sponsor)}</h1>
+    <div class="meta">${esc(sState.season)} Season &nbsp;·&nbsp; ${esc(r.rep || "No rep")} &nbsp;·&nbsp; ${esc(r.type || "—")} &nbsp;·&nbsp; Jersey Shore BlueClaws Sponsorship</div>
+    <table><thead><tr><th>Category</th><th>Asset</th><th class="num">Qty</th><th class="num">Allocated value</th></tr></thead>
+    <tbody>${rowsHTML}<tr class="total"><td></td><td>Allocated total</td><td></td><td class="num">${fmtMoney(sum)}</td></tr></tbody></table>
+    <div class="recon">${reconTxt}</div>
+    </body></html>`;
+  const w = window.open("", "_blank");
+  if (!w) { copyBreakdown(r); toast("Pop-up blocked", "Copied the breakdown instead — allow pop-ups to print."); return; }
+  w.document.write(doc); w.document.close(); w.focus(); setTimeout(() => { try { w.print(); } catch (e) {} }, 300);
+}
+function renderBreakdownView() {
+  updateSeasonBadges();
+  populateGlobalSeasonSelect();
+  const picker = document.getElementById("breakdownSponsorPicker");
+  const searchEl = document.getElementById("breakdownSearch");
+  if (!picker) return;
+  const list = dealFlowSponsorList(bkState.search);
+  picker.innerHTML = `<option value="">Select partner</option>` + list.map(r => `<option value="${esc(r.id)}">${esc(r.sponsor)}</option>`).join("");
+  if (bkState.sponsorId && !list.some(r => r.id === bkState.sponsorId)) bkState.sponsorId = "";
+  picker.value = bkState.sponsorId;
+  picker.onchange = e => { bkState.sponsorId = e.target.value; renderBreakdownView(); };
+  if (searchEl && searchEl.value !== bkState.search) searchEl.value = bkState.search;
+  if (searchEl) searchEl.oninput = e => { bkState.search = e.target.value; renderBreakdownView(); };
+
+  const kpis = document.getElementById("breakdownKpis");
+  const body = document.getElementById("breakdownBody");
+  const r = bkState.sponsorId ? getRecord(bkState.sponsorId) : null;
+
+  if (!r) {
+    kpis.innerHTML = `<div class="mini-kpi"><span>Partners available</span><strong>${list.length}</strong></div>`;
+    body.innerHTML = `
+      <article class="table-card">
+        <div class="table-toolbar"><strong style="font-size:14px;">Package breakdowns</strong><span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs);">Pick a partner above to build its finance breakdown</span></div>
+        <div style="padding:0 var(--space-18) var(--space-18);">
+          <div class="fulfillment-row" style="grid-template-columns:1fr 150px 130px; font-weight:800; color:var(--muted); font-size:var(--text-xs); padding:var(--space-8) 0;"><div>Partner</div><div class="bk-num">Allocated</div><div class="bk-num">Agreement</div></div>
+          ${list.map(row => {
+            const rows = breakdownRowsFor(row), sum = rows.reduce((t, x) => t + x.value, 0), target = breakdownTarget(row);
+            const tone = !target ? "neutral" : Math.abs(sum - target) < 0.5 ? "positive" : "negative";
+            return `<div class="fulfillment-row" data-bk-row="${esc(row.id)}" style="grid-template-columns:1fr 150px 130px; cursor:pointer; padding:var(--space-8) 0; border-top:1px solid #eee;">
+              <div>${esc(row.sponsor)}<small style="display:block; color:var(--muted); font-size:var(--text-xs);">${rows.length} asset${rows.length === 1 ? "" : "s"}</small></div>
+              <div class="bk-num ${tone}">${sum ? fmtMoney(sum) : "—"}</div>
+              <div class="bk-num" style="color:var(--muted);">${target ? fmtMoney(target) : "—"}</div>
+            </div>`;
+          }).join("")}
+        </div>
+      </article>`;
+    body.querySelectorAll("[data-bk-row]").forEach(el => el.addEventListener("click", () => { bkState.sponsorId = el.dataset.bkRow; renderBreakdownView(); }));
+    return;
+  }
+
+  const rows = breakdownRowsFor(r);
+  const groups = breakdownGrouped(rows);
+  const target = breakdownTarget(r);
+  const sum = rows.reduce((t, x) => t + x.value, 0);
+  const remaining = target - sum;
+  kpis.innerHTML = `
+    <div class="mini-kpi"><span>Agreement total</span><strong>${target ? fmtMoney(target) : "—"}</strong></div>
+    <div class="mini-kpi"><span>Allocated</span><strong>${fmtMoney(sum)}</strong></div>
+    <div class="mini-kpi"><span>${remaining >= 0 ? "Unallocated" : "Over-allocated"}</span><strong class="${!target ? "" : Math.abs(remaining) < 0.5 ? "positive" : "negative"}">${target ? fmtMoney(Math.abs(remaining)) : "—"}</strong></div>
+    <div class="mini-kpi"><span>Assets</span><strong>${rows.length}</strong></div>`;
+
+  if (!rows.length) {
+    body.innerHTML = `<div style="padding:var(--space-40); text-align:center; color:var(--muted); font-size:var(--text-xs);">No assets on file for ${esc(r.sponsor)} yet. Add deal assets in Partner Details or Sponsor Fulfillment first.</div>`;
+    return;
+  }
+
+  let flatIndexByAsset = {};
+  dealAssetsFor(r).forEach((a, i) => { if (a.asset && !(a.asset in flatIndexByAsset)) flatIndexByAsset[a.asset] = i; });
+
+  const bodyRows = groups.map(g => `
+    <tr class="bk-cat-row"><td colspan="3">${esc(g.category)}</td><td class="bk-num">${fmtMoney(g.subtotal)}</td></tr>
+    ${g.rows.map(x => `<tr>
+      <td style="color:var(--muted);"></td>
+      <td><strong style="font-weight:700;">${esc(x.asset)}</strong>${x.notes ? `<small style="display:block; color:var(--muted);">${esc(x.notes)}</small>` : ""}</td>
+      <td class="bk-num">${esc(x.qty)}</td>
+      <td class="bk-num"><input class="bk-val-input" data-bk-val="${flatIndexByAsset[x.asset] ?? -1}" value="${esc(x.raw)}" placeholder="$0" inputmode="decimal"></td>
+    </tr>`).join("")}
+  `).join("");
+
+  const reconTone = !target ? "" : Math.abs(remaining) < 0.5 ? "is-ok" : "is-off";
+  const reconTxt = !target ? `No agreement total on file to check against — allocated ${fmtMoney(sum)}.`
+    : Math.abs(remaining) < 0.5 ? `Allocated ${fmtMoney(sum)} — matches the agreement total.`
+    : `Allocated ${fmtMoney(sum)} vs agreement total ${fmtMoney(target)} — ${remaining < 0 ? "over" : "under"} by ${fmtMoney(Math.abs(remaining))}.`;
+
+  body.innerHTML = `
+    <div class="bk-actions">
+      <button class="secondary-button" id="bkCopy" type="button">Copy for finance</button>
+      <button class="secondary-button" id="bkPrint" type="button">Print / Save PDF</button>
+      <button class="secondary-button" id="bkCsv" type="button">Download CSV</button>
+      <span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs); align-self:center;">Edit any value below — it saves to the partner and syncs.</span>
+    </div>
+    <div class="bk-doc">
+      <div class="bk-head">
+        <div><h2>${esc(r.sponsor)}</h2><div class="bk-sub">${esc(sState.season)} Season · ${esc(r.rep || "No rep")} · ${esc(r.type || "—")} · Package breakdown for finance</div></div>
+        <div class="bk-total"><strong>${target ? fmtMoney(target) : fmtMoney(sum)}</strong><span>${target ? "agreement total" : "allocated (no agreement total on file)"}</span></div>
+      </div>
+      <table class="bk-table">
+        <thead><tr><th style="width:26px;"></th><th>Asset</th><th class="bk-num">Qty</th><th class="bk-num">Allocated value</th></tr></thead>
+        <tbody>
+          ${bodyRows}
+          <tr class="bk-total-row"><td></td><td>Allocated total</td><td></td><td class="bk-num">${fmtMoney(sum)}</td></tr>
+        </tbody>
+      </table>
+      <div class="breakdown-recon ${reconTone}" style="margin:var(--space-12) var(--space-14) var(--space-14);">${reconTxt}</div>
+    </div>`;
+
+  document.getElementById("bkCopy").onclick = () => copyBreakdown(r);
+  document.getElementById("bkPrint").onclick = () => printBreakdown(r);
+  document.getElementById("bkCsv").onclick = () => downloadBreakdownCSV(r);
+  body.querySelectorAll("[data-bk-val]").forEach(inp => inp.addEventListener("change", () => {
+    const idx = +inp.dataset.bkVal; if (idx >= 0) saveBreakdownValue(r.id, idx, inp.value);
+  }));
+}
+
 /* ================= SPONSOR FULFILLMENT ================= */
 function fulfillmentSponsorList() {
   const q = fState.search.trim().toLowerCase();
@@ -7288,12 +7819,26 @@ function renderFulfillmentEditorRows(r, rows) {
       const meta = statusMeta(row.status);
       const statuses = FULFILLMENT_STATUSES.map(s => `<button type="button" class="fulfillment-status ${s.cls} ${meta.key === s.key ? "selected" : ""}" data-fulfill-status="${s.key}" data-row="${idx}">${s.label}</button>`).join("");
       const cadence = cadenceMeta(row.cadence).key;
-      return `<div class="fulfillment-row" data-fulfill-row="${idx}" style="grid-template-columns:minmax(180px,1fr) 250px minmax(240px,1.2fr) minmax(180px,1fr) 28px;">
+      // Dates band: Multi-Instance draws one date box per unit of quantity, Single draws one,
+      // Full-Season draws none (no per-date scheduling makes sense for a season-long asset).
+      const savedDates = normalizeFulfillmentDates(row.dates);
+      let dateBoxes;
+      if (cadence === "full") {
+        dateBoxes = `<span class="ff-dates-note">Full season / year — runs throughout, no per-date scheduling needed.</span>`;
+      } else {
+        const n = cadence === "multi" ? Math.min(Math.max(assetQtyNumber(row.qty), 1), 60) : 1;
+        dateBoxes = Array.from({ length: n }, (_, j) =>
+          `<input class="ff-date-box" data-fulfill-date="${idx}" data-date-i="${j}" list="fulfillmentDateChoices" value="${esc(savedDates[j] || "")}" placeholder="${cadence === "multi" ? "Date " + (j + 1) : "TBD"}" aria-label="Date ${j + 1} for asset ${idx + 1}">`
+        ).join("");
+      }
+      return `<div class="fulfillment-row" data-fulfill-row="${idx}" style="grid-template-columns:minmax(160px,1fr) 240px 156px 78px 28px;">
         <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Asset" : ""}</label><input data-fulfill-asset="${idx}" list="fulfillmentAssetChoices" value="${esc(row.asset || "")}" placeholder="Asset name"></div>
         <div><label style="display:block; color:var(--muted); font-size: var(--text-xs); font-weight:800; margin-bottom:var(--space-6);">${idx === 0 ? "Status" : ""}</label><div class="fulfillment-statuses">${statuses}</div></div>
-        <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Schedule" : ""}</label><div style="display:grid; grid-template-columns:132px 1fr; gap:var(--space-7);"><select data-fulfill-cadence="${idx}">${FULFILLMENT_CADENCES.map(c => `<option value="${c.key}" ${cadence === c.key ? "selected" : ""}>${esc(c.label)}</option>`).join("")}</select><input data-fulfill-dates="${idx}" list="fulfillmentDateChoices" value="${esc(normalizeFulfillmentDates(row.dates).join(", "))}" placeholder="TBD, Apr 7, Apr 8"></div></div>
-        <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Quantity / Notes" : ""}</label><div style="display:grid; grid-template-columns:62px 1fr; gap:var(--space-7);"><input data-fulfill-qty="${idx}" value="${esc(row.qty || "1")}" placeholder="Qty"><textarea class="fulfillment-note" data-fulfill-note="${idx}" placeholder="Fulfillment notes">${esc(row.notes || "")}</textarea></div></div>
+        <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Schedule" : ""}</label><select data-fulfill-cadence="${idx}">${FULFILLMENT_CADENCES.map(c => `<option value="${c.key}" ${cadence === c.key ? "selected" : ""}>${esc(c.label)}</option>`).join("")}</select></div>
+        <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Quantity" : ""}</label><input data-fulfill-qty="${idx}" type="number" min="1" step="1" value="${esc(row.qty || "1")}" placeholder="Qty"></div>
         <button type="button" data-fulfill-remove="${idx}" style="border:0; background:transparent; color:var(--muted); cursor:pointer; margin-top:${idx === 0 ? "22px" : "0"};" title="Remove">x</button>
+        <div class="ff-dates-band" style="grid-column:1 / -1;"><span class="ff-band-label">Dates</span><div class="ff-dates-wrap">${dateBoxes}</div></div>
+        <div class="ff-notes-band" style="grid-column:1 / -1;"><span class="ff-band-label">Notes</span><textarea class="fulfillment-note" data-fulfill-note="${idx}" placeholder="Fulfillment notes">${esc(row.notes || "")}</textarea></div>
         <div class="asset-tasks" style="grid-column:1 / -1;">${row.asset ? `<span class="asset-tasks-label">Tasks</span>${TASK_TEMPLATE.map(t => { const done = !!assetTasksFor(r, row.asset)[t.key]; return `<button type="button" class="task-pill ${done ? "done" : ""}" data-asset-task="${t.key}" data-asset-name="${esc(row.asset)}" aria-pressed="${done}">${done ? "✓" : "○"} ${esc(t.label)}</button>`; }).join("")}` : ""}</div>
       </div>`;
     }).join("") : `<div style="padding:var(--space-18); color:var(--muted); font-size:var(--text-xs);">No assets yet. Add an asset below to start fulfillment tracking.</div>`);
@@ -7313,20 +7858,27 @@ function renderFulfillmentEditorRows(r, rows) {
     renderFulfillmentView();
     if (document.querySelector(".nav-item.active")?.dataset.view === "sponsors") renderSponsorGrid();
   };
-  const rowSnapshot = () => rows.map((row, idx) => ({
-    asset: document.querySelector(`[data-fulfill-asset="${idx}"]`)?.value ?? row.asset,
-    qty: document.querySelector(`[data-fulfill-qty="${idx}"]`)?.value ?? row.qty,
-    status: row.status || "need-to-do",
-    cadence: document.querySelector(`[data-fulfill-cadence="${idx}"]`)?.value ?? row.cadence,
-    dates: normalizeFulfillmentDates(document.querySelector(`[data-fulfill-dates="${idx}"]`)?.value ?? row.dates),
-    notes: document.querySelector(`[data-fulfill-note="${idx}"]`)?.value ?? row.notes
-  }));
+  const rowSnapshot = () => rows.map((row, idx) => {
+    const cad = document.querySelector(`[data-fulfill-cadence="${idx}"]`)?.value ?? row.cadence;
+    const boxes = document.querySelectorAll(`[data-fulfill-date="${idx}"]`);
+    const dates = boxes.length
+      ? normalizeFulfillmentDates(Array.from(boxes).map(b => b.value))
+      : (cad === "full" ? [] : normalizeFulfillmentDates(row.dates));
+    return {
+      asset: document.querySelector(`[data-fulfill-asset="${idx}"]`)?.value ?? row.asset,
+      qty: document.querySelector(`[data-fulfill-qty="${idx}"]`)?.value ?? row.qty,
+      status: row.status || "need-to-do",
+      cadence: cad,
+      dates,
+      notes: document.querySelector(`[data-fulfill-note="${idx}"]`)?.value ?? row.notes
+    };
+  });
   wrap.querySelectorAll("[data-fulfill-status]").forEach(btn => btn.addEventListener("click", () => {
     const next = rowSnapshot();
     next[+btn.dataset.row].status = btn.dataset.fulfillStatus;
     saveRows(next);
   }));
-  wrap.querySelectorAll("[data-fulfill-asset], [data-fulfill-qty], [data-fulfill-note], [data-fulfill-cadence], [data-fulfill-dates]").forEach(el => el.addEventListener("change", () => saveRows(rowSnapshot())));
+  wrap.querySelectorAll("[data-fulfill-asset], [data-fulfill-qty], [data-fulfill-note], [data-fulfill-cadence], [data-fulfill-date]").forEach(el => el.addEventListener("change", () => saveRows(rowSnapshot())));
   wrap.querySelectorAll("[data-fulfill-remove]").forEach(btn => btn.addEventListener("click", () => {
     const next = rowSnapshot();
     next.splice(+btn.dataset.fulfillRemove, 1);
