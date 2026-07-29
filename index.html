@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 151 -->
+<!-- BUILD_VERSION: 156 -->
 <!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
 <!-- BUILD_VERSION: 56 -->
@@ -627,6 +627,35 @@ body.bp-dragging .upper-panel-cell.house { opacity: .4; }
 
 
 .pipeline-card span, .pipeline-card strong, .pipeline-card small { display: block; }.pipeline-card span { color: var(--muted); font-size: var(--text-xs); }.pipeline-card strong { margin: var(--space-8) 0 var(--space-4); font: 800 23px var(--font-display); }.pipeline-card small { font-size: var(--text-xs); color: var(--muted); }.pipeline-card.accent { color: white; background: var(--ink); border-color: var(--ink); }.pipeline-card.accent span, .pipeline-card.accent small { color: #b9c4d5; }
+.pipeline-forecast { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-11); margin-bottom: var(--space-11); }
+.forecast-tile { padding: var(--space-17) var(--space-18); border: 1px solid var(--line); border-top: 3px solid var(--accent, var(--blue)); background: var(--card); border-radius: var(--radius-md); }
+.forecast-tile small { display: block; color: var(--muted); font-size: var(--text-xs); font-weight: 700; letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+.forecast-tile strong { display: block; margin: var(--space-6) 0 var(--space-3); font: 800 28px var(--font-display); color: var(--ink); }
+.forecast-tile span { display: block; color: var(--muted); font-size: var(--text-xs); }
+@media (max-width: 900px) { .pipeline-forecast { grid-template-columns: 1fr; } }
+.drawer-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-10); margin: var(--space-4) 0 var(--space-14); }
+.drawer-kpi { padding: var(--space-13) var(--space-14); border: 1px solid var(--line); border-top: 3px solid var(--accent, var(--blue)); background: var(--card); border-radius: var(--radius-md); }
+.drawer-kpi small { display: block; color: var(--muted); font-size: var(--text-xs); font-weight: 700; letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+.drawer-kpi strong { display: block; margin: var(--space-5) 0 var(--space-2); font: 800 21px var(--font-display); color: var(--ink); }
+.drawer-kpi span { display: block; color: var(--muted); font-size: var(--text-xs); }
+.avail-badge { display: inline-block; padding: var(--space-4) var(--space-9); border-radius: var(--radius-pill); font-size: var(--text-xs); font-weight: 700; }
+.avail-badge.soldout { color: var(--red); background: var(--red-soft); }
+.avail-badge.limited { color: var(--ink); background: var(--gold-soft, rgba(250,205,1,.22)); }
+.avail-badge.available { color: var(--blue-text, var(--blue)); background: var(--blue-soft); }
+.oversell-warn { display: inline-block; padding: var(--space-3) var(--space-8); border-radius: var(--radius-xs); font-size: var(--text-xs); font-weight: 700; color: var(--red); background: var(--red-soft); }
+.oversell-ok { font-size: var(--text-xs); font-weight: 600; color: var(--muted); }
+.oversell-ok.limited { color: var(--ink); font-weight: 700; }
+.nextstep-flag { display: inline-block; padding: 1px var(--space-7); border-radius: var(--radius-xs); font-size: var(--text-xs); font-weight: 700; color: var(--red); background: var(--red-soft); white-space: nowrap; }
+.pipeline-nudge { margin: calc(-1 * var(--space-4)) 0 var(--space-14); }
+.asset-tasks { display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center; margin-top: var(--space-8); padding-top: var(--space-8); border-top: 1px dashed var(--line); }
+.asset-tasks-label { font-size: var(--text-xs); font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: var(--tracking-wide); margin-right: var(--space-4); }
+.task-pill { padding: var(--space-4) var(--space-9); border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--card); color: var(--muted); font-size: var(--text-xs); font-weight: 700; cursor: pointer; }
+.task-pill.done { color: var(--blue-text, var(--blue)); background: var(--blue-soft); border-color: transparent; }
+.drawer-uploads-grid { display: grid; gap: var(--space-8); }
+.upload-chip { display: flex; align-items: center; gap: var(--space-10); padding: var(--space-8) var(--space-10); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--card); }
+.upload-chip .upload-doc { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: var(--radius-xs); background: var(--blue-soft); color: var(--blue-text, var(--blue)); font-size: 16px; }
+.upload-chip .upload-name { font-size: var(--text-xs); font-weight: 700; color: var(--blue-text, var(--blue)); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+.upload-chip .upload-remove { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 var(--space-4); }
 .renewal-list { min-height: 500px; }.renewal-row { display: grid; grid-template-columns: minmax(150px, 260px) 95px 75px minmax(180px, 1fr) 75px 84px; gap: var(--space-16); align-items: center; padding: var(--space-14) var(--space-16); border-top: 1px solid #ebe9e4; }
 .fulfillment-bar { display: flex; align-items: center; gap: var(--space-8); }
 .fulfillment-bar-track { flex: 1; height: 10px; background: #eae8e3; overflow: hidden; }
@@ -2669,7 +2698,9 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           <div style="margin:var(--space-22) 0 var(--space-8);">
             <div class="eyebrow" style="margin-bottom:var(--space-2);">SALES PIPELINE <span style="font-weight:400; color:var(--muted); text-transform:none; letter-spacing:0;">(Score CRM-style, by deal stage)</span></div>
           </div>
+          <div class="pipeline-forecast" id="pipelineForecast"></div>
           <div class="renewal-stats" id="dealPipeline"></div>
+          <div class="pipeline-nudge" id="pipelineNudge"></div>
           <div class="renewal-layout">
             <article class="table-card renewal-list" style="grid-column: 1 / -1;">
               <div class="table-toolbar">
@@ -2834,6 +2865,32 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             </div>
           </div>
           <div class="mini-kpis" id="inventoryKpis"></div>
+
+          <article class="table-card" id="invAvailPanel" style="margin-bottom:var(--space-16);">
+            <div class="table-toolbar" style="display:flex; align-items:center; gap:var(--space-10); flex-wrap:wrap;">
+              <strong style="font-size:14px;">Live availability</strong>
+              <span style="color:var(--muted); font-size:var(--text-xs);">Total, sold &amp; remaining per asset — from the 2026 Master Sheet</span>
+              <div class="search-box" style="margin-left:auto;">⌕ <input id="invAvailSearch" type="search" placeholder="Search assets"></div>
+              <select id="invAvailFilter" aria-label="Availability filter" style="border:1px solid var(--line); border-radius:var(--radius-md); padding:var(--space-8) var(--space-10); font-size:var(--text-xs); background:var(--card);">
+                <option value="all">All assets</option>
+                <option value="limited">Limited / sold out</option>
+                <option value="multi">Multi-unit only</option>
+              </select>
+            </div>
+            <div class="table-scroll" style="max-height:420px; overflow-y:auto;">
+              <table>
+                <thead><tr>
+                  <th scope="col">Asset</th>
+                  <th scope="col" style="text-align:right;">Total</th>
+                  <th scope="col" style="text-align:right;">Sold</th>
+                  <th scope="col" style="text-align:right;">Available</th>
+                  <th scope="col">Status</th>
+                  <th scope="col" style="text-align:right;">Rate</th>
+                </tr></thead>
+                <tbody id="invAvailRows"></tbody>
+              </table>
+            </div>
+          </article>
 
           <div class="filter-bar" style="align-items:center; gap:var(--space-10); flex-wrap:wrap;">
             <select id="invSponsorPicker" aria-label="Sponsor" style="border:1px solid var(--line); border-radius:var(--radius-md); padding:var(--space-8) var(--space-10); font-size:var(--text-xs); background:var(--card); min-width:200px;">
@@ -3592,6 +3649,14 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           <button type="button" data-set-email-provider="outlook">Outlook</button>
           <button type="button" data-set-email-provider="mailto">Default app</button>
         </div>
+      </div>
+
+      <div class="settings-row" style="align-items:flex-start;">
+        <div>
+          <strong>Pipeline stage close %</strong>
+          <small>Sets each deal stage's odds of closing — drives the Probability Value forecast in the Renewal Center. Signed is always 100%, Lost always 0%.</small>
+        </div>
+        <div id="setStageProbs" style="display:grid; gap:var(--space-6); min-width:230px;"></div>
       </div>
 
       <div class="readonly-note" style="margin-top:var(--space-14); font-size:var(--text-xs); line-height:1.5;">
@@ -4448,16 +4513,77 @@ const OUTLOOK_HEALTH = { multiyear: "multiyear", confirmed: "confirmed", likely:
    deal stage is "where is the current transaction right now" — the same distinction
    Score CRM's Sales/Deals pipeline draws. Reuses the outlook-picker CSS color classes
    (multiyear/confirmed/likely/risk/lost/unknown) so no new styling was needed. */
+/* Each stage carries a close-probability (`prob`, 0–100). Probability Value =
+   Σ(account value × stage prob) — the CRM-style weighted forecast SponsorCX shows
+   in its Deals header. These %s are intentionally a single editable object here so
+   they can later move into Settings → Values without hunting through the code. */
 const DEAL_STAGES = {
-  prospect: { label: "Prospecting", cls: "unknown" },
-  meeting_set: { label: "First Meeting Set", cls: "unknown" },
-  meeting_complete: { label: "First Meeting Complete", cls: "likely" },
-  proposal: { label: "Proposal Sent/Shown", cls: "likely" },
-  proposal_review: { label: "Proposal in Review", cls: "risk" },
-  contract: { label: "Contract Out", cls: "confirmed" },
-  signed: { label: "Signed/Active", cls: "multiyear" },
-  lost: { label: "Lost/Passed", cls: "lost" }
+  prospect: { label: "Prospecting", cls: "unknown", prob: 10 },
+  meeting_set: { label: "First Meeting Set", cls: "unknown", prob: 20 },
+  meeting_complete: { label: "First Meeting Complete", cls: "likely", prob: 35 },
+  proposal: { label: "Proposal Sent/Shown", cls: "likely", prob: 50 },
+  proposal_review: { label: "Proposal in Review", cls: "risk", prob: 65 },
+  contract: { label: "Contract Out", cls: "confirmed", prob: 85 },
+  signed: { label: "Signed/Active", cls: "multiyear", prob: 100 },
+  lost: { label: "Lost/Passed", cls: "lost", prob: 0 }
 };
+/* Stage close-%s are editable in Settings (T7 — config-as-data). An override map in
+   storage wins over the hardcoded defaults; the pipeline forecast reads through here. */
+const STAGE_PROB_KEY = "bciq_stage_probs";
+function loadStageProbs() { try { return JSON.parse(memStore.getItem(STAGE_PROB_KEY)) || {}; } catch (e) { return {}; } }
+function saveStageProbs(map) { try { memStore.setItem(STAGE_PROB_KEY, JSON.stringify(map || {})); } catch (e) {} }
+function dealStageProb(key) {
+  const ov = loadStageProbs();
+  if (ov && typeof ov[key] === "number") return ov[key];
+  return (DEAL_STAGES[key] && typeof DEAL_STAGES[key].prob === "number") ? DEAL_STAGES[key].prob : 0;
+}
+/* T9 — the SponsorCX "no next activity scheduled" nudge. An open pipeline account
+   with no future-dated activity on file needs a follow-up logged. Closed stages
+   (Signed / Lost) don't count. Shown as an icon+text tag (not colour alone). */
+function bciqTodayIso() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function hasScheduledNextStep(r) {
+  const t = bciqTodayIso();
+  const log = Array.isArray(r.activityLog) ? r.activityLog : [];
+  if (log.some(a => a && a.date && String(a.date).slice(0, 10) >= t)) return true;
+  if (r.nextStepDate && String(r.nextStepDate) >= t) return true;
+  return false;
+}
+function needsNextStep(r) {
+  const st = dealStageOf(r);
+  if (st === "lost" || st === "signed") return false;
+  return !hasScheduledNextStep(r);
+}
+
+/* ===== 2026 INVENTORY AVAILABILITY — REAL DATA (source-of-truth, not invented) =====
+   From the 2026 Sponsorship Master Sheet, "Assets 2026" tab (gid 962577152),
+   uploaded by the user. Per asset: t=total capacity, av=available/unsold,
+   r=reserved (in an open proposal), c=confirmed/sold. av+r+c=t. Reserved is 0 in
+   the current export. Drives the Inventory availability counters and oversell checks. */
+const INVENTORY_2026 = [{"a":"Boardwalk Naming Rights","rt":25000,"av":0,"r":0,"c":1,"t":1},{"a":"Sand Bar Naming Rights","rt":25000,"av":1,"r":0,"c":0,"t":1},{"a":"Mini Golf Naming Rights","rt":20000,"av":0,"r":0,"c":1,"t":1},{"a":"1B Gate Sponsor Naming Rights","rt":50000,"av":0,"r":0,"c":1,"t":1},{"a":"3B Gate Sponsor Naming Rights","rt":50000,"av":0,"r":0,"c":1,"t":1},{"a":"1B Party Deck Naming Rights","rt":15000,"av":1,"r":0,"c":0,"t":1},{"a":"3B Party Deck Naming Rights","rt":15000,"av":1,"r":0,"c":0,"t":1},{"a":"Champions Club Naming Rights","rt":20000,"av":0,"r":0,"c":1,"t":1},{"a":"Upstairs Bar Naming Rights","rt":20000,"av":1,"r":0,"c":0,"t":1},{"a":"1B Picnic Area Naming Rights","rt":20000,"av":1,"r":0,"c":0,"t":1},{"a":"3B Picnic Area Naming Rights","rt":20000,"av":0,"r":0,"c":1,"t":1},{"a":"1B Food Court Naming Rights","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"3B Food Court Naming Rights","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"Information Booth Naming Rights","rt":15000,"av":1,"r":0,"c":0,"t":1},{"a":"Ticket Kiosk Naming Rights","rt":15000,"av":1,"r":0,"c":0,"t":1},{"a":"Home Run Wall Billboard","rt":10000,"av":9,"r":0,"c":3,"t":12},{"a":"Upper Tier Billboard","rt":8500,"av":3,"r":0,"c":7,"t":10},{"a":"Section Sign","rt":5000,"av":1,"r":0,"c":11,"t":12},{"a":"Concourse Sign","rt":5000,"av":9,"r":0,"c":11,"t":20},{"a":"Bathroom Alcove","rt":4000,"av":1,"r":0,"c":6,"t":7},{"a":"Batter On Deck Circles","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"Dugout Top 1B","rt":18000,"av":0,"r":0,"c":1,"t":1},{"a":"Dugout Top 3B","rt":18000,"av":0,"r":0,"c":1,"t":1},{"a":"Field Walls","rt":15000,"av":0,"r":0,"c":1,"t":1},{"a":"Foul Poles","rt":15000,"av":0,"r":0,"c":0,"t":0},{"a":"Inner Dugouts","rt":8000,"av":0,"r":0,"c":1,"t":1},{"a":"Scoreboard Top Fixed Signage","rt":50000,"av":1,"r":0,"c":0,"t":1},{"a":"Elevator","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"Lifeguard Chairs","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"Scoreboard Side","rt":25000,"av":1,"r":0,"c":0,"t":1},{"a":"Bridge Banner","rt":3000,"av":4,"r":0,"c":0,"t":4},{"a":"Cup Holders","rt":20000,"av":1,"r":0,"c":0,"t":1},{"a":"Entrance Sign","rt":12500,"av":2,"r":0,"c":0,"t":2},{"a":"Parking Lot Poles","rt":15000,"av":1,"r":0,"c":0,"t":1},{"a":"Plaza Light Poles","rt":15000,"av":1,"r":0,"c":0,"t":1},{"a":"Stairs","rt":25000,"av":1,"r":0,"c":0,"t":1},{"a":"Turnstiles","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"Inner Bathroom Sign","rt":2500,"av":2,"r":0,"c":8,"t":10},{"a":"Urinals","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"Concourse Pop Up Display","rt":17500,"av":1,"r":0,"c":1,"t":2},{"a":"Concourse Map Signage","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"Outdoor Digital Billboard - (1 month)","rt":1700,"av":291,"r":0,"c":22,"t":313},{"a":"Yard Signs","rt":1000,"av":2,"r":0,"c":0,"t":2},{"a":"Core Game Sponsor - No Giveaway","rt":7000,"av":14,"r":0,"c":11,"t":25},{"a":"Core Game Sponsor - Branded Giveaway","rt":10000,"av":16,"r":0,"c":3,"t":19},{"a":"Non-Core Game Sponsor","rt":3500,"av":32,"r":0,"c":3,"t":35},{"a":"Kids Club Sponsor","rt":7500,"av":1,"r":0,"c":1,"t":2},{"a":"Kids Eat Free Sponsor","rt":5000,"av":1,"r":0,"c":1,"t":2},{"a":"Kids Run the Bases Sponsor","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"Silver Sluggers Program Sponsor","rt":5000,"av":0,"r":0,"c":1,"t":1},{"a":"Seniors Eat Free Sponsor","rt":3500,"av":2,"r":0,"c":0,"t":2},{"a":"Thirsty Thursday Sponsor","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"Summer Concert Series Sponsor","rt":7500,"av":0,"r":0,"c":1,"t":1},{"a":"Pooch Passes Sponsor","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"Tuesdays Sponsor","rt":3500,"av":1,"r":0,"c":0,"t":1},{"a":"Mondays Sponsor","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"Wednesdays Sponsor","rt":3500,"av":1,"r":0,"c":0,"t":1},{"a":"Fridays Sponsor","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"Sundays Sponsor","rt":7500,"av":0,"r":0,"c":1,"t":1},{"a":"Pre Game PA Read - Full Season","rt":4000,"av":5,"r":0,"c":5,"t":10},{"a":"Pre Game Commercial","rt":4000,"av":4,"r":0,"c":8,"t":12},{"a":"Buster Intro","rt":7500,"av":1,"r":0,"c":0,"t":1},{"a":"Clawstars Sponsor","rt":4000,"av":0,"r":0,"c":1,"t":1},{"a":"Home Team Lineups","rt":7500,"av":0,"r":0,"c":1,"t":1},{"a":"Visiting Team Lineups","rt":7000,"av":1,"r":0,"c":0,"t":1},{"a":"Umpire Intro","rt":4000,"av":0,"r":0,"c":1,"t":1},{"a":"Mini Manager Sponsor","rt":7500,"av":0,"r":0,"c":1,"t":1},{"a":"Pre Game Parade Sponsor","rt":6000,"av":0,"r":0,"c":1,"t":1},{"a":"Special Guest Sponsor","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"Exit Sampling","rt":1000,"av":66,"r":0,"c":0,"t":66},{"a":"Inning Sponsor","rt":7500,"av":0,"r":0,"c":8,"t":8},{"a":"Deluxe Rotator","rt":5000,"av":18,"r":0,"c":0,"t":18},{"a":"Premiere Digital Rotator","rt":8500,"av":0,"r":0,"c":9,"t":9},{"a":"In Game Action: Rooftop Foul Balls","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Action: First Run of the Game","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"Home Runs For Heroes Sponsor","rt":15000,"av":0,"r":0,"c":1,"t":1},{"a":"In Game Action: Grand Slam Inning","rt":7500,"av":0,"r":0,"c":1,"t":1},{"a":"In Game Action: 7 in the 7th","rt":7500,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Action: Drive of the Game","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Action: Steals","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Action: Call to the Bullpen","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"In Game Action: Wins","rt":10500,"av":0,"r":0,"c":1,"t":1},{"a":"In Game Action: Strikeouts","rt":15000,"av":0,"r":0,"c":1,"t":1},{"a":"In Game Action: First Foul Ball","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Promotion: Instant Replays","rt":7500,"av":3,"r":0,"c":0,"t":3},{"a":"In Game Promotion: Fan Cam","rt":8500,"av":5,"r":0,"c":1,"t":6},{"a":"In Game Action: Walks","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Action: 7th Inning Stretch","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"In Game Promotion","rt":10000,"av":17,"r":0,"c":5,"t":22},{"a":"In Game Promotion: Eyeball Race","rt":12000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Promotion: Pork Roll, Egg & Cheese Race","rt":12000,"av":0,"r":0,"c":1,"t":1},{"a":"In Game Promotion: T-Shirt Toss","rt":12000,"av":0,"r":0,"c":2,"t":2},{"a":"Birthdays","rt":15000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Promotion: Lucky Seat of the Game","rt":3500,"av":22,"r":0,"c":0,"t":22},{"a":"In Game Promotion: Cow Race","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Action: Field Drag","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Promotion: Cow Toss","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Promotion: Salute the Troops","rt":12000,"av":1,"r":0,"c":0,"t":1},{"a":"E-Newsletter Advertisement","rt":500,"av":51,"r":0,"c":45,"t":96},{"a":"E-Newsletter Presenting Partner","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"Website Advertisement","rt":1000,"av":32,"r":0,"c":18,"t":50},{"a":"Catch of the Day - Half Page","rt":3000,"av":40,"r":0,"c":0,"t":40},{"a":"Catch of the Day - Back Page","rt":6000,"av":1,"r":0,"c":0,"t":1},{"a":"Radio Package","rt":3000,"av":27,"r":0,"c":9,"t":36},{"a":"MiLB.tv Commercial","rt":5000,"av":32,"r":0,"c":4,"t":36},{"a":"Food Stand/Truck","rt":10000,"av":9,"r":0,"c":1,"t":10},{"a":"732 Brew Sponsor","rt":3500,"av":0,"r":0,"c":4,"t":4},{"a":"Entertainment Stand","rt":7500,"av":4,"r":0,"c":1,"t":5},{"a":"Most Improved Student Program","rt":5000,"av":0,"r":0,"c":1,"t":1},{"a":"Friends & Family Plan Sponsor","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"Youth Sports Initiatives Presenting Partner","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"Outdoor Digital Billboard - Fixed Signage","rt":50000,"av":1,"r":0,"c":0,"t":1},{"a":"Will Call Envelope Insert","rt":10000,"av":1,"r":0,"c":0,"t":1},{"a":"Ticket Front Advertising","rt":2500,"av":2,"r":0,"c":0,"t":2},{"a":"Ticket Back Advertising","rt":2500,"av":1,"r":0,"c":0,"t":1},{"a":"In Game PA Read - Half Season","rt":4000,"av":22,"r":0,"c":0,"t":22},{"a":"In Game PA Read - Per Game","rt":1000,"av":60,"r":0,"c":6,"t":66},{"a":"In Game Promotion - Half Season","rt":6000,"av":6,"r":0,"c":0,"t":6},{"a":"Stadium Steps","rt":50000,"av":1,"r":0,"c":0,"t":1},{"a":"Broadcast In Bed","rt":1000,"av":1,"r":0,"c":0,"t":1},{"a":"Home Run Wall Banner (Left-Center)","rt":25000,"av":0,"r":0,"c":1,"t":1},{"a":"Pocket Schedule Back Panel","rt":3000,"av":0,"r":0,"c":1,"t":1},{"a":"Amazing Saves Sponsor","rt":3000,"av":0,"r":0,"c":1,"t":1},{"a":"Print-at-Home Ticket Advertisement","rt":5000,"av":5,"r":0,"c":0,"t":5},{"a":"Fireworks Show Logo Inclusion","rt":3500,"av":1,"r":0,"c":0,"t":1},{"a":"Pocket Schedule Inside Panel","rt":2000,"av":1,"r":0,"c":0,"t":1},{"a":"Carpool Karaoke","rt":4000,"av":1,"r":0,"c":0,"t":1},{"a":"Road to Success","rt":3000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Action: Custom","rt":10000,"av":1,"r":0,"c":2,"t":3},{"a":"Scoreboard Clock","rt":30000,"av":1,"r":0,"c":0,"t":1},{"a":"Magnet Schedule Advertisement","rt":4000,"av":1,"r":0,"c":0,"t":1},{"a":"Category Exclusivity","rt":20000,"av":9,"r":0,"c":1,"t":10},{"a":"Suite and Sand Bar TV Frame Signage","rt":5000,"av":1,"r":0,"c":0,"t":1},{"a":"In Game Promotion: In Stands","rt":7500,"av":22,"r":0,"c":0,"t":22},{"a":"In Game Promotion: On Field","rt":10000,"av":22,"r":0,"c":0,"t":22},{"a":"In Game Promotion: Video Board","rt":8500,"av":6,"r":0,"c":0,"t":6},{"a":"Vets Night Out Sponsor","rt":2000,"av":1,"r":0,"c":0,"t":1},{"a":"COPA Partner (Medusas)","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"Pre Game PA Read - Per Game","rt":500,"av":53,"r":0,"c":13,"t":66},{"a":"In Game Promotion: Lucky Row","rt":3500,"av":2,"r":0,"c":0,"t":2},{"a":"Digital Display Network","rt":10000,"av":0,"r":0,"c":14,"t":14},{"a":"In Game Commercial","rt":10000,"av":2,"r":0,"c":3,"t":5},{"a":"Post Game Commercial","rt":3000,"av":1,"r":0,"c":0,"t":1},{"a":"Podcast Presenting Partner","rt":12500,"av":1,"r":0,"c":0,"t":1},{"a":"Grass Berm Pod Signage","rt":7500,"av":1,"r":0,"c":0,"t":1},{"a":"Fan Zone Naming Rights","rt":15000,"av":0,"r":0,"c":1,"t":1},{"a":"Podcast Advertisement","rt":3000,"av":1,"r":0,"c":3,"t":4},{"a":"Plaza Displays","rt":1500,"av":66,"r":0,"c":0,"t":66},{"a":"Know Before You Go Email Advertisement","rt":500,"av":5,"r":0,"c":0,"t":5},{"a":"Locals' Summer","rt":15000,"av":1,"r":0,"c":0,"t":1},{"a":"On-Deck Wallpad","rt":5000,"av":2,"r":0,"c":0,"t":2},{"a":"Homeplate Wall Pad","rt":15000,"av":5,"r":0,"c":1,"t":6},{"a":"Claws Crew Presenting Partner","rt":35000,"av":0,"r":0,"c":1,"t":1},{"a":"Fan Engagement Signage","rt":5000,"av":0,"r":0,"c":1,"t":1},{"a":"Promo Zone Naming Rights","rt":1500,"av":1,"r":0,"c":0,"t":1},{"a":"Activity Kiosk Naming Rights","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"STH Gift Sponsor","rt":5000,"av":5,"r":0,"c":0,"t":5},{"a":"Presenting Partner of the BlueClaws Fan Van","rt":30000,"av":1,"r":0,"c":0,"t":1},{"a":"On-Field Branding","rt":25000,"av":3,"r":0,"c":0,"t":3},{"a":"Fire Pits Naming Rights","rt":20000,"av":2,"r":0,"c":0,"t":2},{"a":"In Game Action: Triples Contest","rt":7500,"av":1,"r":0,"c":0,"t":1},{"a":"Vending Location","rt":12000,"av":0,"r":0,"c":1,"t":1},{"a":"Photo Spot Naming Rights","rt":10000,"av":0,"r":0,"c":1,"t":1},{"a":"In Game PA Read - Full Season","rt":7500,"av":0,"r":0,"c":3,"t":3},{"a":"Home Run Wall Banner (Right-Center)","rt":20000,"av":0,"r":0,"c":1,"t":1},{"a":"Home Run Wall Billboard (Double)","rt":17500,"av":0,"r":0,"c":10,"t":10},{"a":"Upper Tier Billboard (6-Panel)","rt":40000,"av":1,"r":0,"c":1,"t":2},{"a":"Upper Tier Billboard (Double)","rt":15000,"av":0,"r":0,"c":10,"t":10},{"a":"Upper Tier Billboard (Quad)","rt":27500,"av":2,"r":0,"c":4,"t":6},{"a":"Upper Tier Billboard (Triple)","rt":22000,"av":0,"r":0,"c":0,"t":0},{"a":"Core Game Sponsor - Branded Giveaway & Fireworks","rt":15000,"av":7,"r":0,"c":1,"t":8},{"a":"Core Game Sponsor - Fireworks - No Giveaway","rt":10000,"av":18,"r":0,"c":4,"t":22},{"a":"Suite Sign - Illuminated","rt":4000,"av":20,"r":0,"c":6,"t":26},{"a":"Suite Sign - Not Illuminated","rt":3000,"av":5,"r":0,"c":3,"t":8},{"a":"Game Sponsor - $2 Tuesdays Presenting Partner","rt":7000,"av":2,"r":0,"c":1,"t":3},{"a":"Buster Appearance","rt":150,"av":11,"r":0,"c":19,"t":30},{"a":"Menu Board Inclusion","rt":2500,"av":8,"r":0,"c":2,"t":10},{"a":"Preferred Vendor","rt":2000,"av":8,"r":0,"c":2,"t":10},{"a":"Elite Rotator","rt":7500,"av":1,"r":0,"c":8,"t":9},{"a":"Buster Video (plus social/pre-gm commercial)","rt":7500,"av":2,"r":0,"c":8,"t":10},{"a":"On-Site Buster Video (no social)","rt":6000,"av":5,"r":0,"c":0,"t":5},{"a":"Planter Signage","rt":7500,"av":1,"r":0,"c":3,"t":4},{"a":"Exit Giveaway","rt":1000,"av":35,"r":0,"c":5,"t":40},{"a":"Outdoor Digital Billboard - (12 months)","rt":14400,"av":5,"r":0,"c":10,"t":15},{"a":"Outdoor Digital Billboard - (6 months)","rt":8400,"av":9,"r":0,"c":6,"t":15},{"a":"Coupon Handouts","rt":1000,"av":25,"r":0,"c":5,"t":30},{"a":"Social Media Post","rt":1500,"av":6,"r":0,"c":14,"t":20},{"a":"Ballpark Rental","rt":7500,"av":7,"r":0,"c":3,"t":10},{"a":"Ballpark Tour","rt":1000,"av":8,"r":0,"c":2,"t":10},{"a":"Branded Food Stand","rt":6000,"av":0,"r":0,"c":1,"t":1},{"a":"Official Status","rt":5000,"av":0,"r":0,"c":5,"t":5},{"a":"Team Store Clothing Rack Signs","rt":500,"av":0,"r":0,"c":1,"t":1},{"a":"Social Media Promotion","rt":8000,"av":1,"r":0,"c":7,"t":8},{"a":"Consumer Driving Promotion","rt":5000,"av":2,"r":0,"c":1,"t":3},{"a":"Box Office Naming Rights","rt":30000,"av":0,"r":0,"c":1,"t":1},{"a":"Full Stadium Rental","rt":0,"av":0,"r":0,"c":1,"t":1},{"a":"Entrance Handouts","rt":1000,"av":5,"r":0,"c":3,"t":8},{"a":"Full Season Concourse Kiosk","rt":17500,"av":0,"r":0,"c":1,"t":1},{"a":"Clean Community Initiative","rt":1500,"av":0,"r":0,"c":1,"t":1},{"a":"LinkedIn Partnership Announcement","rt":500,"av":5,"r":0,"c":3,"t":8},{"a":"Plaza Display","rt":1500,"av":3,"r":0,"c":7,"t":10},{"a":"BECC Rental","rt":0,"av":18,"r":0,"c":12,"t":30},{"a":"E-Mail Blast","rt":3000,"av":8,"r":0,"c":2,"t":10},{"a":"Special Event Co-Sponsor","rt":3500,"av":4,"r":0,"c":1,"t":5},{"a":"Signed Baseballs","rt":250,"av":5,"r":0,"c":5,"t":10},{"a":"Signed Jersey","rt":250,"av":4,"r":0,"c":1,"t":5},{"a":"BlueClaws Logo Baseball","rt":6,"av":14,"r":0,"c":16,"t":30},{"a":"Seating Bowl Signage (2)","rt":15000,"av":3,"r":0,"c":1,"t":4},{"a":"Game Ball Delivery Presenting Partner","rt":8500,"av":0,"r":0,"c":1,"t":1}];
+function invNormName(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
+const INVENTORY_BY_NAME = (function(){ var m={}; INVENTORY_2026.forEach(function(d){ m[invNormName(d.a)]=d; }); return m; })();
+function inventoryAvailFor(name){
+  var key = invNormName(name);
+  if (INVENTORY_BY_NAME[key]) return INVENTORY_BY_NAME[key];
+  var toks = key.split(" ").filter(Boolean).slice(0,3).join(" ");
+  if (!toks) return null;
+  return INVENTORY_2026.find(function(d){ return invNormName(d.a).indexOf(toks)===0; }) || null;
+}
+function inventoryStatus(d){
+  if (!d) return null;
+  if (d.av <= 0) return { key:"soldout", label:"Sold out" };
+  if (d.av <= 2) return { key:"limited", label:d.av+" left" };
+  return { key:"available", label:d.av+" left" };
+}
+/* Oversell: would requesting `qty` of `name` exceed what is still available? */
+function oversellState(name, qty){
+  var d = inventoryAvailFor(name); if (!d) return null;
+  var want = Math.max(1, parseInt(qty,10)||1);
+  return { over: want > d.av, want: want, avail: d.av, total: d.t, sold: d.c, asset: d.a };
+}
+function inventoryTotals(){
+  return INVENTORY_2026.reduce(function(s,d){ s.total+=d.t; s.sold+=d.c; s.avail+=d.av; return s; }, {total:0,sold:0,avail:0});
+}
 function dealStageOf(r) { return (r.dealStage && DEAL_STAGES[r.dealStage]) ? r.dealStage : (isActiveForSelectedSeason(r) ? "signed" : (r.active ? "prospect" : "lost")); }
 const TYPE_COLORS = { "Cash": "#0971ce", "Trade": "#0d1d41", "MiLB": "#facd01", "Cash & Trade": "#c20f2f" };
 
@@ -5596,6 +5722,16 @@ function renderAgAssetResults() {
   }).join("") : `<p style="color:var(--muted); font-size:var(--text-xs); padding:var(--space-10) 0;">No matching assets.</p>`;
   wrap.querySelectorAll("[data-add-asset]").forEach(btn => btn.addEventListener("click", () => agAddAsset(btn.dataset.addAsset)));
 }
+/* Oversell check (T4): compares the requested quantity against remaining inventory
+   from the 2026 Master Sheet. Silent when the asset isn't in the availability data
+   (e.g. a one-off custom line) rather than guessing. */
+function agOversellHTML(asset, qty) {
+  const os = oversellState(asset, qty);
+  if (!os) return "";
+  if (os.over) return `<span class="oversell-warn">⚠ Oversell — ${os.want} requested, only ${os.avail} of ${os.total} left (${os.sold} already sold)</span>`;
+  if (os.avail <= 2) return `<span class="oversell-ok limited">${os.avail} of ${os.total} left — limited</span>`;
+  return `<span class="oversell-ok">${os.avail} of ${os.total} available</span>`;
+}
 function renderAgSelectedRows() {
   const wrap = document.getElementById("agSelectedRows");
   if (!wrap) return;
@@ -5605,10 +5741,14 @@ function renderAgSelectedRows() {
       <div><strong>${esc(s.asset)}</strong><small style="color:var(--muted);">${esc((tpl && tpl.section) || agAssetCategory(s.asset) || "Other")}${tpl ? "" : " · no saved language"}</small></div>
       <input type="number" min="1" step="1" value="${esc(s.qty)}" data-qty-idx="${i}" style="width:80px;">
       <button type="button" class="secondary-button" data-remove-idx="${i}" style="padding:var(--space-4) var(--space-10); font-size:var(--text-xs);">Remove</button>
+      <div class="ag-oversell-cell" data-oversell-idx="${i}" style="grid-column:1 / -1; margin-top:var(--space-4);">${agOversellHTML(s.asset, s.qty)}</div>
     </div>`;
   }).join("") : `<p style="color:var(--muted); font-size:var(--text-xs); padding:var(--space-10) 0;">No assets added yet — search above and click + Add.</p>`;
   wrap.querySelectorAll("[data-qty-idx]").forEach(inp => inp.addEventListener("input", () => {
-    agState.selected[+inp.dataset.qtyIdx].qty = inp.value.trim() === "" ? "" : Number(inp.value);
+    const idx = +inp.dataset.qtyIdx;
+    agState.selected[idx].qty = inp.value.trim() === "" ? "" : Number(inp.value);
+    const badge = wrap.querySelector(`[data-oversell-idx="${idx}"]`);
+    if (badge) badge.innerHTML = agOversellHTML(agState.selected[idx].asset, agState.selected[idx].qty);
     renderAgOutput();
   }));
   wrap.querySelectorAll("[data-remove-idx]").forEach(btn => btn.addEventListener("click", () => {
@@ -7114,6 +7254,29 @@ function renderFulfillmentView() {
     </article>`;
   renderFulfillmentEditorRows(r, rows);
 }
+/* T8 — Task templates. Every fulfilled asset carries the same typed subtask chain
+   SponsorCX auto-generates. Stored per-asset in r.assetTasks (a parallel checklist),
+   deliberately SEPARATE from the asset's fulfillment status so the fulfillment-%
+   rollup math is untouched. Auto-seeded for each asset on the contract-signed cascade. */
+const TASK_TEMPLATE = [
+  { key: "specs", label: "Send Artwork Specs" },
+  { key: "approval", label: "Artwork Approval" },
+  { key: "pop", label: "Proof of Performance" }
+];
+function assetTasksFor(r, assetName) { return (r && r.assetTasks && r.assetTasks[assetName]) || {}; }
+function assetTaskProgress(r, assetName) {
+  const t = assetTasksFor(r, assetName);
+  const done = TASK_TEMPLATE.filter(x => t[x.key]).length;
+  return { done, total: TASK_TEMPLATE.length };
+}
+function toggleAssetTask(recId, assetName, taskKey) {
+  const rec = getRecord(recId); if (!rec || !assetName) return;
+  const all = Object.assign({}, rec.assetTasks || {});
+  const cur = Object.assign({}, all[assetName] || {});
+  cur[taskKey] = !cur[taskKey];
+  all[assetName] = cur;
+  updateOverride(recId, { assetTasks: all });
+}
 function renderFulfillmentEditorRows(r, rows) {
   const wrap = document.getElementById("fulfillmentRows");
   if (!wrap) return;
@@ -7131,8 +7294,14 @@ function renderFulfillmentEditorRows(r, rows) {
         <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Schedule" : ""}</label><div style="display:grid; grid-template-columns:132px 1fr; gap:var(--space-7);"><select data-fulfill-cadence="${idx}">${FULFILLMENT_CADENCES.map(c => `<option value="${c.key}" ${cadence === c.key ? "selected" : ""}>${esc(c.label)}</option>`).join("")}</select><input data-fulfill-dates="${idx}" list="fulfillmentDateChoices" value="${esc(normalizeFulfillmentDates(row.dates).join(", "))}" placeholder="TBD, Apr 7, Apr 8"></div></div>
         <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Quantity / Notes" : ""}</label><div style="display:grid; grid-template-columns:62px 1fr; gap:var(--space-7);"><input data-fulfill-qty="${idx}" value="${esc(row.qty || "1")}" placeholder="Qty"><textarea class="fulfillment-note" data-fulfill-note="${idx}" placeholder="Fulfillment notes">${esc(row.notes || "")}</textarea></div></div>
         <button type="button" data-fulfill-remove="${idx}" style="border:0; background:transparent; color:var(--muted); cursor:pointer; margin-top:${idx === 0 ? "22px" : "0"};" title="Remove">x</button>
+        <div class="asset-tasks" style="grid-column:1 / -1;">${row.asset ? `<span class="asset-tasks-label">Tasks</span>${TASK_TEMPLATE.map(t => { const done = !!assetTasksFor(r, row.asset)[t.key]; return `<button type="button" class="task-pill ${done ? "done" : ""}" data-asset-task="${t.key}" data-asset-name="${esc(row.asset)}" aria-pressed="${done}">${done ? "✓" : "○"} ${esc(t.label)}</button>`; }).join("")}` : ""}</div>
       </div>`;
     }).join("") : `<div style="padding:var(--space-18); color:var(--muted); font-size:var(--text-xs);">No assets yet. Add an asset below to start fulfillment tracking.</div>`);
+  wrap.querySelectorAll("[data-asset-task]").forEach(btn => btn.addEventListener("click", () => {
+    toggleAssetTask(r.id, btn.dataset.assetName, btn.dataset.assetTask);
+    const rec = getRecord(r.id);
+    renderFulfillmentEditorRows(rec, fulfillmentAssetsFor(rec));
+  }));
 
   const saveRows = nextRows => {
     const cleaned = cleanFulfillmentAssets(nextRows);
@@ -7470,10 +7639,38 @@ function renderDealPipeline() {
   stageKeys.forEach(s => { counts[s] = 0; values[s] = 0; });
   all.forEach(r => { const s = dealStageOf(r); counts[s]++; values[s] += displayValueForSeason(r) || 0; });
 
+  // Forecast totals (SponsorCX Deals header): Net Value = open book excluding Lost;
+  // Probability Value = Σ(stage value × stage close-%). Signed counts at 100%, Lost at 0.
+  const openKeys = stageKeys.filter(s => s !== "lost");
+  const netValue = openKeys.reduce((sum, s) => sum + values[s], 0);
+  const probValue = openKeys.reduce((sum, s) => sum + values[s] * dealStageProb(s) / 100, 0);
+  const openCount = openKeys.reduce((sum, s) => sum + counts[s], 0);
+  const fc = document.getElementById("pipelineForecast");
+  if (fc) fc.innerHTML = `
+    <div class="forecast-tile" style="--accent:var(--blue);">
+      <small>Net pipeline value</small><strong>${fmtMoney(netValue)}</strong>
+      <span>${openCount} open account${openCount === 1 ? "" : "s"} (excludes Lost)</span>
+    </div>
+    <div class="forecast-tile" style="--accent:var(--gold);">
+      <small>Probability value</small><strong>${fmtMoney(Math.round(probValue))}</strong>
+      <span>weighted by each stage's close %</span>
+    </div>
+    <div class="forecast-tile" style="--accent:var(--red);">
+      <small>Signed &amp; active</small><strong>${fmtMoney(values.signed || 0)}</strong>
+      <span>${counts.signed || 0} account${(counts.signed || 0) === 1 ? "" : "s"} at 100%</span>
+    </div>`;
+
   document.getElementById("dealPipeline").innerHTML = stageKeys.map(s => `
     <div class="pipeline-card" data-dealstage="${s}" style="cursor:pointer;">
-      <span>${DEAL_STAGES[s].label}</span><strong>${counts[s]}</strong><small>${counts[s] === 1 ? "account" : "accounts"} · ${fmtMoney(values[s])}</small>
+      <span>${DEAL_STAGES[s].label}</span><strong>${counts[s]}</strong><small>${counts[s] === 1 ? "account" : "accounts"} · ${fmtMoney(values[s])} · ${dealStageProb(s)}%</small>
     </div>`).join("");
+
+  // T9 — surface how many open accounts have no next activity scheduled.
+  const noStep = all.filter(needsNextStep);
+  const nudge = document.getElementById("pipelineNudge");
+  if (nudge) nudge.innerHTML = noStep.length
+    ? `<span class="nextstep-flag">⚑ ${noStep.length} open account${noStep.length === 1 ? "" : "s"} with no next step scheduled</span> <span style="color:var(--muted); font-size:var(--text-xs);">— log a follow-up to keep deals moving.</span>`
+    : `<span style="color:var(--muted); font-size:var(--text-xs);">Every open account has a next activity scheduled.</span>`;
   document.querySelectorAll("#dealPipeline .pipeline-card").forEach(card => {
     card.addEventListener("click", () => {
       rState.dealStage = card.dataset.dealstage;
@@ -7515,7 +7712,7 @@ function renderRenewalRows() {
     <div class="renewal-row" data-id="${esc(r.id)}" style="cursor:pointer;">
       <div style="display:flex; align-items:center; gap:var(--space-8);">
         ${r.logoDataUrl ? `<span class="sponsor-logo-thumb" style="width:28px;height:28px;"><img src="${esc(r.logoDataUrl)}" alt="" loading="lazy" decoding="async"></span>` : `<span class="club-badge" style="background:${typeColor(r.type)}; --badge-ink:${typeInk(r.type)}; width:28px; height:28px; font-size:var(--text-xs);">${esc(initials(r.sponsor))}</span>`}
-        <div><strong>${esc(r.sponsor)}</strong><small>${esc(r.rep || "No rep")} · ${esc(r.type || "—")}${r.department ? " · " + esc(r.department) : ""} · ${seasonStanding(r,sState.season)==="current" ? "Current" : "In Renewal"} · ${DEAL_STAGES[dealStageOf(r)].label}</small></div>
+        <div><strong>${esc(r.sponsor)}</strong><small>${esc(r.rep || "No rep")} · ${esc(r.type || "—")}${r.department ? " · " + esc(r.department) : ""} · ${seasonStanding(r,sState.season)==="current" ? "Current" : "In Renewal"} · ${DEAL_STAGES[dealStageOf(r)].label}${needsNextStep(r) ? ` · <span class="nextstep-flag" title="No future activity is scheduled — log a call, meeting, or follow-up">⚑ No next step</span>` : ""}</small></div>
       </div>
       <div><small>${esc(sState.season)} value</small><strong style="font-size:var(--text-xs);">${displayValueForSeason(r) ? fmtMoney(displayValueForSeason(r)) : "—"}</strong></div>
       <div><small>Renewal odds</small><strong style="font-size:var(--text-xs);" title="${esc(renewalOdds(r).notes.join(" · "))}">${renewalProbability(r)}%</strong></div>
@@ -8967,6 +9164,10 @@ function runContractSignedCascade(r) {
     const fulfillment = mergedDeal.map(a => fulBy[(a.asset || "").toLowerCase()] || { asset: a.asset, qty: a.qty || "1", status: "need-to-do", notes: "" });
     patch.dealAssets = mergedDeal;
     patch.fulfillmentAssets = cleanFulfillmentAssets(fulfillment);
+    // T8: seed the typed task template (Send Specs → Approval → PoP) for each asset.
+    const at = Object.assign({}, rec.assetTasks || {});
+    mergedDeal.forEach(a => { if (a.asset && !at[a.asset]) at[a.asset] = { specs: false, approval: false, pop: false }; });
+    patch.assetTasks = at;
     summary.assets = newLines.length;
   }
 
@@ -9786,12 +9987,17 @@ function renderAssetLibrary() {
   const rates = loadRates();
   const catalog = getFullCatalog();
   const ratedTotal = catalog.filter(a => rates[a.id] !== undefined || RATE_CARD[a.asset] !== undefined).length;
+  const invT = inventoryTotals();
+  const invPct = invT.total ? Math.round(invT.sold / invT.total * 100) : 0;
   document.getElementById("inventoryKpis").innerHTML = `
     <div class="mini-kpi"><span>Total catalog assets</span><strong>${catalog.length}</strong></div>
-    <div class="mini-kpi"><span>Folders</span><strong>${assetCategories().length}</strong></div>
+    <div class="mini-kpi"><span>Inventory units (capacity)</span><strong>${invT.total.toLocaleString()}</strong></div>
+    <div class="mini-kpi"><span>Sold</span><strong>${invT.sold.toLocaleString()}</strong></div>
+    <div class="mini-kpi"><span>Available to sell</span><strong>${invT.avail.toLocaleString()}</strong></div>
+    <div class="mini-kpi"><span>Sell-through</span><strong>${invPct}%</strong></div>
     <div class="mini-kpi"><span>Assets with a rate set</span><strong>${ratedTotal}</strong></div>
-    <div class="mini-kpi"><span>Source</span><strong style="font-size:12px;">Team inventory list</strong></div>
   `;
+  renderInventoryAvailability();
   aState.mode = "folders"; aState.category = null; aState.pickedSponsor = "";
   document.getElementById("folderSearch").value = "";
   const names = [...new Set(getAllRecords().map(r => r.sponsor).filter(Boolean))].sort();
@@ -9803,6 +10009,40 @@ function renderAssetLibrary() {
   document.getElementById("folderView").classList.remove("condensed");
   showFolderGrid();
 }
+let invAvailState = { search: "", filter: "all" };
+function renderInventoryAvailability() {
+  const wrap = document.getElementById("invAvailRows");
+  if (!wrap) return;
+  const q = invAvailState.search.trim().toLowerCase();
+  let list = INVENTORY_2026.slice();
+  if (q) list = list.filter(d => d.a.toLowerCase().includes(q));
+  if (invAvailState.filter === "limited") list = list.filter(d => d.av <= 2);
+  if (invAvailState.filter === "multi") list = list.filter(d => d.t > 1);
+  // Most-constrained first: sold out, then fewest available, then biggest books.
+  list.sort((a, b) => (a.av - b.av) || (b.c - a.c) || a.a.localeCompare(b.a));
+  if (!list.length) { wrap.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:var(--space-20);">No assets match.</td></tr>`; return; }
+  wrap.innerHTML = list.map(d => {
+    const st = inventoryStatus(d);
+    const cls = st.key === "soldout" ? "soldout" : (st.key === "limited" ? "limited" : "available");
+    const rate = (d.rt || d.rt === 0) && String(d.rt).length ? fmtMoney(Number(d.rt)) : "—";
+    return `<tr>
+      <td><strong>${esc(d.a)}</strong></td>
+      <td style="text-align:right;">${d.t.toLocaleString()}</td>
+      <td style="text-align:right;">${d.c.toLocaleString()}</td>
+      <td style="text-align:right; font-weight:700; color:${d.av <= 0 ? "var(--red)" : (d.av <= 2 ? "var(--navy-700, var(--ink))" : "var(--ink)")};">${d.av.toLocaleString()}</td>
+      <td><span class="avail-badge ${cls}">${esc(st.label)}</span></td>
+      <td style="text-align:right;">${rate}</td>
+    </tr>`;
+  }).join("");
+}
+(function wireInvAvail() {
+  document.addEventListener("input", e => {
+    if (e.target && e.target.id === "invAvailSearch") { invAvailState.search = e.target.value; renderInventoryAvailability(); }
+  });
+  document.addEventListener("change", e => {
+    if (e.target && e.target.id === "invAvailFilter") { invAvailState.filter = e.target.value; renderInventoryAvailability(); }
+  });
+})();
 function pickInventorySponsor(name) {
   aState.pickedSponsor = name || "";
   document.getElementById("assetListView").style.display = "none";
@@ -12586,7 +12826,10 @@ const REPORTS = [
   { id: "recap", icon: "▤", title: "Full Sponsor Recap", desc: "Every account, value, fulfillment, and renewal outlook — one row each." },
   { id: "risk", icon: "!", title: "Renewal Risk Brief", desc: "Accounts flagged at risk or not returning, with notes, for leadership review." },
   { id: "category", icon: "o", title: "Category Breakdown", desc: "Active value grouped by sponsorship type and by rep." },
-  { id: "presentation", icon: "▣", title: "Presentation-Style Sponsorship Update", desc: "A slide-style leadership recap with season totals, pipeline, risks, and next actions." }
+  { id: "presentation", icon: "▣", title: "Presentation-Style Sponsorship Update", desc: "A slide-style leadership recap with season totals, pipeline, risks, and next actions." },
+  { id: "pipeline", icon: "◫", title: "Pipeline Forecast", desc: "Weighted sales pipeline by stage — Net value and probability-weighted forecast." },
+  { id: "inventory", icon: "▦", title: "Inventory Availability", desc: "Every asset's total, sold, and remaining units, with sold-out and limited flags." },
+  { id: "billing", icon: "$", title: "Billing & Trade", desc: "Account values, payment schedules, and outstanding trade not yet collected." }
 ];
 function renderReportGrid() {
   document.getElementById("reportGrid").innerHTML = REPORTS.map(r => `
@@ -12643,6 +12886,54 @@ function buildReportHTML(id) {
         <section class="presentation-slide"><div><h3>Next actions</h3><table><tbody>${riskRows.slice(0, 5).map(r => `<tr><td>${esc(r.sponsor)}</td><td>${esc((r.todo || r.outlookNotes || "Schedule renewal follow-up").split("\\n")[0])}</td></tr>`).join("") || `<tr><td>Keep updating season rows, report stages, and renewal outlook notes.</td></tr>`}</tbody></table></div></section>
       </div>`,
       text: `BlueClaws ${sState.season} Sponsorship Update — ${now}\nActive value: ${fmtMoney(total)}\nActive partners: ${active.length}\nPipeline accounts: ${pipeline.length}\n\nRisk watch:\n` + riskRows.map(r => `${r.sponsor} | ${OUTLOOK_LABELS[outlookOf(r)]} | ${renewalProbability(r)}%`).join("\n")
+    };
+  }
+  if (id === "pipeline") {
+    const recs = renewalCenterRecords();
+    const stageKeys = Object.keys(DEAL_STAGES);
+    const counts = {}, values = {}; stageKeys.forEach(s => { counts[s] = 0; values[s] = 0; });
+    recs.forEach(r => { const s = dealStageOf(r); counts[s]++; values[s] += displayValueForSeason(r) || 0; });
+    const openKeys = stageKeys.filter(s => s !== "lost");
+    const net = openKeys.reduce((a, s) => a + values[s], 0);
+    const prob = openKeys.reduce((a, s) => a + values[s] * dealStageProb(s) / 100, 0);
+    return {
+      title: "Pipeline Forecast",
+      html: `<h3>${esc(sState.season)} Pipeline Forecast</h3><div class="rp-meta">Generated ${now} · Net ${fmtMoney(net)} · Probability ${fmtMoney(Math.round(prob))}</div>
+        <table><thead><tr><th>Stage</th><th>Accounts</th><th>Value</th><th>Close %</th><th>Weighted</th></tr></thead><tbody>
+        ${stageKeys.map(s => `<tr><td>${esc(DEAL_STAGES[s].label)}</td><td>${counts[s]}</td><td>${fmtMoney(values[s])}</td><td>${dealStageProb(s)}%</td><td>${fmtMoney(Math.round(values[s] * dealStageProb(s) / 100))}</td></tr>`).join("")}
+        <tr><td><strong>Total (excl. Lost)</strong></td><td><strong>${openKeys.reduce((a, s) => a + counts[s], 0)}</strong></td><td><strong>${fmtMoney(net)}</strong></td><td></td><td><strong>${fmtMoney(Math.round(prob))}</strong></td></tr>
+        </tbody></table>`,
+      text: `${sState.season} Pipeline Forecast — ${now}\nNet ${fmtMoney(net)} · Probability ${fmtMoney(Math.round(prob))}\n\n` +
+        stageKeys.map(s => `${DEAL_STAGES[s].label} | ${counts[s]} | ${fmtMoney(values[s])} | ${dealStageProb(s)}% | ${fmtMoney(Math.round(values[s] * dealStageProb(s) / 100))}`).join("\n")
+    };
+  }
+  if (id === "inventory") {
+    const t = inventoryTotals();
+    const pct = t.total ? Math.round(t.sold / t.total * 100) : 0;
+    const rows = INVENTORY_2026.slice().sort((a, b) => (a.av - b.av) || (b.c - a.c));
+    const soldout = rows.filter(d => d.av <= 0).length;
+    return {
+      title: "Inventory Availability",
+      html: `<h3>${esc(sState.season)} Inventory Availability</h3><div class="rp-meta">Generated ${now} · ${t.total.toLocaleString()} units · ${t.sold.toLocaleString()} sold (${pct}%) · ${t.avail.toLocaleString()} available · ${soldout} sold out</div>
+        <table><thead><tr><th>Asset</th><th>Total</th><th>Sold</th><th>Available</th><th>Status</th></tr></thead><tbody>
+        ${rows.map(d => { const st = inventoryStatus(d); return `<tr><td>${esc(d.a)}</td><td>${d.t}</td><td>${d.c}</td><td>${d.av}</td><td>${esc(st.label)}</td></tr>`; }).join("")}
+        </tbody></table>`,
+      text: `${sState.season} Inventory Availability — ${now}\n${t.total} units · ${t.sold} sold (${pct}%) · ${t.avail} available\n\n` +
+        rows.map(d => `${d.a} | ${d.t} | ${d.c} | ${d.av} | ${inventoryStatus(d).label}`).join("\n")
+    };
+  }
+  if (id === "billing") {
+    const rows = active.slice().sort((a, b) => selectedSeasonTotal(b) - selectedSeasonTotal(a));
+    const outstanding = rows.filter(r => r.tradeAmount && !["Received", "N/A"].includes(r.tradeCollected || "Not yet"));
+    const totalVal = rows.reduce((s, r) => s + selectedSeasonTotal(r), 0);
+    return {
+      title: "Billing & Trade",
+      html: `<h3>${esc(sState.season)} Billing &amp; Trade</h3><div class="rp-meta">Generated ${now} · ${rows.length} active accounts · ${fmtMoney(totalVal)} total · ${outstanding.length} with trade outstanding</div>
+        <table><thead><tr><th>Sponsor</th><th>Total</th><th>Payment schedule</th><th>Trade</th><th>Received?</th></tr></thead><tbody>
+        ${rows.map(r => { const pay = Array.isArray(r.paymentSchedule) && r.paymentSchedule.length ? r.paymentSchedule.map(p => `${esc(String(p.date || p.due || ""))} ${fmtMoney(parseTotal(p.amount || p.value || 0))}`).join("; ") : "—"; const tr = r.tradeAmount ? fmtMoney(parseTotal(r.tradeAmount)) : "—"; const trc = r.tradeAmount ? (r.tradeCollected || "Not yet") : "—"; return `<tr><td>${esc(r.sponsor)}</td><td>${selectedSeasonTotal(r) ? fmtMoney(selectedSeasonTotal(r)) : "—"}</td><td style="font-size:11px;">${pay}</td><td>${tr}</td><td>${esc(trc)}</td></tr>`; }).join("")}
+        </tbody></table>`,
+      text: `${sState.season} Billing & Trade — ${now}\n${rows.length} accounts · ${fmtMoney(totalVal)} · ${outstanding.length} trade outstanding\n\n` +
+        rows.map(r => `${r.sponsor} | ${selectedSeasonTotal(r) ? fmtMoney(selectedSeasonTotal(r)) : "—"} | trade ${r.tradeAmount ? fmtMoney(parseTotal(r.tradeAmount)) : "—"} (${r.tradeAmount ? (r.tradeCollected || "Not yet") : "n/a"})`).join("\n")
     };
   }
   // category
@@ -12713,6 +13004,28 @@ function openSponsorSlide(id) {
 }
 
 /* ================= SPONSOR DRAWER ================= */
+/* T3b — per-account uploads library (creative, artwork, PoP). Files are stored as
+   data URLs in r.uploads, the same storage pattern logos/photos already use. */
+function drawerUploadsListHTML(r) {
+  const ups = Array.isArray(r.uploads) ? r.uploads : [];
+  if (!ups.length) return `<div style="color:var(--muted); font-size:var(--text-xs);">No files uploaded yet.</div>`;
+  return `<div class="drawer-uploads-grid">` + ups.map((u, i) => `
+    <div class="upload-chip">
+      ${/^image\//.test(u.type || "") ? `<img src="${esc(u.dataUrl)}" alt="" style="width:34px; height:34px; object-fit:cover; border-radius:var(--radius-xs);">` : `<span class="upload-doc" aria-hidden="true">▢</span>`}
+      <div style="min-width:0; flex:1;"><a href="${esc(u.dataUrl)}" download="${esc(u.name)}" class="upload-name" title="${esc(u.name)}">${esc(u.name)}</a><small style="display:block; color:var(--muted);">${esc((u.uploadedAt || "").slice(0, 10))}</small></div>
+      <button type="button" class="upload-remove" data-upload-remove="${i}" aria-label="Remove ${esc(u.name)}">×</button>
+    </div>`).join("") + `</div>`;
+}
+function wireDrawerUploadRemoves(id) {
+  document.querySelectorAll("#drawerUploadsList [data-upload-remove]").forEach(btn => btn.onclick = () => {
+    const rec = getRecord(id); if (!rec) return;
+    const ups = Array.isArray(rec.uploads) ? rec.uploads.slice() : [];
+    ups.splice(+btn.dataset.uploadRemove, 1);
+    updateOverride(id, { uploads: ups });
+    const list = document.getElementById("drawerUploadsList");
+    if (list) { list.innerHTML = drawerUploadsListHTML(getRecord(id)); wireDrawerUploadRemoves(id); }
+  });
+}
 function drawerTemplate(r) {
   const keys = Object.keys(OUTLOOK_LABELS);
   const digideckStat = digideckCompletion(r);
@@ -12722,6 +13035,14 @@ function drawerTemplate(r) {
   // Matched by sponsor name (proposals don't carry a sponsorId yet — see board item #29).
   const proposalCount = loadOptions().filter(o => (o.sponsorName || "").trim().toLowerCase() === (r.sponsor || "").trim().toLowerCase()).length;
   const health = compositeHealthScore(r);
+  // KPI header cards (SponsorCX account-360 pattern): the account summarized in one
+  // glance before drilling into tabs. All values from existing helpers — no new data.
+  const kpiSeasonVal = displayValueForSeason(r) || selectedSeasonTotal(r) || 0;
+  const kpiFb = fulfillmentBreakdown(r);
+  const kpiAssetCount = kpiFb ? kpiFb.total : 0;
+  const kpiFpct = kpiFb ? kpiFb.pct : null;
+  const kpiSigned = isSignedRecord(r);
+  const kpiOdds = renewalProbability(r);
   return `
     <div class="sdrawer-head">
       <div style="display:flex; gap:var(--space-12);">
@@ -12753,6 +13074,23 @@ function drawerTemplate(r) {
       </div>
     </div>
     <div class="sdrawer-body">
+      <div class="drawer-kpis" aria-label="Account summary">
+        <div class="drawer-kpi" style="--accent:var(--blue);">
+          <small>${esc(sState.season)} ${kpiSigned ? "signed value" : "pipeline value"}</small>
+          <strong>${kpiSeasonVal ? fmtMoney(kpiSeasonVal) : "—"}</strong>
+          <span>${kpiSigned ? "Signed / active" : DEAL_STAGES[dealStageOf(r)].label}</span>
+        </div>
+        <div class="drawer-kpi" style="--accent:var(--gold);">
+          <small>Fulfillment</small>
+          <strong>${kpiFpct === null ? "—" : kpiFpct + "%"}</strong>
+          <span>${kpiAssetCount} asset${kpiAssetCount === 1 ? "" : "s"} on this deal</span>
+        </div>
+        <div class="drawer-kpi" style="--accent:var(--red);">
+          <small>Renewal odds</small>
+          <strong>${kpiOdds === "N/A" ? "N/A" : kpiOdds + "%"}</strong>
+          <span>${esc(OUTLOOK_LABELS[outlookOf(r)] || "—")}</span>
+        </div>
+      </div>
       <div class="sdrawer-section-tabs" aria-label="Sponsor detail sections">
         <button type="button" data-sd-all>All</button>
         <button type="button" data-sd-jump="sdsec-account">Account</button>
@@ -12825,6 +13163,8 @@ function drawerTemplate(r) {
           <div class="sfield"><label for="f_cashAmount">Cash Amount ($)</label><input id="f_cashAmount" inputmode="numeric" value="${esc(r.cashAmount || "")}" placeholder="$0"></div>
           <div class="sfield"><label for="f_tradeAmount">Trade Amount ($)</label><input id="f_tradeAmount" inputmode="numeric" value="${esc(r.tradeAmount || "")}" placeholder="$0"></div>
           <div class="sfield"><label for="f_tradeNotes">Trade Notes</label><input id="f_tradeNotes" value="${esc(r.tradeNotes || "")}" placeholder="What we receive"></div>
+          <div class="sfield"><label for="f_tradeCollected">Trade received?</label><select id="f_tradeCollected" aria-label="Trade received status">${["Not yet","Partially","Received","N/A"].map(o => `<option ${(r.tradeCollected || "Not yet") === o ? "selected" : ""}>${o}</option>`).join("")}</select></div>
+          ${(r.tradeAmount && !["Received","N/A"].includes(r.tradeCollected || "Not yet")) ? `<div class="readonly-note is-off" style="grid-column:1 / -1;">⚠ Trade outstanding — ${esc(String(r.tradeAmount))} promised${(r.tradeCollected === "Partially") ? ", partially received" : ", not yet received"}. ${esc(r.tradeNotes || "")}</div>` : ""}
         </div>
         ${futureStandingTagsHTML(r) ? `<div style="margin-top:var(--space-10);"><div class="sdsection-title" style="font-size:var(--text-xs); margin-bottom:var(--space-4);">Season-by-season standing</div>${futureStandingTagsHTML(r)}</div>` : ""}
       </div>
@@ -12989,6 +13329,14 @@ function drawerTemplate(r) {
         <button type="button" class="secondary-button" id="drawerUploadAgreementBtn">${r.contractFile ? "Replace agreement" : "Upload agreement"}</button>
       </div>
 
+      <div class="sdsection drawer-uploads-section">
+        <div class="sdsection-title">Uploads</div>
+        <div class="readonly-note" style="margin-bottom:var(--space-8);">Store creative, artwork, proofs of performance, or any file for this sponsor. Saved to this browser and synced like the rest of the data.</div>
+        <div id="drawerUploadsList">${drawerUploadsListHTML(r)}</div>
+        <input type="file" id="drawerUploadInput" style="display:none;">
+        <button type="button" class="secondary-button" id="drawerUploadBtn" style="margin-top:var(--space-8);">+ Add file</button>
+      </div>
+
       <div class="sdsection drawer-detail-section">
         <button class="secondary-button" id="revertBtn">Revert edits to original import</button>
         <button class="secondary-button" id="hideToggleBtn" style="margin-left:var(--space-8);">${r.hidden ? "Unhide this sponsor" : "Hide this sponsor"}</button>
@@ -13061,6 +13409,28 @@ function openDrawer(id) {
   setDrawerSection("all");
   const uploadAgreementBtn = document.getElementById("drawerUploadAgreementBtn");
   if (uploadAgreementBtn) uploadAgreementBtn.onclick = () => openContractModal(r.id);
+  const upBtn = document.getElementById("drawerUploadBtn");
+  const upInput = document.getElementById("drawerUploadInput");
+  if (upBtn && upInput) {
+    upBtn.onclick = () => upInput.click();
+    upInput.onchange = () => {
+      const f = upInput.files && upInput.files[0]; if (!f) return;
+      if (f.size > 8 * 1024 * 1024) { toast("File too large", "Please keep uploads under 8 MB."); upInput.value = ""; return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const rec = getRecord(r.id); if (!rec) return;
+        const ups = Array.isArray(rec.uploads) ? rec.uploads.slice() : [];
+        ups.push({ name: f.name, type: f.type, dataUrl: reader.result, uploadedAt: new Date().toISOString() });
+        updateOverride(r.id, { uploads: ups });
+        const list = document.getElementById("drawerUploadsList");
+        if (list) { list.innerHTML = drawerUploadsListHTML(getRecord(r.id)); wireDrawerUploadRemoves(r.id); }
+        toast("File uploaded", `${f.name} saved to ${rec.sponsor}.`);
+        upInput.value = "";
+      };
+      reader.readAsDataURL(f);
+    };
+    wireDrawerUploadRemoves(r.id);
+  }
   renderSponsorTimeline(r);
 
   const vibeEl = document.getElementById("f_vibe"), involvedEl = document.getElementById("f_involved");
@@ -13368,6 +13738,7 @@ function openDrawer(id) {
       cashAmount: document.getElementById("f_cashAmount").value.trim() || null,
       tradeAmount: document.getElementById("f_tradeAmount").value.trim() || null,
       tradeNotes: document.getElementById("f_tradeNotes").value.trim() || null,
+      tradeCollected: document.getElementById("f_tradeCollected") ? document.getElementById("f_tradeCollected").value : (r.tradeCollected || null),
       /* Phase 2: the workflow auto-advances deal stage, so a manual change here is
          an override. Log it on the sponsor so nobody has to guess later why the
          stage disagrees with the request history. */
@@ -14902,6 +15273,14 @@ function renderSettingsModal() {
   sel.innerHTML = `<option value="">Whatever's current (${esc(sState.season)})</option>` +
     years.map(y => `<option value="${esc(y)}">${esc(y)}</option>`).join("");
   sel.value = years.includes(String(st.season)) ? String(st.season) : "";
+  const spWrap = document.getElementById("setStageProbs");
+  if (spWrap) {
+    spWrap.innerHTML = Object.keys(DEAL_STAGES).filter(k => k !== "lost").map(k =>
+      `<label style="display:grid; grid-template-columns:1fr 58px; gap:var(--space-8); align-items:center; font-size:var(--text-xs); color:var(--muted);">
+        <span>${esc(DEAL_STAGES[k].label)}</span>
+        <input type="number" min="0" max="100" step="5" data-stage-prob="${k}" value="${dealStageProb(k)}" ${k === "signed" ? "disabled title='Signed is always 100%'" : ""} style="width:54px; text-align:right;">
+      </label>`).join("");
+  }
 }
 function openSettingsModal() {
   renderSettingsModal();
@@ -14976,6 +15355,13 @@ document.getElementById("settingsSave").addEventListener("click", () => {
     season: document.getElementById("setSeason").value || ""
   };
   saveSettings(patch);
+  // T7: persist edited pipeline stage close-%s (Signed forced to 100).
+  const probMap = {};
+  document.querySelectorAll("#setStageProbs [data-stage-prob]").forEach(inp => {
+    probMap[inp.dataset.stageProb] = Math.max(0, Math.min(100, Number(inp.value) || 0));
+  });
+  probMap.signed = 100; probMap.lost = 0;
+  saveStageProbs(probMap);
   maybeRequestDesktopNotifications(patch.desktopNotif).then(ok => {
     if (patch.desktopNotif === "on" && ok) sendDesktopNotice("BlueClaws IQ notifications on", "You'll get desktop alerts for mentions, assignments, and approvals.", "settings");
     if (patch.desktopNotif === "on" && !ok) toast("Notifications blocked", "Browser permission was not granted, so alerts will stay in-app.", true);
