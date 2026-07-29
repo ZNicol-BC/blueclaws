@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 157 -->
+<!-- BUILD_VERSION: 158 -->
 <!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
 <!-- BUILD_VERSION: 56 -->
@@ -873,6 +873,8 @@ button.proc-stage-title:hover { color: var(--blue-text); }
 .proc-sub { list-style: none; margin: var(--space-10) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-6); }
 .proc-sub li { font-size: var(--text-xs); color: var(--ink); line-height: 1.42; display: flex; gap: var(--space-7); align-items: flex-start; }
 .proc-sub li.sub-indent { margin-left: var(--space-16); }
+.proc-sub li.sub-note { margin-top: var(--space-4); }
+.proc-sub-head { font-weight: 800; font-size: 9.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); line-height: 1.35; }
 .proc-step-btn { flex: 0 0 auto; width: 16px; height: 16px; border: 1.5px solid var(--ink-300); border-radius: 4px; background: var(--card); cursor: pointer; display: grid; place-items: center; font-size: 10px; line-height: 1; color: transparent; margin-top: 1px; }
 .proc-step-btn.on { background: var(--blue); border-color: var(--blue); color: #fff; }
 .proc-step-static { flex: 0 0 auto; color: var(--ink-300); margin-top: 1px; }
@@ -2428,20 +2430,23 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           </button>
           <div class="chapter-body">
             <button class="nav-item" data-view="overview">
-              <span class="nav-icon">&#9672;</span> Executive Overview
-            </button>
-            <button class="nav-item" data-view="schedule">
-              <span class="nav-icon">&#9638;</span> Calendar
+              <span class="nav-icon">&#9672;</span> Partnership Performance
             </button>
             <button class="nav-item" data-view="reports">
               <span class="nav-icon">&#9636;</span> Reports
             </button>
+            <button class="nav-item" data-view="history">
+              <span class="nav-icon">&#9719;</span> Sponsorship History
+            </button>
+            <button class="nav-item" data-view="schedule">
+              <span class="nav-icon">&#9638;</span> Calendar
+            </button>
           </div>
         </div>
 
-        <div class="nav-chapter" data-chapter="sponsor-hub" data-open="true">
-          <button class="chapter-head" data-chapter-main="sponsor-hub">
-            <span class="nav-icon">&#9635;</span> Sponsor Hub
+        <div class="nav-chapter" data-chapter="accounts-hub" data-open="true">
+          <button class="chapter-head" data-chapter-main="accounts-hub">
+            <span class="nav-icon">&#9635;</span> Accounts
             <span class="nav-count" id="sponsorCount">128</span>
           </button>
           <div class="chapter-body">
@@ -2449,15 +2454,20 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
               <span class="nav-icon">&#9776;</span> Sponsor Ledger
               <span class="nav-count nav-count-audit" id="auditCount" title="Data import audit — conflicts, unmatched names, and possible duplicates">0</span>
             </button>
+          </div>
+        </div>
+
+        <div class="nav-chapter" data-chapter="sales-hub" data-open="true">
+          <button class="chapter-head" data-chapter-main="sales-hub">
+            <span class="nav-icon">&#8981;</span> Sales Center
+          </button>
+          <div class="chapter-body">
             <button class="nav-item" data-view="statusview">
-              <span class="nav-icon">&#9670;</span> Status View
+              <span class="nav-icon">&#9670;</span> Renewal Status View
             </button>
             <button class="nav-item" data-view="renewals">
               <span class="nav-icon">+</span> Renewal Center
               <span class="nav-count" id="riskCount">0</span>
-            </button>
-            <button class="nav-item" data-view="history">
-              <span class="nav-icon">&#9719;</span> Sponsorship History
             </button>
             <button class="nav-item" data-view="prospecting">
               <span class="nav-icon">&#8981;</span> Prospecting
@@ -2465,64 +2475,9 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           </div>
         </div>
 
-        <div class="nav-chapter" data-chapter="process-hub" data-open="true">
-          <button class="chapter-head" data-chapter-main="process-hub">
-            <span class="nav-icon">&#9680;</span> Sponsor Process
-          </button>
-          <div class="chapter-body">
-            <button class="nav-item" data-view="process">
-              <span class="nav-icon">&#9654;</span> Process Tracker
-            </button>
-          </div>
-        </div>
-
-        <div class="nav-chapter" data-chapter="ballpark-info" data-open="true">
-          <button class="chapter-head" data-chapter-main="ballpark-info">
-            <span class="nav-icon">&#8962;</span> Ballpark Info
-          </button>
-          <div class="chapter-body">
-            <button class="nav-item" data-view="stadiummap">
-              <span class="nav-icon">&#9678;</span> Stadium Map
-            </button>
-            <button class="nav-item" data-view="displays">
-              <span class="nav-icon">&#9637;</span> Ballpark Displays
-            </button>
-            <button class="nav-item" data-view="inventory">
-              <span class="nav-icon">*</span> Assets &amp; Inventory
-            </button>
-          </div>
-        </div>
-
-        <div class="nav-chapter" data-chapter="digideck-hub" data-open="true">
-          <button class="chapter-head" data-chapter-main="digideck-hub">
-            <span class="nav-icon">&#9636;</span> Partner Reports
-            <span class="nav-count" id="digideckCount">0</span>
-          </button>
-          <div class="chapter-body">
-            <button class="nav-item" data-view="digideck">
-              <span class="nav-icon">&#9636;</span> Partner Reports
-            </button>
-            <button class="nav-item" data-view="photolibrary">
-              <span class="nav-icon">&#9637;</span> Photo Library
-              <span class="nav-count" id="photoLibraryCount">0</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="nav-chapter" data-chapter="assetprep-hub" data-open="true">
-          <button class="chapter-head" data-chapter-main="assetprep-hub">
-            <span class="nav-icon">&#9993;</span> Asset Prep
-          </button>
-          <div class="chapter-body">
-            <button class="nav-item" data-view="assetprep">
-              <span class="nav-icon">&#9993;</span> Asset Prep Hub
-            </button>
-          </div>
-        </div>
-
-        <div class="nav-chapter" data-chapter="operations-hub" data-open="true">
-          <button class="chapter-head" data-chapter-main="operations-hub">
-            <span class="nav-icon">%</span> Operations
+        <div class="nav-chapter" data-chapter="service-hub" data-open="true">
+          <button class="chapter-head" data-chapter-main="service-hub">
+            <span class="nav-icon">%</span> Service Center
           </button>
           <div class="chapter-body">
             <button class="nav-item" data-view="fulfillment">
@@ -2531,6 +2486,19 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <button class="nav-item" data-view="gameday">
               <span class="nav-icon">&#9636;</span> Gameday
             </button>
+            <button class="nav-item" data-view="process">
+              <span class="nav-icon">&#9654;</span> Process Tracker
+            </button>
+            <span class="nav-subhead">Partner Reporting</span>
+            <button class="nav-item" data-view="digideck">
+              <span class="nav-icon">&#9636;</span> Partner Reports
+              <span class="nav-count" id="digideckCount">0</span>
+            </button>
+            <button class="nav-item" data-view="photolibrary">
+              <span class="nav-icon">&#9637;</span> Photo Library
+              <span class="nav-count" id="photoLibraryCount">0</span>
+            </button>
+            <span class="nav-subhead">Generators</span>
             <button class="nav-item" data-view="options">
               <span class="nav-icon">+</span> Options Creator
               <span class="nav-count" id="optionsCount">0</span>
@@ -2538,9 +2506,46 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <button class="nav-item" data-view="agreements">
               <span class="nav-icon">&#9998;</span> Agreement Generator
             </button>
+            <button class="nav-item" data-view="assetprep">
+              <span class="nav-icon">&#9993;</span> Asset Prep Hub
+            </button>
             <button class="nav-item" data-view="breakdown">
               <span class="nav-icon">$</span> Breakdown Generator
             </button>
+          </div>
+        </div>
+
+        <div class="nav-chapter" data-chapter="assets-hub" data-open="true">
+          <button class="chapter-head" data-chapter-main="assets-hub">
+            <span class="nav-icon">&#8962;</span> Assets &amp; Inventory
+          </button>
+          <div class="chapter-body">
+            <button class="nav-item" data-view="inventory">
+              <span class="nav-icon">*</span> Assets &amp; Inventory
+            </button>
+            <button class="nav-item" data-view="stadiummap">
+              <span class="nav-icon">&#9678;</span> Stadium Map
+            </button>
+            <button class="nav-item" data-view="displays">
+              <span class="nav-icon">&#9637;</span> Ballpark Displays
+            </button>
+            <button class="nav-item" data-view="scoreboard">
+              <span class="nav-icon">&#9632;</span> Scoreboard Layout
+            </button>
+            <button class="nav-item" data-view="marquee">
+              <span class="nav-icon">&#9644;</span> Digital Marquee Slots &amp; Schedule
+            </button>
+            <button class="nav-item" data-view="enews">
+              <span class="nav-icon">&#9993;</span> E-Newsletter Slots &amp; Schedule
+            </button>
+          </div>
+        </div>
+
+        <div class="nav-chapter" data-chapter="tasks-hub" data-open="true">
+          <button class="chapter-head" data-chapter-main="tasks-hub">
+            <span class="nav-icon">&#8644;</span> Tasks &amp; Approvals
+          </button>
+          <div class="chapter-body">
             <button class="nav-item" data-view="requests">
               <span class="nav-icon">&#8644;</span> Requests &amp; Tasks
               <span class="nav-count" id="requestsCount">0</span>
@@ -2551,6 +2556,17 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             </button>
             <button class="nav-item" data-view="service">
               <span class="nav-icon">&#10003;</span> Service Squad To-Do
+            </button>
+          </div>
+        </div>
+
+        <div class="nav-chapter" data-chapter="agreements-hub" data-open="true">
+          <button class="chapter-head" data-chapter-main="agreements-hub">
+            <span class="nav-icon">&#9998;</span> Agreements
+          </button>
+          <div class="chapter-body">
+            <button class="nav-item" data-view="agreementhub">
+              <span class="nav-icon">&#9998;</span> Agreements
             </button>
           </div>
         </div>
@@ -3577,6 +3593,102 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           <div class="embed-wrap" data-embed-key="score" data-embed-label="Score CRM"></div>
         </section>
 
+        <!-- ============ SCOREBOARD LAYOUT ============ -->
+        <section class="view" id="scoreboardView">
+          <div class="overview-hero">
+            <div class="overview-hero-brand">
+              <img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws">
+              <div>
+                <div class="eyebrow">SCOREBOARD LAYOUT<span class="season-badge" id="scoreboardSeasonBadge">2026</span></div>
+                <h1 class="overview-hero-title">Inning-by-inning rotator board.</h1>
+                <p>Drag sponsors into the inning grid, then load their artwork. Inning Sponsor, Elite Rotator and Premiere Rotator across 9 innings plus extras. A <span class="sb-takeover-inline">Takeover</span> tag shows when a sponsor holds all three in that inning.</p>
+              </div>
+            </div>
+          </div>
+          <div class="sb-toolbar">
+            <div class="sb-mode-switch" id="scoreboardModeSwitch">
+              <button type="button" class="sb-mode-btn is-active" data-sb-mode="sponsor">Sponsor grid</button>
+              <button type="button" class="sb-mode-btn" data-sb-mode="artwork">Artwork grid</button>
+            </div>
+            <div class="sb-toolbar-note" id="scoreboardModeNote"></div>
+          </div>
+          <div class="sb-split">
+            <aside class="sb-tray" id="scoreboardTray"></aside>
+            <div class="sb-grid-wrap" id="scoreboardGridWrap"></div>
+          </div>
+        </section>
+
+        <!-- ============ DIGITAL MARQUEE SLOTS & SCHEDULE ============ -->
+        <section class="view" id="marqueeView">
+          <div class="overview-hero">
+            <div class="overview-hero-brand">
+              <img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws">
+              <div>
+                <div class="eyebrow">DIGITAL MARQUEE<span class="season-badge">32 SLOTS</span></div>
+                <h1 class="overview-hero-title">Marquee slots &amp; schedule.</h1>
+                <p>Signed marquee partners with quantity scheduled vs contracted, and 32 dedicated slots each with a run window, artwork and history.</p>
+              </div>
+            </div>
+          </div>
+          <div class="sched-section">
+            <div class="sched-section-head"><h2>Signed marquee partners</h2><span class="sched-hint">Scheduled / contracted · drag a card into a slot below</span></div>
+            <div class="sched-tray" id="marqueeTray"></div>
+          </div>
+          <div class="sched-section">
+            <div class="sched-section-head"><h2>Dedicated slots</h2><span class="sched-hint">32 fixed slots — assign a sponsor, run window, artwork &amp; notes</span></div>
+            <div class="marquee-slots" id="marqueeSlots"></div>
+          </div>
+        </section>
+
+        <!-- ============ E-NEWSLETTER SLOTS & SCHEDULE ============ -->
+        <section class="view" id="enewsView">
+          <div class="overview-hero">
+            <div class="overview-hero-brand">
+              <img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws">
+              <div>
+                <div class="eyebrow">E-NEWSLETTER<span class="season-badge" id="enewsSeasonBadge">2026</span></div>
+                <h1 class="overview-hero-title">E-newsletter slots &amp; schedule.</h1>
+                <p>Signed e-newsletter partners turn green once every contracted send is placed. Below, a week-by-week grid for two sponsor ads plus a presenting partner.</p>
+              </div>
+            </div>
+          </div>
+          <div class="sched-section">
+            <div class="sched-section-head">
+              <h2>Signed e-newsletter partners</h2>
+              <div style="display:flex; gap:var(--space-8); align-items:center; flex-wrap:wrap;">
+                <select id="enewsYear" aria-label="Schedule year" class="sb-select"></select>
+                <button class="primary-button" id="enewsAlertBtn" type="button" style="padding:0 var(--space-12);">✉ Alert Greg with schedule</button>
+              </div>
+            </div>
+            <div class="sched-tray" id="enewsTray"></div>
+          </div>
+          <div class="sched-section">
+            <div class="sched-section-head"><h2>Weekly schedule</h2><span class="sched-hint">Drag a partner card onto a name cell, or use “+ Add”. Every Monday of the season is listed.</span></div>
+            <div class="enews-grid-scroll"><div id="enewsGrid"></div></div>
+          </div>
+        </section>
+
+        <!-- ============ AGREEMENTS ============ -->
+        <section class="view" id="agreementhubView">
+          <div class="overview-hero">
+            <div class="overview-hero-brand">
+              <img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws">
+              <div>
+                <div class="eyebrow">AGREEMENTS<span class="season-badge" id="agrHubBadge">2026</span></div>
+                <h1 class="overview-hero-title">Every partner's paperwork.</h1>
+                <p>All sponsors whose term covers the selected year, with their agreement on file. Missing one? Add it in a click.</p>
+              </div>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <div class="search-box">⌕ <input id="agrHubSearch" type="search" placeholder="Search sponsor or rep"></div>
+            <select id="agrHubYear" aria-label="Agreement year" class="sb-select"></select>
+            <select id="agrHubSort" aria-label="Sort order" class="sb-select"><option value="name">Sort: name</option><option value="rep">Sort: rep</option><option value="missing">Sort: missing first</option></select>
+          </div>
+          <div class="agr-hub-kpis" id="agrHubKpis"></div>
+          <div class="agr-hub-list" id="agrHubList"></div>
+        </section>
+
       </div>
     </main>
   </div>
@@ -4405,7 +4517,7 @@ async function pullSharedData() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const shared = await res.json();
     lastSyncedAt = Date.now(); lastSyncError = null;
-    const WHOLE_STORE_CHANNELS = {teamChat:CHAT_KEY,proposals:OPTIONS_KEY,rates:RATES_KEY,assetDetails:ASSET_DETAILS_KEY,links:LINKS_KEY,decks:DECKS_KEY,reportOverrides:REPORT_OVERRIDES_KEY,customSponsors:CUSTOM_KEY,customAssets:CUSTOM_ASSETS_KEY,photoChecklist:PHOTO_CHECK_KEY,quickLinks:QUICK_LINKS_KEY,staffSchedule:STAFF_SCHEDULE_KEY,repsList:REPS_KEY,serviceRepsList:SERVICE_REPS_KEY,sponsorCategoriesList:SPONSOR_CATEGORIES_KEY,agreementTemplates:AGREEMENT_TEMPLATES_KEY,requests:REQUESTS_KEY,approvalConfig:APPROVAL_CONFIG_KEY};
+    const WHOLE_STORE_CHANNELS = {teamChat:CHAT_KEY,proposals:OPTIONS_KEY,rates:RATES_KEY,assetDetails:ASSET_DETAILS_KEY,links:LINKS_KEY,decks:DECKS_KEY,reportOverrides:REPORT_OVERRIDES_KEY,customSponsors:CUSTOM_KEY,customAssets:CUSTOM_ASSETS_KEY,photoChecklist:PHOTO_CHECK_KEY,quickLinks:QUICK_LINKS_KEY,staffSchedule:STAFF_SCHEDULE_KEY,repsList:REPS_KEY,serviceRepsList:SERVICE_REPS_KEY,sponsorCategoriesList:SPONSOR_CATEGORIES_KEY,agreementTemplates:AGREEMENT_TEMPLATES_KEY,requests:REQUESTS_KEY,approvalConfig:APPROVAL_CONFIG_KEY,scoreboardLayout:"bciq_scoreboard_layout",marqueeSchedule:"bciq_marquee_schedule",enewsSchedule:"bciq_enews_schedule",presenceNames:"bciq_presence_names"};
     let changed=false;
     Object.entries(WHOLE_STORE_CHANNELS).forEach(([id,key])=>{if(hasPendingWrite(id,"overrides")||recentlyPushed(id,"overrides"))return;const incoming=shared[id];const serverValue=incoming&&incoming.value!==undefined?incoming.value:null;if(serverValue===null){if(memStore.getItem(key)!==null){memStore.removeItem(key);changed=true;}}else if(memStore.getItem(key)!==serverValue){memStore.setItem(key,serverValue);changed=true;}});
     const local=loadOverrides(),authoritative={};
@@ -6672,9 +6784,13 @@ function checkPerformanceHealth() {
 
 /* ================= VIEW SWITCHING ================= */
 const VIEW_TITLES = {
-  overview: "Executive Overview",
+  overview: "Partnership Performance",
   sponsors: "Sponsor Ledger",
-  statusview: "Status View",
+  statusview: "Renewal Status View",
+  scoreboard: "Scoreboard Layout",
+  marquee: "Digital Marquee Slots & Schedule",
+  enews: "E-Newsletter Slots & Schedule",
+  agreementhub: "Agreements",
   renewals: "Renewal Center",
   categories: "Category Insights",
   inventory: "Assets & Inventory",
@@ -6701,13 +6817,13 @@ const VIEW_TITLES = {
   "embed-score": "Score CRM"
 };
 const VIEW_CHAPTER = {
-  overview: "overview-hub", schedule: "overview-hub", reports: "overview-hub",
-  sponsors: "sponsor-hub", statusview: "sponsor-hub", renewals: "sponsor-hub", history: "sponsor-hub", prospecting: "sponsor-hub",
-  process: "process-hub",
-  stadiummap: "ballpark-info", displays: "ballpark-info", inventory: "ballpark-info",
-  digideck: "digideck-hub", photolibrary: "digideck-hub",
-  assetprep: "assetprep-hub",
-  fulfillment: "operations-hub", breakdown: "operations-hub", gameday: "operations-hub", options: "operations-hub", agreements: "operations-hub", requests: "operations-hub", mytasks: "operations-hub", service: "operations-hub"
+  overview: "overview-hub", reports: "overview-hub", history: "overview-hub", schedule: "overview-hub",
+  sponsors: "accounts-hub",
+  statusview: "sales-hub", renewals: "sales-hub", prospecting: "sales-hub",
+  fulfillment: "service-hub", gameday: "service-hub", process: "service-hub", digideck: "service-hub", photolibrary: "service-hub", options: "service-hub", agreements: "service-hub", assetprep: "service-hub", breakdown: "service-hub",
+  inventory: "assets-hub", stadiummap: "assets-hub", displays: "assets-hub", scoreboard: "assets-hub", marquee: "assets-hub", enews: "assets-hub",
+  requests: "tasks-hub", mytasks: "tasks-hub", service: "tasks-hub",
+  agreementhub: "agreements-hub"
 };
 function showView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
@@ -6745,6 +6861,10 @@ function showView(name) {
   if (name === "assetprep") renderAssetPrepView();
   if (name === "requests") renderRequestsView();
   if (name === "mytasks") renderMyTasksView();
+  if (name === "scoreboard") { try { renderScoreboardView(); } catch(e){ console.error("Scoreboard render failed", e); } }
+  if (name === "marquee") { try { renderMarqueeView(); } catch(e){ console.error("Marquee render failed", e); } }
+  if (name === "enews") { try { renderEnewsView(); } catch(e){ console.error("E-news render failed", e); } }
+  if (name === "agreementhub") { try { renderAgreementHubView(); } catch(e){ console.error("Agreement hub render failed", e); } }
   if (name === "embed-blueclaws") { renderEmbedView("blueclaws"); collapseSidebar(); }
   if (name === "embed-gameschedule") { renderEmbedView("gameschedule"); collapseSidebar(); }
   if (name === "embed-score") { renderEmbedView("score"); collapseSidebar(); }
@@ -7328,8 +7448,16 @@ const PROCESS_STAGES = [
   ]},
   { key: "contract-signed", label: "Contract Signed", view: "requests", sub: [
     "Once signed, Sales Rep alerts the whole Sponsorship Team",
-    { t: "Confirm / Update Partner Details — Account, Deal, Assets, Contacts, Upload Agreement", view: "sponsors" },
-    { t: "Create Breakdown & Update Score (Breakdown approved by Rob Vota only; confirm Score updated)", view: "breakdown" },
+    { t: "The following assignments are distributed to the Service Team to claim:", note: true },
+    { t: "Confirm / Update Partner Details", view: "sponsors" },
+    { t: "Account section", indent: true, view: "sponsors" },
+    { t: "Deal section", indent: true, view: "sponsors" },
+    { t: "Assets section", indent: true, view: "sponsors" },
+    { t: "Contacts section", indent: true, view: "sponsors" },
+    { t: "Upload Agreement", indent: true, view: "sponsors" },
+    { t: "Create Breakdown & Update Score", view: "breakdown" },
+    { t: "Breakdown must be approved by Rob Vota (only) once complete", indent: true },
+    { t: "Confirm that Score has been updated", indent: true },
     { t: "Create Asset Prep Email Generator", view: "assetprep" }
   ]},
   { key: "asset-prep", label: "Asset Prep", view: "assetprep", sub: [
@@ -7352,14 +7480,18 @@ const PROCESS_STAGES = [
   ]}
 ];
 function subText(s) { return typeof s === "string" ? s : s.t; }
-function subView(s) { return typeof s === "string" ? null : s.view; }
-function processTotalSteps() { return PROCESS_STAGES.reduce((n, s) => n + s.sub.length, 0); }
+function subView(s) { return (s && typeof s === "object") ? (s.view || null) : null; }
+/* A "note" sub-item (e.g. the "assignments distributed to the Service Team" header) is a label,
+   not a tickable step, so it's excluded from the step counts and never blocks stage completion. */
+function isCheckableStep(s) { return !(s && typeof s === "object" && s.note); }
+function stageCheckables(stage) { return stage.sub.filter(isCheckableStep); }
+function processTotalSteps() { return PROCESS_STAGES.reduce((n, s) => n + stageCheckables(s).length, 0); }
 function getProcess(r) { return (r && r.process) || {}; }
 function processStepKey(stage, i) { return stage.key + "." + i; }
 function processStepDone(r, stage, i) { return !!(getProcess(r).steps || {})[processStepKey(stage, i)]; }
-function stageAllDone(r, stage) { return stage.sub.length > 0 && stage.sub.every((_, i) => processStepDone(r, stage, i)); }
-function stageAnyDone(r, stage) { return stage.sub.some((_, i) => processStepDone(r, stage, i)); }
-function processCheckedCount(r) { return Object.values(getProcess(r).steps || {}).filter(Boolean).length; }
+function stageAllDone(r, stage) { return stageCheckables(stage).length > 0 && stage.sub.every((s, i) => !isCheckableStep(s) || processStepDone(r, stage, i)); }
+function stageAnyDone(r, stage) { return stage.sub.some((s, i) => isCheckableStep(s) && processStepDone(r, stage, i)); }
+function processCheckedCount(r) { let n = 0; PROCESS_STAGES.forEach(st => st.sub.forEach((s, i) => { if (isCheckableStep(s) && processStepDone(r, st, i)) n++; })); return n; }
 function processPct(r) { const t = processTotalSteps(); return t ? Math.round((processCheckedCount(r) / t) * 100) : 0; }
 /* Each process stage that has a real counterpart in Requests & Tasks is mapped here, so the
    tracker can start the actual request and mirror its live status instead of only manual ticks. */
@@ -7412,12 +7544,14 @@ function processStageCardHTML(stage, sIdx, r, curIdx) {
     : `<span class="proc-stage-title">${esc(stage.label)}</span>`;
   const subs = stage.sub.map((s, i) => {
     const txt = esc(subText(s));
+    if (s && typeof s === "object" && s.note) return `<li class="sub-note"><span class="proc-sub-head">${txt}</span></li>`;
+    const indent = s && typeof s === "object" && s.indent;
     const box = editable
       ? `<button type="button" class="proc-step-btn ${processStepDone(r, stage, i) ? "on" : ""}" data-proc-step="${stage.key}" data-proc-i="${i}" aria-pressed="${processStepDone(r, stage, i)}">${processStepDone(r, stage, i) ? "✓" : ""}</button>`
       : `<span class="proc-step-static">○</span>`;
     const v = subView(s);
     const link = v ? ` <a class="proc-inline-open" href="#" data-proc-open="${v}" style="color:var(--blue-text); font-weight:700; white-space:nowrap;">open ▸</a>` : "";
-    return `<li>${box}<span>${txt}${link}</span></li>`;
+    return `<li class="${indent ? "sub-indent" : ""}">${box}<span>${txt}${link}</span></li>`;
   }).join("");
   const stageLink = stage.view ? `<a class="proc-open" href="#" data-proc-open="${stage.view}">Open ${esc(VIEW_TITLES[stage.view] || stage.view)} ▸</a>` : "";
   let reqAction = "";
@@ -9094,11 +9228,30 @@ function saveRequests(arr) { memStore.setItem(REQUESTS_KEY, JSON.stringify(arr))
 function currentUser() { try { return memStore.getItem(IDENTITY_KEY) || ""; } catch { return ""; } }
 function setCurrentUser(name) { try { memStore.setItem(IDENTITY_KEY, name || ""); } catch {} }
 
+/* Presence roster: every browser that has picked a name in Settings broadcasts it into
+   a small synced list, so @-tagging and assignee pickers reflect who is actually using
+   the app — not just the seeded rep list. "Mitchell Zavoda" is always taggable. */
+const PRESENCE_KEY = "bciq_presence_names";
+const PRESENCE_SEED = ["Mitchell Zavoda"];
+function loadPresenceNames() { try { const v = JSON.parse(memStore.getItem(PRESENCE_KEY)); return Array.isArray(v) ? v : []; } catch { return []; } }
+function registerPresenceName(name) {
+  const n = String(name || "").trim();
+  if (!n) return;
+  const list = loadPresenceNames();
+  if (list.some(x => x.toLowerCase() === n.toLowerCase())) return;
+  list.push(n);
+  memStore.setItem(PRESENCE_KEY, JSON.stringify(list));
+  if (typeof pushSharedData === "function") pushSharedData("presenceNames", { value: JSON.stringify(list) }, "overrides");
+}
 function reqPeople() {
   const set = [];
-  try { serviceTeamNames().forEach(n => { if (!set.includes(n)) set.push(n); }); } catch (e) {}
-  loadServiceReps().forEach(n => { if (!set.includes(n)) set.push(n); });
-  loadReps().forEach(n => { if (!set.includes(n)) set.push(n); });
+  const add = n => { const t = String(n || "").trim(); if (t && !set.some(x => x.toLowerCase() === t.toLowerCase())) set.push(t); };
+  try { serviceTeamNames().forEach(add); } catch (e) {}
+  loadServiceReps().forEach(add);
+  loadReps().forEach(add);
+  PRESENCE_SEED.forEach(add);
+  loadPresenceNames().forEach(add);
+  try { add(currentUser()); } catch (e) {}
   return set.sort((a, b) => a.localeCompare(b));
 }
 /* Emails are first initial + last name @blueclaws.com (per the department's convention). */
@@ -13532,23 +13685,86 @@ function buildSponsorSlideHTML(id) {
   const fulfillPct = fulfillmentPercent(r);
   const contactLines = [r.primary ? `Primary contact: ${r.primary}` : null, r.email ? `Email: ${r.email}` : null, r.rep ? `BlueClaws rep: ${r.rep}` : null].filter(Boolean);
   const todoRaw = (r.todo || "").split("\n").map(t => t.trim()).filter(Boolean);
-  const slideStyle = `<style>.sslide-deck{display:grid;gap:14px}.sslide{aspect-ratio:16/9;border:1px solid #dcd7cc;background:#fffdfa;padding:var(--space-28);display:flex;flex-direction:column;justify-content:space-between;page-break-inside:avoid}.sslide h2{font:800 26px/1.05 Manrope;margin:0}.sslide h3{font:800 17px/1.1 Manrope;margin:0 0 10px}.sslide-meta{color:var(--muted);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.04em}.sslide-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.sslide-metrics div{border:1px solid #e7e1d6;padding:14px}.sslide-metrics span{display:block;color:#6b7688;font-size:var(--text-xs);text-transform:uppercase}.sslide-metrics strong{font-size:22px}.sslide-bars{display:flex;align-items:flex-end;gap:var(--space-14);height:180px;padding-top:10px}.sslide-bar-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;flex:1;height:100%}.sslide-bar{width:100%;background:linear-gradient(180deg,#0971ce,#0d1d41);border-radius:4px 4px 0 0;min-height:6px}.sslide-bar-val{font-size:var(--text-xs);font-weight:800;margin-top:6px}.sslide-bar-col small{color:var(--muted);font-size: var(--text-xs);margin-top:2px}.sslide table{font-size:var(--text-xs);width:100%}.sslide td,.sslide th{padding:5px 6px}</style>`;
+  // Fulfillment status distribution for a visual bar.
+  let health2 = null; try { health2 = compositeHealthScore(r); } catch (e) {}
+  const odds = (() => { try { return renewalProbability(r); } catch (e) { return "N/A"; } })();
+  const statusBuckets = { complete: 0, process: 0, waiting: 0, todo: 0 };
+  assets.forEach(a => {
+    const lbl = (statusMeta(a.status).label || "").toLowerCase();
+    if (lbl.includes("complete")) statusBuckets.complete++;
+    else if (lbl.includes("process") || lbl.includes("progress")) statusBuckets.process++;
+    else if (lbl.includes("wait")) statusBuckets.waiting++;
+    else statusBuckets.todo++;
+  });
+  const assetsTotal = assets.length || 0;
+  const seg = (n, color, label) => n ? `<span class="sum-seg" style="flex:${n};background:${color}" title="${label}: ${n}"></span>` : "";
+  const fulfillBar = assetsTotal
+    ? `<div class="sum-fbar">${seg(statusBuckets.complete, "#0971ce", "Complete")}${seg(statusBuckets.process, "#facd01", "In process")}${seg(statusBuckets.waiting, "#c20f2f", "Waiting on")}${seg(statusBuckets.todo, "#c9cedb", "Need to do")}</div>
+       <div class="sum-flegend"><span><i style="background:#0971ce"></i>Complete ${statusBuckets.complete}</span><span><i style="background:#facd01"></i>In process ${statusBuckets.process}</span><span><i style="background:#c20f2f"></i>Waiting ${statusBuckets.waiting}</span><span><i style="background:#c9cedb"></i>To do ${statusBuckets.todo}</span></div>`
+    : `<p style="color:var(--muted);font-size:var(--text-xs);">No assets on file to score.</p>`;
+  const tile = (label, val, accent, sub) => `<div class="sum-tile" style="--a:${accent}"><span>${label}</span><strong>${val}</strong>${sub ? `<em>${sub}</em>` : ""}</div>`;
+  const slideStyle = `<style>
+    .sslide-deck{display:grid;gap:14px}
+    .sslide{border:1px solid #dcd7cc;background:#fffdfa;padding:var(--space-24);page-break-inside:avoid}
+    .sslide h2{font:800 26px/1.05 Manrope;margin:0}
+    .sslide h3{font:800 16px/1.1 Manrope;margin:0 0 12px;letter-spacing:.01em}
+    .sslide-meta{color:var(--muted);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.04em}
+    .sum-hero{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .sum-hero img{width:64px;height:64px;object-fit:contain;border:1px solid #e7e1d6;background:#fff;border-radius:8px;padding:4px}
+    .sum-hero .sum-crest{width:64px;height:64px;display:grid;place-items:center;border-radius:8px;background:#0d1d41;color:#fff;font:800 22px Manrope}
+    .sum-tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+    .sum-tile{border:1px solid #e7e1d6;border-top:3px solid var(--a,#0971ce);padding:12px 12px 13px;background:#fff}
+    .sum-tile span{display:block;color:#6b7688;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:800}
+    .sum-tile strong{font:800 21px Manrope;display:block;margin-top:3px}
+    .sum-tile em{font-style:normal;color:#8792a8;font-size:10px}
+    .sum-fbar{display:flex;height:18px;border-radius:5px;overflow:hidden;border:1px solid #e7e1d6}
+    .sum-seg{display:block}
+    .sum-flegend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-size:11px;color:#4a5262}
+    .sum-flegend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+    .sum-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .sslide-bars{display:flex;align-items:flex-end;gap:var(--space-12);height:150px;padding-top:10px}
+    .sslide-bar-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;flex:1;height:100%}
+    .sslide-bar{width:100%;background:linear-gradient(180deg,#0971ce,#0d1d41);border-radius:4px 4px 0 0;min-height:6px}
+    .sslide-bar-val{font-size:11px;font-weight:800;margin-top:6px}
+    .sslide-bar-col small{color:var(--muted);font-size:11px;margin-top:2px}
+    .sslide table{font-size:11px;width:100%;border-collapse:collapse}
+    .sslide td,.sslide th{padding:5px 6px;border-bottom:1px solid #eee;text-align:left}
+    @media(max-width:640px){.sum-tiles{grid-template-columns:repeat(2,1fr)}.sum-2col{grid-template-columns:1fr}}
+  </style>`;
   const html = `${slideStyle}<div class="sslide-deck">
-    <section class="sslide"><div><span class="sslide-meta">BlueClaws IQ · ${esc(sState.season)} Season · Generated ${now}</span><h2>${esc(r.sponsor)}</h2><p style="margin:var(--space-6) 0 0;color:#4a5262;font-size:12px;">${esc(r.type || "—")} · ${esc(r.department || "Sponsorship")}${r.category ? " · " + esc(r.category) : ""}</p></div><div class="sslide-metrics"><div><span>${esc(sState.season)} value</span><strong>${currentTotal ? fmtMoneyShort(currentTotal) : "—"}</strong></div><div><span>YoY change</span><strong>${trendPct === null ? "—" : (trendPct > 0 ? "+" : "") + trendPct + "%"}</strong></div><div><span>Fulfillment</span><strong>${fulfillPct === null ? "—" : fulfillPct + "%"}</strong></div></div></section>
-    <section class="sslide"><div><h3>Revenue history</h3>${barsHTML}</div></section>
-    <section class="sslide"><div><h3>Current assets on file</h3>${assetsHTML}</div></section>
-    <section class="sslide"><div><h3>Contact &amp; renewal outlook</h3><p style="font-size:var(--text-xs);line-height:1.7;">${contactLines.length ? contactLines.map(esc).join("<br>") : "No contact info on file."}</p><p style="font-size:var(--text-xs);margin-top:var(--space-10);"><strong>Outlook:</strong> ${esc(OUTLOOK_LABELS[outlookOf(r)])} (${renewalProbability(r)}% odds)${r.outlookNotes ? "<br><em>" + esc(r.outlookNotes) + "</em>" : ""}</p></div></section>
-    <section class="sslide"><div><h3>Next steps</h3>${todoRaw.length ? `<ul style="margin:0;padding-left:var(--space-16);font-size:var(--text-xs);line-height:1.9;">${todoRaw.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : `<p style="color:var(--muted);font-size:var(--text-xs);">Nothing outstanding on file.</p>`}</div></section>
+    <section class="sslide">
+      <span class="sslide-meta">BlueClaws IQ · ${esc(sState.season)} Season · ${now}</span>
+      <div class="sum-hero">
+        ${r.logoDataUrl ? `<img src="${esc(r.logoDataUrl)}" alt="">` : `<div class="sum-crest">${esc(initials(r.sponsor))}</div>`}
+        <div><h2>${esc(r.sponsor)}</h2><p style="margin:4px 0 0;color:#4a5262;font-size:12px;">${esc(r.type || "—")} · ${esc(r.department || "Sponsorship")}${r.category ? " · " + esc(r.category) : ""}</p></div>
+      </div>
+      <div class="sum-tiles">
+        ${tile(sState.season + " value", currentTotal ? fmtMoneyShort(currentTotal) : "—", "#0971ce", isSignedRecord(r) ? "Signed" : "Pipeline")}
+        ${tile("YoY change", trendPct === null ? "—" : (trendPct > 0 ? "+" : "") + trendPct + "%", trendPct !== null && trendPct < 0 ? "#c20f2f" : "#0971ce", priorSeason ? "vs " + esc(priorSeason.year) : "")}
+        ${tile("Fulfillment", fulfillPct === null ? "—" : fulfillPct + "%", "#facd01", assetsTotal + " asset" + (assetsTotal === 1 ? "" : "s"))}
+        ${tile("Renewal odds", odds === "N/A" ? "N/A" : odds + "%", "#c20f2f", esc(OUTLOOK_LABELS[outlookOf(r)] || ""))}
+        ${tile("Health", health2 ? health2.score + "%" : "—", health2 && health2.score >= 80 ? "#0971ce" : health2 && health2.score >= 50 ? "#facd01" : "#c20f2f", "Composite")}
+      </div>
+    </section>
+    <section class="sslide"><h3>Asset fulfillment</h3>${fulfillBar}</section>
+    <section class="sslide"><div class="sum-2col">
+      <div><h3>Revenue history</h3>${barsHTML}</div>
+      <div><h3>Current assets</h3>${assetsHTML}</div>
+    </div></section>
+    <section class="sslide"><div class="sum-2col">
+      <div><h3>Contact &amp; outlook</h3><p style="font-size:12px;line-height:1.7;">${contactLines.length ? contactLines.map(esc).join("<br>") : "No contact info on file."}</p><p style="font-size:12px;margin-top:10px;"><strong>Outlook:</strong> ${esc(OUTLOOK_LABELS[outlookOf(r)])} (${odds}% odds)${r.outlookNotes ? "<br><em>" + esc(r.outlookNotes) + "</em>" : ""}</p></div>
+      <div><h3>Next steps</h3>${todoRaw.length ? `<ul style="margin:0;padding-left:16px;font-size:12px;line-height:1.9;">${todoRaw.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : `<p style="color:var(--muted);font-size:12px;">Nothing outstanding on file.</p>`}</div>
+    </div></section>
   </div>`;
   const text = `${r.sponsor} — Sponsorship Slide — ${now}\n${r.type || "—"} · ${r.department || "Sponsorship"}\n\n${esc(sState.season)} value: ${currentTotal ? fmtMoney(currentTotal) : "—"}\nFulfillment: ${fulfillPct === null ? "—" : fulfillPct + "%"}\nOutlook: ${OUTLOOK_LABELS[outlookOf(r)]} (${renewalProbability(r)}% odds)\n\nRevenue history:\n` + seasons.map(s => `${s.year}: ${fmtMoney(Number(s.total || 0))}`).join("\n") +
     `\n\nAssets:\n` + (assets.length ? assets.map(a => `${a.asset} (x${a.qty}) — ${statusMeta(a.status).label}`).join("\n") : "None on file") +
     `\n\nContact:\n` + (contactLines.length ? contactLines.join("\n") : "None on file") +
     `\n\nNext steps:\n` + (todoRaw.length ? todoRaw.join("\n") : "Nothing outstanding");
-  return { title: `${r.sponsor} — Sponsorship Slide`, html, text };
+  return { title: `${r.sponsor} — Account Summary`, html, text };
 }
 function openSponsorSlide(id) {
   const built = buildSponsorSlideHTML(id);
-  document.getElementById("reportEyebrow").textContent = "SPONSOR SLIDE";
+  document.getElementById("reportEyebrow").textContent = "ACCOUNT SUMMARY";
   document.getElementById("reportTitle").textContent = built.title;
   document.getElementById("reportPreview").innerHTML = built.html;
   currentReportText = built.text;
@@ -13596,33 +13812,34 @@ function drawerTemplate(r) {
   const kpiSigned = isSignedRecord(r);
   const kpiOdds = renewalProbability(r);
   return `
-    <div class="sdrawer-head">
-      <div style="display:flex; gap:var(--space-12);">
-        ${r.logoDataUrl ? `<div class="sponsor-logo-thumb" id="sdHeadLogo" style="width:42px;height:42px;"><img src="${esc(r.logoDataUrl)}" alt="" loading="lazy" decoding="async"></div>` : `<div class="brand-mark" id="sdHeadLogo">${esc(initials(r.sponsor))}</div>`}
-        <div><h2 class="sdrawer-name-text">${esc(r.sponsor)}</h2><div class="meta">${esc(r.type || "—")} · ${esc(r.department || "—")} · ${r._custom ? "Added manually" : "Imported data"}${r.scoreLink ? ` · <a href="${esc(r.scoreLink)}" target="_blank" rel="noopener" style="color:#8eaae9;">View in Score ↗</a>` : ""}</div>
-          <div style="display:flex; flex-wrap:wrap; gap:var(--space-6); margin-top:var(--space-6);">
-            <span class="delivery-badge ${digideckPct === 100 ? "complete" : "review"}" title="Digideck checklist completion">Digideck: ${digideckPct}%</span>
-            <span class="delivery-badge ${popPct === 100 ? "complete" : "review"}" title="POP photo checklist completion">POP Photos: ${popPct}%</span>
-            <span class="delivery-badge ${proposalCount ? "complete" : "review"}" title="Saved proposals in Options Creator, matched by sponsor name">Proposals: ${proposalCount}</span>
-            ${health ? `<span class="delivery-badge ${health.score >= 80 ? "complete" : health.score >= 50 ? "review" : "negative"}" title="${health.parts.map(p => `${p.label}: ${p.pct}% (weight ${Math.round(p.weight * 100)}%)`).join(" · ")}">Health Score: ${health.score}%</span>` : ""}
-            ${(() => {
-              // Inconsistency flag (creative item): asset fulfillment reads "Complete"
-              // but the POP photo checklist has zero items checked — usually means the
-              // fulfillment status was updated without anyone actually confirming photos.
-              const overall = fulfillmentPercent(r);
-              if (popStat && popStat.total > 0 && popStat.done === 0 && overall !== null && overall >= 80) {
-                return `<span class="delivery-badge negative" title="Asset fulfillment reads ${overall}% complete, but 0 of ${popStat.total} POP photo checklist items are checked">! Fulfillment/photos mismatch</span>`;
-              }
-              return "";
-            })()}
+    <div class="sdrawer-head sd-head-v2">
+      <button class="sdrawer-close" id="sdClose" aria-label="Close sponsor details"><span aria-hidden="true">&times;</span></button>
+      <div class="sd-head-main">
+        <div class="sd-head-id">
+          ${r.logoDataUrl ? `<div class="sponsor-logo-thumb sd-head-logo" id="sdHeadLogo"><img src="${esc(r.logoDataUrl)}" alt="" loading="lazy" decoding="async"></div>` : `<div class="brand-mark sd-head-logo" id="sdHeadLogo">${esc(initials(r.sponsor))}</div>`}
+          <div class="sd-head-titles">
+            <h2 class="sdrawer-name-text">${esc(r.sponsor)}</h2>
+            <div class="meta">${esc(r.type || "—")} · ${esc(r.department || "—")} · ${r._custom ? "Added manually" : "Imported data"}${r.scoreLink ? ` · <a href="${esc(r.scoreLink)}" target="_blank" rel="noopener" style="color:#8eaae9;">View in Score ↗</a>` : ""}</div>
           </div>
         </div>
+        <div class="sd-head-bubbles">
+          <span class="delivery-badge ${digideckPct === 100 ? "complete" : "review"}" title="Digideck checklist completion">Digideck: ${digideckPct}%</span>
+          <span class="delivery-badge ${popPct === 100 ? "complete" : "review"}" title="POP photo checklist completion">POP Photos: ${popPct}%</span>
+          <span class="delivery-badge ${proposalCount ? "complete" : "review"}" title="Saved proposals in Options Creator, matched by sponsor name">Proposals: ${proposalCount}</span>
+          ${health ? `<span class="delivery-badge ${health.score >= 80 ? "complete" : health.score >= 50 ? "review" : "negative"}" title="${health.parts.map(p => `${p.label}: ${p.pct}% (weight ${Math.round(p.weight * 100)}%)`).join(" · ")}">Health Score: ${health.score}%</span>` : ""}
+          ${(() => {
+            const overall = fulfillmentPercent(r);
+            if (popStat && popStat.total > 0 && popStat.done === 0 && overall !== null && overall >= 80) {
+              return `<span class="delivery-badge negative" title="Asset fulfillment reads ${overall}% complete, but 0 of ${popStat.total} POP photo checklist items are checked">! Fulfillment/photos mismatch</span>`;
+            }
+            return "";
+          })()}
+        </div>
       </div>
-      <div style="display:flex; gap:var(--space-8); align-items:center;">
+      <div class="sd-head-actions">
         <button class="secondary-button" id="sdRequestBtn" type="button">Request work</button>
         <button class="secondary-button" id="sdTaskBtn" type="button">Add task/reminder</button>
-        <button class="secondary-button" id="sdGenSlideBtn" type="button">Generate slide</button>
-        <button class="sdrawer-close" id="sdClose" aria-label="Close sponsor details"><span aria-hidden="true">&times;</span></button>
+        <button class="secondary-button" id="sdGenSlideBtn" type="button">Summary slide</button>
       </div>
     </div>
     <div class="sdrawer-body">
@@ -13958,7 +14175,7 @@ function openDrawer(id) {
   sdTabButtons.forEach(btn => btn.addEventListener("click", () => {
     setDrawerSection(btn.hasAttribute("data-sd-all") ? "all" : btn.dataset.sdJump);
   }));
-  setDrawerSection("all");
+  setDrawerSection("sdsec-account");
   const uploadAgreementBtn = document.getElementById("drawerUploadAgreementBtn");
   if (uploadAgreementBtn) uploadAgreementBtn.onclick = () => openContractModal(r.id);
   const upBtn = document.getElementById("drawerUploadBtn");
@@ -14411,6 +14628,10 @@ function refreshCurrentView() {
   if (name === "prospecting") renderProspectingView();
   if (name === "service") renderServiceView();
   if (name === "assetprep") renderAssetPrepView();
+  if (name === "scoreboard") { try { renderScoreboardView(); } catch(e){} }
+  if (name === "marquee") { try { renderMarqueeView(); } catch(e){} }
+  if (name === "enews") { try { renderEnewsView(); } catch(e){} }
+  if (name === "agreementhub") { try { renderAgreementHubView(); } catch(e){} }
   updateOptionsNavCount();
   refreshHiddenSponsorsCount();
 }
@@ -15897,6 +16118,7 @@ document.getElementById("settingsSave").addEventListener("click", () => {
   // Save the name first: the settings record is keyed to it, so a rename here
   // should write the preferences under the new name rather than the old one.
   setCurrentUser(name);
+  try { registerPresenceName(name); } catch (e) {}
   const patch = {
     ledgerView: document.querySelector("#setLedgerView button.active")?.dataset.setLedger || "3",
     theme: document.querySelector("#setTheme button.active")?.dataset.setTheme || "light",
@@ -15937,6 +16159,7 @@ document.getElementById("settingsReset").addEventListener("click", () => {
   refreshCurrentView();
 });
 try { applySettingsOnLoad(); } catch (e) { /* preferences are best-effort; never block app load */ }
+try { registerPresenceName(currentUser()); } catch (e) { /* presence roster is best-effort */ }
 document.getElementById("sidebarToggleBtn").addEventListener("click", toggleSidebar);
 document.getElementById("calPrevBtn").addEventListener("click", () => {
   csState.month--; if (csState.month < 0) { csState.month = 11; csState.year--; }
@@ -16643,6 +16866,369 @@ const side=document.querySelector(".sidebar-watermark");if(side){side.src=SIDEBA
   const top=document.querySelector(".breadcrumb img");if(top){top.src=NAVY_JS_LOGO_DATA;top.alt="JS";}
   document.documentElement.style.setProperty("--crest-bg-url", `url("${BEACHBALL_LOGO_DATA}")`);
 })();
+
+/* ============================================================================
+   index158 — NEW TABS: Scoreboard Layout, Digital Marquee, E-Newsletter, Agreements
+   Additive module. Uses existing helpers: getAllRecords, getRecord, parseSponsorAssetLines,
+   getLogo, initials, esc, toast, memStore, pushSharedData, sState, getHistoricalValues,
+   isSignedRecord, viewContract, openContractModal.
+   ========================================================================= */
+const SB_SITE_URL = "https://blueclaws26.netlify.app";
+
+function nt_load(key){ try { return JSON.parse(memStore.getItem(key)) || {}; } catch { return {}; } }
+function nt_save(key, channel, obj){
+  try { memStore.setItem(key, JSON.stringify(obj)); } catch(e){}
+  if (typeof pushSharedData === "function") pushSharedData(channel, { value: JSON.stringify(obj) }, "overrides");
+}
+function nt_logoHTML(r, size){
+  size = size || 26;
+  if (!r) return "";
+  const logo = r.logoDataUrl || (typeof getLogo === "function" ? getLogo(r.id) : null);
+  if (logo) return `<span class="nt-logo" style="width:${size}px;height:${size}px;"><img src="${esc(logo)}" alt="" loading="lazy"></span>`;
+  return `<span class="nt-logo nt-logo-fallback" style="width:${size}px;height:${size}px;font-size:${Math.round(size*0.4)}px;">${esc(initials(r.sponsor||"?"))}</span>`;
+}
+function nt_assetLabels(r){ try { return parseSponsorAssetLines(r.assets).map(l => (l.label||l.text||"")); } catch(e){ return []; } }
+function nt_sponsorsWithAsset(pred){ return getAllRecords().filter(r => nt_assetLabels(r).some(l => pred(l, r))); }
+function nt_countAsset(r, pred){ return nt_assetLabels(r).filter(pred).length; }
+
+/* ---- drag helpers ---- */
+let nt_dragSp = null;
+function nt_dragStart(e, id){ nt_dragSp = id; try { e.dataTransfer.setData("text/plain", id); e.dataTransfer.effectAllowed = "copy"; } catch(_){} }
+function nt_wireDrop(el, onDrop){
+  el.addEventListener("dragover", e => { e.preventDefault(); el.classList.add("nt-dragover"); try{ e.dataTransfer.dropEffect="copy"; }catch(_){} });
+  el.addEventListener("dragleave", () => el.classList.remove("nt-dragover"));
+  el.addEventListener("drop", e => { e.preventDefault(); el.classList.remove("nt-dragover"); const id = (function(){ try { return e.dataTransfer.getData("text/plain"); } catch(_){ return ""; } })() || nt_dragSp; if (id) onDrop(id); nt_dragSp = null; });
+}
+
+/* ---- floating sponsor picker ---- */
+let nt_menuEl = null;
+function nt_closeMenu(){ if (nt_menuEl){ nt_menuEl.remove(); nt_menuEl = null; document.removeEventListener("mousedown", nt_menuOutside, true); } }
+function nt_menuOutside(e){ if (nt_menuEl && !nt_menuEl.contains(e.target)) nt_closeMenu(); }
+function nt_pickSponsor(anchor, candidates, onPick, opts){
+  nt_closeMenu();
+  opts = opts || {};
+  const menu = document.createElement("div");
+  menu.className = "nt-menu";
+  menu.innerHTML = `<input type="search" class="nt-menu-search" placeholder="Search sponsor…"><div class="nt-menu-list"></div>` + (opts.allowClear ? `<button type="button" class="nt-menu-clear">Clear this slot</button>` : "");
+  document.body.appendChild(menu);
+  nt_menuEl = menu;
+  const rect = anchor.getBoundingClientRect();
+  const vw = document.documentElement.clientWidth;
+  menu.style.top = (rect.bottom + window.scrollY + 4) + "px";
+  menu.style.left = Math.max(8, Math.min(rect.left + window.scrollX, window.scrollX + vw - 286)) + "px";
+  const listEl = menu.querySelector(".nt-menu-list");
+  const draw = (q) => {
+    const ql = (q||"").toLowerCase();
+    const items = candidates.filter(r => !ql || (r.sponsor||"").toLowerCase().includes(ql)).slice(0, 120);
+    listEl.innerHTML = items.length ? items.map(r => `<button type="button" class="nt-menu-item" data-sp="${esc(r.id)}">${nt_logoHTML(r,22)}<span>${esc(r.sponsor)}</span></button>`).join("") : `<div class="nt-menu-empty">No matching sponsors</div>`;
+    listEl.querySelectorAll(".nt-menu-item").forEach(b => b.onclick = () => { const r = getRecord(b.dataset.sp); nt_closeMenu(); onPick(r); });
+  };
+  draw("");
+  const search = menu.querySelector(".nt-menu-search");
+  search.oninput = () => draw(search.value);
+  if (opts.allowClear) menu.querySelector(".nt-menu-clear").onclick = () => { nt_closeMenu(); onPick(null); };
+  setTimeout(() => { try { search.focus(); } catch(_){} document.addEventListener("mousedown", nt_menuOutside, true); }, 0);
+}
+
+/* ---- image picker ---- */
+function nt_pickImage(onLoad){
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "image/*";
+  inp.onchange = () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    if (f.size > 6 * 1024 * 1024) { toast("File too large", "Keep artwork under 6 MB so it can sync."); return; }
+    const rd = new FileReader();
+    rd.onload = () => onLoad({ name: f.name, dataUrl: rd.result });
+    rd.readAsDataURL(f);
+  };
+  inp.click();
+}
+
+/* ============================ SCOREBOARD LAYOUT ============================ */
+const SCOREBOARD_KEY = "bciq_scoreboard_layout";
+const SB_INNINGS = ["1","2","3","4","5","6","7","8","9","Extra"];
+const SB_COLS = [
+  { k:"inning",   label:"Inning Sponsor",   match:/inning sponsor/i },
+  { k:"elite",    label:"Elite Rotator",    match:/elite rotator/i },
+  { k:"premiere", label:"Premiere Rotator", match:/premiere (digital )?rotator/i }
+];
+let sbMode = "sponsor";
+function sbData(){ const d = nt_load(SCOREBOARD_KEY); if (!d.sponsor) d.sponsor = {}; if (!d.artwork) d.artwork = {}; return d; }
+function sbPersist(d){ nt_save(SCOREBOARD_KEY, "scoreboardLayout", d); }
+function sbSponsorsForCol(col){ return nt_sponsorsWithAsset(l => col.match.test(l)); }
+function sbAllScoreboardSponsors(){ return nt_sponsorsWithAsset(l => /inning sponsor|elite rotator|premiere (digital )?rotator|inning takeover|deluxe rotator/i.test(l)); }
+function sbIsTakeover(r){ return r && nt_assetLabels(r).some(l => /inning takeover/i.test(l)); }
+function sbCellSponsor(d, key){ const id = d.sponsor[key]; return id ? getRecord(id) : null; }
+function sbInningLabel(inn){ return inn === "Extra" ? "Extra Innings" : "Inning " + inn; }
+
+function renderScoreboardView(){
+  const badge = document.getElementById("scoreboardSeasonBadge"); if (badge) badge.textContent = sState.season;
+  document.querySelectorAll("#scoreboardModeSwitch .sb-mode-btn").forEach(b => {
+    b.classList.toggle("is-active", b.dataset.sbMode === sbMode);
+    b.onclick = () => { sbMode = b.dataset.sbMode; renderScoreboardView(); };
+  });
+  const note = document.getElementById("scoreboardModeNote");
+  if (note) note.textContent = sbMode === "sponsor"
+    ? "Drag a sponsor into an inning slot, or click a slot to assign. Takeover sponsors carry a Takeover tag."
+    : "Load each sponsor's artwork. A cell only opens once its sponsor is placed on the Sponsor grid.";
+  const tray = document.getElementById("scoreboardTray");
+  const sponsors = sbAllScoreboardSponsors();
+  tray.innerHTML = `<div class="sb-tray-head">Scoreboard sponsors <span>${sponsors.length}</span></div>` +
+    (sponsors.length ? sponsors.map(r => `<div class="nt-card" draggable="true" data-sp="${esc(r.id)}">${nt_logoHTML(r,26)}<span class="nt-card-name">${esc(r.sponsor)}</span>${sbIsTakeover(r)?'<span class="sb-takeover-tag">Takeover</span>':''}</div>`).join("")
+                       : `<div class="nt-empty">No sponsors carry a scoreboard asset (Inning Sponsor, Elite/Premiere Rotator or Takeover) yet.</div>`);
+  tray.querySelectorAll(".nt-card").forEach(c => c.addEventListener("dragstart", e => nt_dragStart(e, c.dataset.sp)));
+  const wrap = document.getElementById("scoreboardGridWrap");
+  const d = sbData();
+  wrap.innerHTML = sbMode === "sponsor" ? sbSponsorGridHTML(d) : sbArtworkGridHTML(d);
+  if (sbMode === "sponsor") sbWireSponsorGrid(); else sbWireArtworkGrid();
+}
+function sbGridHead(){ return `<thead><tr><th class="sb-inning-col">Inning</th>${SB_COLS.map(c=>`<th>${c.label}</th>`).join("")}</tr></thead>`; }
+function sbSponsorGridHTML(d){
+  return `<table class="sb-grid">${sbGridHead()}<tbody>${SB_INNINGS.map(inn=>`<tr><th class="sb-inning-col">${sbInningLabel(inn)}</th>${SB_COLS.map(c=>{
+    const key = inn+"|"+c.k; const r = sbCellSponsor(d,key);
+    return `<td class="sb-cell" data-key="${key}">${r
+      ? `<div class="sb-placed">${nt_logoHTML(r,22)}<span>${esc(r.sponsor)}</span>${sbIsTakeover(r)?'<span class="sb-takeover-tag">Takeover</span>':''}<button class="sb-x" data-clear="${key}" title="Remove">×</button></div>`
+      : `<span class="sb-empty-cell">＋ add</span>`}</td>`;
+  }).join("")}</tr>`).join("")}</tbody></table>`;
+}
+function sbWireSponsorGrid(){
+  const d = sbData();
+  document.querySelectorAll("#scoreboardGridWrap .sb-cell").forEach(cell => {
+    const key = cell.dataset.key;
+    const col = SB_COLS.find(c => key.endsWith("|"+c.k));
+    nt_wireDrop(cell, id => { const dd = sbData(); dd.sponsor[key] = id; sbPersist(dd); renderScoreboardView(); });
+    cell.addEventListener("click", e => {
+      if (e.target.closest(".sb-x")) return;
+      nt_pickSponsor(cell, sbSponsorsForCol(col), r => { const dd = sbData(); if (r) dd.sponsor[key] = r.id; else delete dd.sponsor[key]; sbPersist(dd); renderScoreboardView(); }, { allowClear: !!d.sponsor[key] });
+    });
+  });
+  document.querySelectorAll("#scoreboardGridWrap [data-clear]").forEach(b => b.addEventListener("click", e => {
+    e.stopPropagation(); const dd = sbData(); delete dd.sponsor[b.dataset.clear]; delete dd.artwork[b.dataset.clear]; sbPersist(dd); renderScoreboardView();
+  }));
+}
+function sbArtworkGridHTML(d){
+  return `<table class="sb-grid">${sbGridHead()}<tbody>${SB_INNINGS.map(inn=>`<tr><th class="sb-inning-col">${sbInningLabel(inn)}</th>${SB_COLS.map(c=>{
+    const key = inn+"|"+c.k; const r = sbCellSponsor(d,key); const art = d.artwork[key];
+    if (!r) return `<td class="sb-cell sb-art-cell sb-art-locked" data-key="${key}"><span class="sb-empty-cell">Place a sponsor first</span></td>`;
+    return `<td class="sb-cell sb-art-cell" data-key="${key}">${art
+      ? `<div class="sb-art"><img src="${esc(art.dataUrl)}" alt=""><div class="sb-art-foot">${nt_logoHTML(r,16)}<span>${esc(r.sponsor)}</span><button class="sb-x" data-artclear="${key}">×</button></div></div>`
+      : `<button class="sb-art-add" data-artadd="${key}">＋ Add ${esc(r.sponsor)} artwork</button>`}</td>`;
+  }).join("")}</tr>`).join("")}</tbody></table>`;
+}
+function sbWireArtworkGrid(){
+  document.querySelectorAll("#scoreboardGridWrap [data-artadd]").forEach(b => b.addEventListener("click", () => {
+    const key = b.dataset.artadd; nt_pickImage(img => { const dd = sbData(); dd.artwork[key] = img; sbPersist(dd); renderScoreboardView(); });
+  }));
+  document.querySelectorAll("#scoreboardGridWrap [data-artclear]").forEach(b => b.addEventListener("click", () => {
+    const dd = sbData(); delete dd.artwork[b.dataset.artclear]; sbPersist(dd); renderScoreboardView();
+  }));
+}
+
+/* ============================ DIGITAL MARQUEE ============================ */
+const MARQUEE_KEY = "bciq_marquee_schedule";
+const MARQUEE_SLOTS = 32;
+function mqData(){ const d = nt_load(MARQUEE_KEY); if (!d.slots) d.slots = {}; if (!d.tray) d.tray = {}; return d; }
+function mqPersist(d){ nt_save(MARQUEE_KEY, "marqueeSchedule", d); }
+function mqSponsors(){ return nt_sponsorsWithAsset(l => /digital marquee/i.test(l)); }
+function mqContracted(r){ return nt_countAsset(r, l => /digital marquee/i.test(l)) || 1; }
+function mqScheduled(d, id){ let n = 0; for (let i=1;i<=MARQUEE_SLOTS;i++){ if (d.slots[i] && d.slots[i].sponsorId === id) n++; } return n; }
+function mqAutoHistory(r, s){ if (r && (s.start || s.end)) return `${r.sponsor}: ${s.start||'?'} - ${s.end||'?'}`; return ""; }
+function renderMarqueeView(){
+  const d = mqData();
+  const sponsors = mqSponsors();
+  const tray = document.getElementById("marqueeTray");
+  tray.innerHTML = sponsors.length ? sponsors.map(r => {
+    const sched = mqScheduled(d, r.id), con = mqContracted(r), done = con > 0 && sched >= con, t = d.tray[r.id] || {};
+    return `<div class="sched-card ${done?'is-complete':''}" draggable="true" data-sp="${esc(r.id)}">
+      <div class="sched-card-top">${nt_logoHTML(r,28)}<span class="nt-card-name">${esc(r.sponsor)}</span><span class="sched-qty ${done?'ok':''}">${sched} / ${con}</span></div>
+      <div class="sched-card-fields"><input class="nt-inp" data-mqnote="${esc(r.id)}" placeholder="Notes" value="${esc(t.notes||'')}"><input class="nt-inp" data-mqtiming="${esc(r.id)}" placeholder="Timing (if any)" value="${esc(t.timing||'')}"></div>
+    </div>`;
+  }).join("") : `<div class="nt-empty">No sponsors carry a Digital Marquee asset yet.</div>`;
+  tray.querySelectorAll(".sched-card").forEach(c => c.addEventListener("dragstart", e => nt_dragStart(e, c.dataset.sp)));
+  tray.querySelectorAll("[data-mqnote]").forEach(inp => inp.addEventListener("change", () => { const dd = mqData(); (dd.tray[inp.dataset.mqnote] = dd.tray[inp.dataset.mqnote] || {}).notes = inp.value; mqPersist(dd); }));
+  tray.querySelectorAll("[data-mqtiming]").forEach(inp => inp.addEventListener("change", () => { const dd = mqData(); (dd.tray[inp.dataset.mqtiming] = dd.tray[inp.dataset.mqtiming] || {}).timing = inp.value; mqPersist(dd); }));
+
+  const wrap = document.getElementById("marqueeSlots");
+  let html = "";
+  for (let i=1;i<=MARQUEE_SLOTS;i++){
+    const s = d.slots[i] || {}; const r = s.sponsorId ? getRecord(s.sponsorId) : null;
+    html += `<div class="mq-slot" data-slot="${i}">
+      <div class="mq-slot-head"><span class="mq-slot-num">SLOT ${i}</span>${r?`<button class="sb-x" data-mqclear="${i}" title="Clear slot">×</button>`:''}</div>
+      <div class="mq-slot-body ${r?'':'mq-slot-empty'}" data-mqdrop="${i}">${r?`<div class="sb-placed">${nt_logoHTML(r,22)}<span>${esc(r.sponsor)}</span></div>`:`<button class="mq-assign" data-mqadd="${i}">＋ Assign sponsor</button>`}</div>
+      <div class="mq-slot-dates"><label>Start<input type="date" data-mqstart="${i}" value="${esc(s.start||'')}"></label><label>End<input type="date" data-mqend="${i}" value="${esc(s.end||'')}"></label></div>
+      <div class="mq-slot-art">${s.art?`<img src="${esc(s.art.dataUrl)}" alt=""><button class="sb-x mq-art-x" data-mqartclear="${i}">×</button>`:`<button class="mq-art-add" data-mqartadd="${i}">＋ Add ad graphic</button>`}</div>
+      <input class="nt-inp" data-mqslotnote="${i}" placeholder="Notes" value="${esc(s.notes||'')}">
+      <input class="nt-inp mq-history" data-mqhist="${i}" placeholder="History summary" value="${esc(s.history || mqAutoHistory(r, s))}">
+    </div>`;
+  }
+  wrap.innerHTML = html;
+  mqWireSlots();
+}
+function mqSlotObj(d, i){ if (!d.slots[i]) d.slots[i] = {}; return d.slots[i]; }
+function mqWireSlots(){
+  document.querySelectorAll("#marqueeSlots [data-mqdrop]").forEach(el => nt_wireDrop(el, id => { const dd = mqData(); mqSlotObj(dd, el.dataset.mqdrop).sponsorId = id; mqPersist(dd); renderMarqueeView(); }));
+  document.querySelectorAll("#marqueeSlots [data-mqadd]").forEach(b => b.addEventListener("click", () => nt_pickSponsor(b, mqSponsors(), r => { if (!r) return; const dd = mqData(); mqSlotObj(dd, b.dataset.mqadd).sponsorId = r.id; mqPersist(dd); renderMarqueeView(); })));
+  document.querySelectorAll("#marqueeSlots [data-mqclear]").forEach(b => b.addEventListener("click", () => { const dd = mqData(); delete dd.slots[b.dataset.mqclear]; mqPersist(dd); renderMarqueeView(); }));
+  document.querySelectorAll("#marqueeSlots [data-mqstart]").forEach(inp => inp.addEventListener("change", () => { const dd = mqData(); mqSlotObj(dd, inp.dataset.mqstart).start = inp.value; mqPersist(dd); renderMarqueeView(); }));
+  document.querySelectorAll("#marqueeSlots [data-mqend]").forEach(inp => inp.addEventListener("change", () => { const dd = mqData(); mqSlotObj(dd, inp.dataset.mqend).end = inp.value; mqPersist(dd); renderMarqueeView(); }));
+  document.querySelectorAll("#marqueeSlots [data-mqartadd]").forEach(b => b.addEventListener("click", () => nt_pickImage(img => { const dd = mqData(); mqSlotObj(dd, b.dataset.mqartadd).art = img; mqPersist(dd); renderMarqueeView(); })));
+  document.querySelectorAll("#marqueeSlots [data-mqartclear]").forEach(b => b.addEventListener("click", () => { const dd = mqData(); delete mqSlotObj(dd, b.dataset.mqartclear).art; mqPersist(dd); renderMarqueeView(); }));
+  document.querySelectorAll("#marqueeSlots [data-mqslotnote]").forEach(inp => inp.addEventListener("change", () => { const dd = mqData(); mqSlotObj(dd, inp.dataset.mqslotnote).notes = inp.value; mqPersist(dd); }));
+  document.querySelectorAll("#marqueeSlots [data-mqhist]").forEach(inp => inp.addEventListener("change", () => { const dd = mqData(); mqSlotObj(dd, inp.dataset.mqhist).history = inp.value; mqPersist(dd); }));
+}
+
+/* ============================ E-NEWSLETTER ============================ */
+const ENEWS_KEY = "bciq_enews_schedule";
+const ENE_COLS = [ { k:"s1", label:"Sponsor #1", cls:"ene-g1" }, { k:"s2", label:"Sponsor #2", cls:"ene-g2" }, { k:"pp", label:"Presenting Partner", cls:"ene-g3" } ];
+let eneYear = null;
+function eneData(){ return nt_load(ENEWS_KEY); }
+function enePersist(d){ nt_save(ENEWS_KEY, "enewsSchedule", d); }
+function eneYD(d, year){ if (!d[year]) d[year] = { tray:{}, weeks:{} }; if (!d[year].tray) d[year].tray = {}; if (!d[year].weeks) d[year].weeks = {}; return d[year]; }
+function eneSponsors(){ return nt_sponsorsWithAsset(l => /e-?newsletter/i.test(l)); }
+function eneContracted(r){ return nt_countAsset(r, l => /e-?newsletter/i.test(l)) || 1; }
+function eneScheduled(yd, id){ let n = 0; Object.values(yd.weeks).forEach(w => ENE_COLS.forEach(c => { if (w[c.k] && w[c.k].id === id) n++; })); return n; }
+function eneMondays(year){
+  const res = []; const d = new Date(Date.UTC(year, 0, 1));
+  d.setUTCDate(d.getUTCDate() + ((1 - d.getUTCDay() + 7) % 7));
+  while (d.getUTCFullYear() === year){ res.push(d.toISOString().slice(0,10)); d.setUTCDate(d.getUTCDate() + 7); }
+  return res;
+}
+function eneFmtWeek(iso){ const [y,m,dd] = iso.split("-"); return `${parseInt(m,10)}/${parseInt(dd,10)}`; }
+function renderEnewsView(){
+  const sel = document.getElementById("enewsYear");
+  if (sel && !sel.dataset.filled){
+    const cur = parseInt(sState.season,10) || 2026; let opts = "";
+    for (let y = cur+1; y >= cur-3; y--) opts += `<option value="${y}">${y}</option>`;
+    sel.innerHTML = opts; sel.value = String(cur); sel.dataset.filled = "1";
+    sel.onchange = () => { eneYear = parseInt(sel.value,10); renderEnewsView(); };
+  }
+  eneYear = parseInt(sel ? sel.value : sState.season, 10) || (parseInt(sState.season,10)||2026);
+  const badge = document.getElementById("enewsSeasonBadge"); if (badge) badge.textContent = eneYear;
+  const alertBtn = document.getElementById("enewsAlertBtn"); if (alertBtn) alertBtn.onclick = eneAlertGreg;
+
+  const d = eneData(); const yd = eneYD(d, eneYear);
+  const sponsors = eneSponsors();
+  const tray = document.getElementById("enewsTray");
+  tray.innerHTML = sponsors.length ? sponsors.map(r => {
+    const sched = eneScheduled(yd, r.id), con = eneContracted(r), done = con > 0 && sched >= con, t = yd.tray[r.id] || {};
+    return `<div class="sched-card ${done?'is-complete':''}" draggable="true" data-sp="${esc(r.id)}">
+      <div class="sched-card-top">${nt_logoHTML(r,28)}<span class="nt-card-name">${esc(r.sponsor)}</span><span class="sched-qty ${done?'ok':''}">${sched} / ${con}</span></div>
+      <div class="sched-card-fields"><input class="nt-inp" data-enenote="${esc(r.id)}" placeholder="Notes" value="${esc(t.notes||'')}"><input class="nt-inp" data-enetiming="${esc(r.id)}" placeholder="Timing (if any)" value="${esc(t.timing||'')}"></div>
+    </div>`;
+  }).join("") : `<div class="nt-empty">No sponsors carry an E-Newsletter asset yet.</div>`;
+  tray.querySelectorAll(".sched-card").forEach(c => c.addEventListener("dragstart", e => nt_dragStart(e, c.dataset.sp)));
+  tray.querySelectorAll("[data-enenote]").forEach(inp => inp.addEventListener("change", () => { const D = eneData(); (eneYD(D,eneYear).tray[inp.dataset.enenote] = eneYD(D,eneYear).tray[inp.dataset.enenote] || {}).notes = inp.value; enePersist(D); }));
+  tray.querySelectorAll("[data-enetiming]").forEach(inp => inp.addEventListener("change", () => { const D = eneData(); (eneYD(D,eneYear).tray[inp.dataset.enetiming] = eneYD(D,eneYear).tray[inp.dataset.enetiming] || {}).timing = inp.value; enePersist(D); }));
+
+  const mondays = eneMondays(eneYear);
+  const head = `<thead><tr><th class="ene-week">Week Of</th>${ENE_COLS.map(c=>`<th class="${c.cls}">${c.label} Name</th><th class="${c.cls}">${c.label} Ad</th><th class="${c.cls}">${c.label} Link</th>`).join("")}</tr></thead>`;
+  const body = mondays.map(m => {
+    const w = yd.weeks[m] || {};
+    const cells = ENE_COLS.map(c => {
+      const cell = w[c.k] || {}; const r = cell.id ? getRecord(cell.id) : null;
+      const nameCell = `<td class="ene-name-cell"><div class="ene-name-slot ${r?'filled':''}" data-enename="${m}|${c.k}">${r?`${nt_logoHTML(r,20)}<span class="nt-card-name">${esc(r.sponsor)}</span><button class="sb-x" data-eneclear="${m}|${c.k}">×</button>`:`<button class="ene-add" data-eneadd="${m}|${c.k}">＋ Add</button>`}</div></td>`;
+      const adCell = `<td class="ene-ad-cell"><div class="ene-ad" data-enead="${m}|${c.k}">${cell.art?`<img src="${esc(cell.art.dataUrl)}" alt=""><button class="sb-x mq-art-x" data-eneadclear="${m}|${c.k}">×</button>`:`<span class="ene-ad-empty">＋ ad</span>`}</div></td>`;
+      const linkCell = `<td class="ene-link-cell"><input class="nt-inp" data-enelink="${m}|${c.k}" placeholder="https://" value="${esc(cell.link||'')}"></td>`;
+      return nameCell + adCell + linkCell;
+    }).join("");
+    return `<tr><td class="ene-week">${eneFmtWeek(m)}</td>${cells}</tr>`;
+  }).join("");
+  const grid = document.getElementById("enewsGrid");
+  grid.innerHTML = `<table class="ene-grid">${head}<tbody>${body}</tbody></table>`;
+  eneWireGrid();
+}
+function eneCellObj(D, key){ const yd = eneYD(D, eneYear); const [m, k] = key.split("|"); if (!yd.weeks[m]) yd.weeks[m] = {}; if (!yd.weeks[m][k]) yd.weeks[m][k] = {}; return { yd, cell: yd.weeks[m][k] }; }
+function eneWireGrid(){
+  document.querySelectorAll("#enewsGrid [data-enename]").forEach(el => nt_wireDrop(el, id => { const D = eneData(); eneCellObj(D, el.dataset.enename).cell.id = id; enePersist(D); renderEnewsView(); }));
+  document.querySelectorAll("#enewsGrid [data-eneadd]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); nt_pickSponsor(b, eneSponsors(), r => { if (!r) return; const D = eneData(); eneCellObj(D, b.dataset.eneadd).cell.id = r.id; enePersist(D); renderEnewsView(); }); }));
+  document.querySelectorAll("#enewsGrid [data-eneclear]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); const D = eneData(); const { cell } = eneCellObj(D, b.dataset.eneclear); delete cell.id; enePersist(D); renderEnewsView(); }));
+  document.querySelectorAll("#enewsGrid [data-enead]").forEach(el => el.addEventListener("click", e => { if (e.target.closest("[data-eneadclear]")) return; nt_pickImage(img => { const D = eneData(); eneCellObj(D, el.dataset.enead).cell.art = img; enePersist(D); renderEnewsView(); }); }));
+  document.querySelectorAll("#enewsGrid [data-eneadclear]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); const D = eneData(); const { cell } = eneCellObj(D, b.dataset.eneadclear); delete cell.art; enePersist(D); renderEnewsView(); }));
+  document.querySelectorAll("#enewsGrid [data-enelink]").forEach(inp => inp.addEventListener("change", () => { const D = eneData(); eneCellObj(D, inp.dataset.enelink).cell.link = inp.value; enePersist(D); }));
+}
+function eneAlertGreg(){
+  const year = eneYear; const D = eneData(); const yd = eneYD(D, year); const mondays = eneMondays(year);
+  const nm = (w, k) => { const c = w[k]; if (!c || !c.id) return "—"; const r = getRecord(c.id); return r ? r.sponsor : "—"; };
+  let rows = "";
+  mondays.forEach(m => { const w = yd.weeks[m] || {}; if (w.s1 || w.s2 || w.pp) rows += `${m}  |  ${nm(w,'s1')}  |  ${nm(w,'s2')}  |  ${nm(w,'pp')}\n`; });
+  if (!rows) rows = "(no weeks scheduled yet)\n";
+  const body = `Hi Greg,\n\nHere is the current e-newsletter schedule for ${year}, pulled from BlueClaws IQ.\n\nWeek Of  |  Sponsor #1  |  Sponsor #2  |  Presenting Partner\n${rows}\nLive schedule (open the E-Newsletter tab): ${SB_SITE_URL}/#enews\n\nThanks,\n${(typeof currentUser === "function" && currentUser()) || "BlueClaws Partnerships"}`;
+  const url = `mailto:ggiombarrese@blueclaws.com?subject=${encodeURIComponent("E-Newsletter schedule update — " + year)}&body=${encodeURIComponent(body)}`;
+  try { window.location.href = url; toast("Opening email", "Drafting the schedule to Greg in your mail app."); } catch(e){ toast("Could not open email", "Copy the schedule manually."); }
+}
+
+/* ============================ AGREEMENTS ============================ */
+function nt_recordYears(r){
+  const ys = new Set();
+  try { (Array.isArray(r.seasons) ? r.seasons : []).forEach(y => { const n = parseInt(String(y),10); if (n) ys.add(n); }); } catch(e){}
+  try { (typeof getHistoricalValues === "function" ? getHistoricalValues(r) : []).forEach(h => { const n = parseInt(String(h.year),10); if (n) ys.add(n); }); } catch(e){}
+  return ys;
+}
+function agrHubYearNow(){ const sel = document.getElementById("agrHubYear"); return parseInt(sel ? sel.value : sState.season, 10) || (parseInt(sState.season,10)||2026); }
+function renderAgreementHubView(){
+  const sel = document.getElementById("agrHubYear");
+  if (sel && !sel.dataset.filled){
+    const cur = parseInt(sState.season,10) || 2026; let opts = "";
+    for (let y = cur+1; y >= cur-4; y--) opts += `<option value="${y}">${y}</option>`;
+    sel.innerHTML = opts; sel.value = String(cur); sel.dataset.filled = "1";
+    sel.onchange = renderAgreementHubView;
+  }
+  const search = document.getElementById("agrHubSearch");
+  const sort = document.getElementById("agrHubSort");
+  if (search && !search.dataset.wired){ search.dataset.wired = "1"; search.addEventListener("input", agrHubRenderList); }
+  if (sort && !sort.dataset.wired){ sort.dataset.wired = "1"; sort.addEventListener("change", agrHubRenderList); }
+  agrHubRenderList();
+}
+function agrHubRenderList(){
+  const year = agrHubYearNow();
+  const badge = document.getElementById("agrHubBadge"); if (badge) badge.textContent = year;
+  const q = (document.getElementById("agrHubSearch")?.value || "").toLowerCase().trim();
+  const sortMode = document.getElementById("agrHubSort")?.value || "name";
+  const curSeason = parseInt(sState.season,10) || 2026;
+  let recs = getAllRecords().filter(r => {
+    const ys = nt_recordYears(r);
+    if (ys.has(year)) return true;
+    if (ys.size === 0){ const signed = (typeof isSignedRecord === "function" && isSignedRecord(r)) || r.active; return !!signed && year >= curSeason; }
+    return false;
+  });
+  if (q) recs = recs.filter(r => (r.sponsor||"").toLowerCase().includes(q) || (r.rep||"").toLowerCase().includes(q));
+  const hasAgr = r => !!r.contractFile;
+  recs.sort((a,b) => {
+    if (sortMode === "rep") return (a.rep||"~").localeCompare(b.rep||"~") || (a.sponsor||"").localeCompare(b.sponsor||"");
+    if (sortMode === "missing") return (hasAgr(a)?1:0) - (hasAgr(b)?1:0) || (a.sponsor||"").localeCompare(b.sponsor||"");
+    return (a.sponsor||"").localeCompare(b.sponsor||"");
+  });
+  const total = recs.length, withA = recs.filter(hasAgr).length, missing = total - withA;
+  const kpis = document.getElementById("agrHubKpis");
+  if (kpis) kpis.innerHTML = `
+    <div class="agr-hub-kpi"><small>Partners in ${year}</small><strong>${total}</strong></div>
+    <div class="agr-hub-kpi"><small>Agreement on file</small><strong>${withA}</strong></div>
+    <div class="agr-hub-kpi"><small>Missing agreement</small><strong>${missing}</strong></div>`;
+  const list = document.getElementById("agrHubList");
+  list.innerHTML = total ? recs.map(r => {
+    const has = hasAgr(r);
+    const extra = Array.isArray(r.uploads) ? r.uploads.length : 0;
+    return `<div class="agr-row ${has?'':'missing'}">
+      ${nt_logoHTML(r,34)}
+      <div style="min-width:0;"><div class="agr-row-name">${esc(r.sponsor)}</div><div class="agr-row-meta">${esc(r.rep||'No rep')}${r.department?' · '+esc(r.department):''}${extra?` · ${extra} other file${extra===1?'':'s'}`:''}</div></div>
+      <div class="agr-row-spacer"></div>
+      ${has
+        ? `<button class="agr-btn-view" data-agrview="${esc(r.id)}" data-agrname="${esc(r.contractFile.name||'Agreement')}">View agreement</button><button class="agr-btn-add" data-agrmanage="${esc(r.id)}">Manage</button>`
+        : `<button class="agr-btn-missing" data-agrmanage="${esc(r.id)}">No Agreement Found — Add</button>`}
+    </div>`;
+  }).join("") : `<div class="nt-empty">No partners whose term covers ${year}. Try another year.</div>`;
+  list.querySelectorAll("[data-agrview]").forEach(b => b.addEventListener("click", () => { if (typeof viewContract === "function") viewContract(b.dataset.agrview, b.dataset.agrname); }));
+  list.querySelectorAll("[data-agrmanage]").forEach(b => b.addEventListener("click", () => { if (typeof openContractModal === "function") openContractModal(b.dataset.agrmanage); }));
+}
+
+/* ---- hash deep-link (used by the "Alert Greg" email link, e.g. .../#enews) ---- */
+window.addEventListener("load", function(){
+  try {
+    const raw = (location.hash || "").replace(/^#/, "");
+    const name = raw.indexOf("view=") === 0 ? raw.slice(5) : raw;
+    if (["scoreboard","marquee","enews","agreementhub"].indexOf(name) !== -1 && typeof showView === "function") showView(name);
+  } catch(e){}
+});
 </script>
 
 <script>
@@ -16915,5 +17501,152 @@ const side=document.querySelector(".sidebar-watermark");if(side){side.src=SIDEBA
 
 </script>
 
+<style id="bciq158-styles">
+/* ===== index158: sidebar sub-headers ===== */
+.nav-subhead{display:block;padding:var(--space-10) var(--space-12) var(--space-3);margin-top:var(--space-4);font-size:9px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#7f8ba3;}
+
+/* ===== index158: Sponsor Details header redesign ===== */
+.sd-head-v2{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-16);position:relative;}
+.sd-head-v2 .sdrawer-close{position:absolute;top:0;right:0;}
+.sd-head-main{display:flex;flex-direction:column;gap:var(--space-10);min-width:0;flex:1;}
+.sd-head-id{display:flex;gap:var(--space-12);align-items:center;}
+.sd-head-logo{width:60px!important;height:60px!important;flex:0 0 60px!important;font-size:18px!important;border-radius:var(--radius-md);}
+.sd-head-logo img{width:100%;height:100%;object-fit:contain;}
+.sd-head-titles{min-width:0;}
+.sd-head-titles h2{font-size:23px!important;margin:0 0 3px!important;line-height:1.05;}
+.sd-head-bubbles{display:flex;flex-wrap:nowrap;gap:var(--space-6);overflow-x:auto;padding-bottom:2px;scrollbar-width:thin;}
+.sd-head-bubbles .delivery-badge{flex:0 0 auto;}
+.sd-head-actions{display:flex;flex-direction:column;gap:var(--space-6);flex:0 0 auto;padding-top:var(--space-34);width:150px;}
+.sd-head-actions .secondary-button{width:100%;white-space:nowrap;color:#fff;border-color:rgba(255,255,255,.42);background:rgba(255,255,255,.10);}
+.sd-head-actions .secondary-button:hover{background:rgba(255,255,255,.22);color:#fff;}
+@media(max-width:720px){.sd-head-v2{flex-direction:column;}.sd-head-actions{flex-direction:row;flex-wrap:wrap;width:100%;padding-top:0;}.sd-head-actions .secondary-button{width:auto;flex:1;}}
+
+/* ===== index158: Settings modal internal scroll (was scrolling the page) ===== */
+#settingsModal{max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;}
+#settingsModal .modal-close{position:sticky;top:0;margin-left:auto;display:grid;background:var(--card);z-index:6;}
+
+/* ===== index158: shared new-tab primitives ===== */
+.nt-logo{display:inline-grid;place-items:center;flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);overflow:hidden;}
+.nt-logo img{width:100%;height:100%;object-fit:contain;}
+.nt-logo-fallback{background:var(--ink);color:#fff;font-weight:800;border-color:var(--ink);}
+.nt-card{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-9) var(--space-10);border:1px solid var(--line);border-left:3px solid var(--blue);background:var(--card);border-radius:var(--radius-md);cursor:grab;}
+.nt-card:active{cursor:grabbing;}
+.nt-card .nt-card-name,.sb-placed span,.sched-card .nt-card-name{font-weight:700;font-size:var(--text-xs);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nt-empty{color:var(--muted);font-size:var(--text-xs);padding:var(--space-12);border:1px dashed var(--line);border-radius:var(--radius-md);}
+.nt-inp{width:100%;min-height:30px;padding:var(--space-4) var(--space-8);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card);font:inherit;font-size:var(--text-xs);}
+.nt-dragover{outline:2px dashed var(--blue);outline-offset:-3px;background:var(--blue-soft)!important;}
+.sb-select{min-height:34px;border:1.5px solid var(--line);border-bottom:3px solid var(--blue);border-radius:var(--radius-sm);background:var(--card);padding:0 var(--space-10);font:inherit;font-size:var(--text-xs);font-weight:700;}
+
+/* floating sponsor picker */
+.nt-menu{position:absolute;z-index:95;width:270px;max-width:calc(100vw - 24px);background:#fff;border:1px solid var(--line);border-top:3px solid var(--blue);border-radius:var(--radius-md);padding:var(--space-8);box-shadow:0 8px 28px rgba(13,29,65,.18);}
+.nt-menu-search{width:100%;min-height:32px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:0 var(--space-8);font:inherit;font-size:var(--text-xs);margin-bottom:var(--space-6);}
+.nt-menu-list{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
+.nt-menu-item{display:flex;align-items:center;gap:var(--space-8);width:100%;padding:var(--space-5) var(--space-7);border:0;background:transparent;border-radius:var(--radius-sm);text-align:left;font-size:var(--text-xs);cursor:pointer;}
+.nt-menu-item:hover{background:var(--blue-soft);}
+.nt-menu-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nt-menu-empty{color:var(--muted);font-size:var(--text-xs);padding:var(--space-8);}
+.nt-menu-clear{margin-top:var(--space-6);width:100%;min-height:30px;border:1px solid var(--red);color:var(--red);background:var(--red-soft);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:700;cursor:pointer;}
+
+/* ===== Scoreboard Layout ===== */
+.sb-takeover-inline,.sb-takeover-tag{display:inline-block;padding:1px var(--space-6);border-radius:var(--radius-pill);background:var(--gold);color:var(--ink);font-size:9px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;}
+.sb-toolbar{display:flex;align-items:center;gap:var(--space-12);flex-wrap:wrap;margin:var(--space-14) 0;}
+.sb-mode-switch{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;}
+.sb-mode-btn{border:0;background:var(--card);color:var(--ink);padding:var(--space-8) var(--space-16);font-size:var(--text-xs);font-weight:800;cursor:pointer;}
+.sb-mode-btn.is-active{background:var(--blue);color:#fff;}
+.sb-toolbar-note{color:var(--muted);font-size:var(--text-xs);flex:1;min-width:200px;}
+.sb-split{display:grid;grid-template-columns:230px minmax(0,1fr);gap:var(--space-14);align-items:start;}
+.sb-tray{display:flex;flex-direction:column;gap:var(--space-8);max-height:70vh;overflow-y:auto;padding:var(--space-6);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--paper);}
+.sb-tray-head{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;justify-content:space-between;padding:var(--space-4) var(--space-4) var(--space-6);}
+.sb-tray-head span{color:var(--blue-text);}
+.sb-tray .nt-card{flex-direction:row;align-items:center;gap:var(--space-8);}
+.sb-grid-wrap{overflow-x:auto;}
+.sb-grid{border-collapse:separate;border-spacing:0;width:100%;min-width:640px;}
+.sb-grid th,.sb-grid td{border:1px solid var(--line);padding:var(--space-6);vertical-align:middle;}
+.sb-grid thead th{background:var(--ink);color:#fff;font-size:var(--text-xs);font-weight:800;position:sticky;top:0;}
+.sb-grid thead th:nth-child(2){border-top:3px solid var(--blue);}
+.sb-grid thead th:nth-child(3){border-top:3px solid var(--gold);}
+.sb-grid thead th:nth-child(4){border-top:3px solid var(--red);}
+.sb-inning-col{background:var(--paper);font-weight:800;font-size:var(--text-xs);white-space:nowrap;}
+.sb-cell{min-width:150px;height:52px;cursor:pointer;}
+.sb-placed{display:flex;align-items:center;gap:var(--space-6);position:relative;}
+.sb-placed span{font-size:var(--text-xs);font-weight:700;}
+.sb-x{margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:14px;cursor:pointer;line-height:1;padding:0 2px;}
+.sb-x:hover{color:var(--red);}
+.sb-empty-cell{color:var(--muted);font-size:var(--text-xs);}
+.sb-art-cell{height:auto;}
+.sb-art-locked{background:repeating-linear-gradient(45deg,#f5f3ee,#f5f3ee 8px,#efece5 8px,#efece5 16px);cursor:default;}
+.sb-art-add{width:100%;min-height:44px;border:1px dashed var(--blue);color:var(--blue-text);background:var(--blue-soft);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:700;cursor:pointer;}
+.sb-art img{width:100%;max-height:90px;object-fit:contain;border-radius:var(--radius-sm);background:#fff;}
+.sb-art-foot{display:flex;align-items:center;gap:var(--space-6);margin-top:2px;font-size:10px;font-weight:700;}
+
+/* ===== Marquee + E-news shared scheduling ===== */
+.sched-section{margin:var(--space-16) 0;}
+.sched-section-head{display:flex;justify-content:space-between;align-items:center;gap:var(--space-10);flex-wrap:wrap;margin-bottom:var(--space-10);}
+.sched-section-head h2{font:800 15px var(--font-display);margin:0;}
+.sched-hint{color:var(--muted);font-size:var(--text-xs);}
+.sched-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--space-10);}
+.sched-card{border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:var(--radius-md);background:var(--card);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);cursor:grab;}
+.sched-card.is-complete{border-left-color:#1f9d55;background:#f0faf3;}
+.sched-card-top{display:flex;align-items:center;gap:var(--space-8);}
+.sched-qty{margin-left:auto;font-size:var(--text-xs);font-weight:800;padding:1px var(--space-7);border-radius:var(--radius-pill);background:var(--ink-100);color:var(--muted);}
+.sched-qty.ok{background:#d7f0df;color:#1f7a45;}
+.sched-card-fields{display:flex;flex-direction:column;gap:var(--space-6);}
+
+.marquee-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--space-10);}
+.mq-slot{border:1px solid var(--line);border-top:3px solid var(--blue);border-radius:var(--radius-md);background:var(--card);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-7);}
+.mq-slot:nth-child(4n+2){border-top-color:var(--gold);}
+.mq-slot:nth-child(4n+3){border-top-color:var(--red);}
+.mq-slot:nth-child(4n){border-top-color:var(--ink);}
+.mq-slot-head{display:flex;align-items:center;}
+.mq-slot-num{font:800 12px var(--font-display);letter-spacing:.04em;}
+.mq-slot-head .sb-x{margin-left:auto;}
+.mq-slot-body{min-height:38px;display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--radius-sm);padding:var(--space-5);}
+.mq-slot-empty{border-style:dashed;}
+.mq-assign{width:100%;border:0;background:transparent;color:var(--blue-text);font-size:var(--text-xs);font-weight:700;cursor:pointer;text-align:left;}
+.mq-slot-dates{display:flex;gap:var(--space-6);}
+.mq-slot-dates label{flex:1;font-size:9px;font-weight:800;text-transform:uppercase;color:var(--muted);display:flex;flex-direction:column;gap:2px;}
+.mq-slot-dates input{min-height:28px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:0 var(--space-6);font:inherit;font-size:11px;}
+.mq-slot-art{position:relative;border:1px dashed var(--line);border-radius:var(--radius-sm);min-height:40px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.mq-slot-art img{width:100%;max-height:80px;object-fit:contain;background:#fff;}
+.mq-art-add{width:100%;border:0;background:transparent;color:var(--muted);font-size:var(--text-xs);cursor:pointer;padding:var(--space-8);}
+.mq-art-x{position:absolute;top:2px;right:2px;background:rgba(255,255,255,.85);border-radius:50%;}
+.mq-history{font-size:11px;}
+
+/* ===== E-news grid ===== */
+.enews-grid-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius-md);}
+.ene-grid{border-collapse:separate;border-spacing:0;min-width:1000px;width:100%;}
+.ene-grid th,.ene-grid td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:var(--space-6);vertical-align:top;font-size:var(--text-xs);}
+.ene-grid thead th{background:var(--ink);color:#fff;font-weight:800;position:sticky;top:0;z-index:2;text-align:left;}
+.ene-grid thead th.ene-g1{border-top:3px solid var(--blue);}
+.ene-grid thead th.ene-g2{border-top:3px solid var(--gold);}
+.ene-grid thead th.ene-g3{border-top:3px solid var(--red);}
+.ene-week{font-weight:800;white-space:nowrap;background:var(--paper);position:sticky;left:0;z-index:1;}
+.ene-name-cell{min-width:150px;}
+.ene-name-slot{min-height:34px;display:flex;align-items:center;gap:var(--space-6);border:1px solid var(--line);border-radius:var(--radius-sm);padding:var(--space-4);cursor:pointer;background:var(--card);}
+.ene-name-slot.filled{border-left:3px solid var(--blue);}
+.ene-add{border:0;background:transparent;color:var(--blue-text);font-size:11px;font-weight:700;cursor:pointer;width:100%;text-align:left;}
+.ene-ad-cell{width:120px;}
+.ene-ad{position:relative;min-height:34px;border:1px dashed var(--line);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
+.ene-ad img{width:100%;max-height:60px;object-fit:contain;background:#fff;}
+.ene-ad-empty{color:var(--muted);font-size:10px;padding:var(--space-6);}
+.ene-link-cell input{width:150px;}
+
+/* ===== Agreements hub ===== */
+.agr-hub-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-10);margin:var(--space-12) 0;}
+.agr-hub-kpi{border:1px solid var(--line);border-top:3px solid var(--blue);background:var(--card);border-radius:var(--radius-md);padding:var(--space-12) var(--space-14);}
+.agr-hub-kpi:nth-child(2){border-top-color:var(--gold);}
+.agr-hub-kpi:nth-child(3){border-top-color:var(--red);}
+.agr-hub-kpi small{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+.agr-hub-kpi strong{font:800 22px var(--font-display);}
+.agr-hub-list{display:flex;flex-direction:column;gap:var(--space-8);}
+.agr-row{display:flex;align-items:center;gap:var(--space-12);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:var(--radius-md);background:var(--card);padding:var(--space-10) var(--space-14);}
+.agr-row.missing{border-left-color:var(--red);}
+.agr-row-name{font-weight:700;font-size:13px;}
+.agr-row-meta{color:var(--muted);font-size:var(--text-xs);}
+.agr-row-spacer{flex:1;}
+.agr-btn-view{border:1px solid var(--blue);color:var(--blue-text);background:var(--blue-soft);border-radius:var(--radius-sm);padding:var(--space-6) var(--space-12);font-size:var(--text-xs);font-weight:700;cursor:pointer;}
+.agr-btn-missing{border:1px solid var(--red);color:#fff;background:var(--red);border-radius:var(--radius-sm);padding:var(--space-6) var(--space-12);font-size:var(--text-xs);font-weight:700;cursor:pointer;}
+.agr-btn-add{border:1px solid var(--line);color:var(--ink);background:var(--card);border-radius:var(--radius-sm);padding:var(--space-6) var(--space-10);font-size:var(--text-xs);font-weight:700;cursor:pointer;}
+</style>
 </body>
 </html>
