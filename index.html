@@ -1257,15 +1257,17 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 #statusView .mini-kpi { min-height:auto; padding:var(--space-10) var(--space-12); }
 #statusView .mini-kpi span { font-size:11px; }
 #statusView .mini-kpi strong { font-size:18px; }
-#statusView .status-board { grid-template-columns:repeat(auto-fit,minmax(205px,1fr)); gap:var(--space-8); }
+#statusView .status-board { grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:var(--space-7); }
 #statusView .status-column-head { padding:var(--space-8) var(--space-10); }
 #statusView .status-column-head strong { font-size:12px; }
 #statusView .status-column-head small { font-size:11px; margin-top:1px; }
-#statusView .status-partner-pill { grid-template-columns:44px minmax(0,1fr); gap:var(--space-6); padding:var(--space-7) var(--space-9); }
-#statusView .status-partner-pill > strong { grid-column:2; font-size:11px; color:var(--muted); }
-#statusView .status-partner-pill div strong { font-size:13px; line-height:1.1; }
-#statusView .status-partner-pill div small { font-size:11px; line-height:1.25; }
-#statusView .renewal-pct { min-width:38px; height:21px; font-size:11px; padding:0 var(--space-5); }
+#statusView .status-column { border-radius:var(--radius-sm); }
+#statusView .status-partner-pill { grid-template-columns:36px minmax(0,1fr); gap:var(--space-5); padding:var(--space-5) var(--space-7); min-height:0; }
+#statusView .status-partner-pill > strong { grid-column:2; font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#statusView .status-partner-pill div { min-width:0; }
+#statusView .status-partner-pill div strong { display:block; font-size:12px; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#statusView .status-partner-pill div small { display:block; font-size:10px; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#statusView .renewal-pct { min-width:33px; height:19px; font-size:10px; padding:0 var(--space-4); }
 .gameday-category { border:1px solid var(--line); background:var(--card); border-radius:var(--radius-md); overflow:hidden; }
 .gameday-category h3 { margin:0; padding:var(--space-11) var(--space-14); font:800 13px var(--font-display); background:var(--blue-soft); border-bottom:1px solid var(--line); }
 .gameday-activity-row { display:grid; grid-template-columns:1fr 1fr 0.9fr 60px 1.3fr; gap:var(--space-10); align-items:start; padding:var(--space-10) var(--space-14); border-top:1px solid #f0efeb; font-size:var(--text-xs); }
@@ -6041,9 +6043,20 @@ const DEFAULT_AGREEMENT_TEMPLATES = [
 ];
 function loadAgreementTemplates() { try { const v = JSON.parse(memStore.getItem(AGREEMENT_TEMPLATES_KEY)); return Array.isArray(v) && v.length ? v : [...DEFAULT_AGREEMENT_TEMPLATES]; } catch { return [...DEFAULT_AGREEMENT_TEMPLATES]; } }
 function saveAgreementTemplates(list) { memStore.setItem(AGREEMENT_TEMPLATES_KEY, JSON.stringify(list)); pushSharedData("agreementTemplates", { value: JSON.stringify(list) }); }
+function agTemplateKey(name) {
+  return String(name || "").toLowerCase().replace(/&/g, " and ").replace(/\b(signage|sponsor|partner|advertisement|advertising)\b/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+}
 function agFindTemplate(assetName) {
   const key = String(assetName || "").trim().toLowerCase();
-  return loadAgreementTemplates().find(t => String(t.asset || "").trim().toLowerCase() === key) || null;
+  const fuzzy = agTemplateKey(assetName);
+  const list = loadAgreementTemplates();
+  return list.find(t => String(t.asset || "").trim().toLowerCase() === key)
+    || list.find(t => agTemplateKey(t.asset) === fuzzy)
+    || list.find(t => {
+      const tk = agTemplateKey(t.asset);
+      return fuzzy && tk && (tk.includes(fuzzy) || fuzzy.includes(tk));
+    })
+    || null;
 }
 function agUpsertTemplate(patch) {
   const list = loadAgreementTemplates();
@@ -11436,7 +11449,7 @@ function renderAssetTable() {
   const rates = loadRates();
   const contractByAsset = {};
   loadAgreementTemplates().forEach(t => { if (t.asset) contractByAsset[String(t.asset).trim().toLowerCase()] = true; });
-  const hasContract = name => !!contractByAsset[String(name || "").trim().toLowerCase()];
+  const hasContract = name => !!contractByAsset[String(name || "").trim().toLowerCase()] || !!agFindTemplate(name);
   const wrap = document.getElementById("assetFileList");
   wrap.innerHTML = list.length ? list.map(a => {
     const detail = assetDetailsFor(a.asset);
@@ -17554,7 +17567,36 @@ const AA_CHANNEL = "assetAlloc";
 function aaData(){ return nt_load(AA_STORE_KEY); }
 function aaPersist(d){ nt_save(AA_STORE_KEY, AA_CHANNEL, d); }
 function aaCat(d, key){ if (!d[key]) d[key] = {}; return d[key]; }
-function aaCandidates(){ return (typeof activeSeasonRecords === "function" ? activeSeasonRecords() : getAllRecords()).slice().sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||"")); }
+function aaKeywords(c){
+  if (!c) return [];
+  const specific = {
+    uppertier: ["upper tier", "upper home run wall banner"],
+    homerun: ["home run wall", "hr wall", "home run banner"],
+    concourse: ["concourse", "alcove"],
+    suites: ["suite"],
+    sections: ["section sign", "section signage"],
+    ddn: ["digital display network"],
+    tableplaza: ["table display", "plaza display"],
+    gamesponsors: ["game sponsor", "fireworks game sponsor"],
+    gamedayscript: ["pa read", "commercial", "in-game", "pre-game", "post-game", "gameday"],
+    weekly: ["weekly", "kids club", "kids eat free", "silver sluggers", "thirsty thursday", "pups in the park", "summer concert"],
+    tickets: ["ticket", "outing", "suite", "picnic", "party deck", "champions club"],
+    website: ["website", "blueclaws.com"],
+    social: ["social media", "linkedin"],
+    broadcast: ["broadcast", "podcast", "radio"],
+    marquee: ["digital marquee", "marquee"],
+    scoreboard: ["scoreboard", "rotator", "inning sponsor"],
+    enews: ["e-newsletter", "enewsletter", "newsletter"]
+  };
+  const base = specific[c.key] || [c.label, c.key].concat((c.slots || []).map(s => s.label), c.groups || []);
+  return base.map(x => String(x || "").toLowerCase()).filter(Boolean);
+}
+function aaHasAssetForCat(r, c){
+  const hay = [r.assets || "", r.assetsReports || "", ...(Array.isArray(r.dealAssets) ? r.dealAssets.map(a => `${a.asset || ""} ${a.notes || ""}`) : [])].join(" ").toLowerCase();
+  const words = aaKeywords(c);
+  return words.length ? words.some(w => hay.includes(w)) : true;
+}
+function aaCandidates(c){ return (typeof activeSeasonRecords === "function" ? activeSeasonRecords() : getAllRecords()).filter(r => aaHasAssetForCat(r, c)).slice().sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||"")); }
 let aaState = { cat: null };
 
 const AA_NOTE = [{ key:"notes", label:"Notes", type:"text" }];
@@ -17574,10 +17616,12 @@ const AA_TICKET_TYPES = ["Season Tickets","Half-Season Tickets","Party Deck Outi
 const AA_SUITE_SECTIONS = ["Section 104","Section 105","Section 106","Section 106 (b)","Section 107","Section 107 (b)","Section 108","Section 109","Section 109 (b)","Section 110","Section 111","Section 111 (b)"];
 const AA_SECTION_SIGNS = ["Section 104","Section 105","Section 106","Section 106 (b)","Section 107 (DOWN)","Section 108/109","Section 109","Section 110","Section 111","Section 112"];
 const AA_CONCOURSE = (()=>{ const o=[]; for(let i=1;i<=18;i++){ o.push({key:"csign-"+i,label:"Concourse Sign "+i}); if(i<=7) o.push({key:"alcove-"+i,label:"Alcove Sign "+i,alcove:true}); } return o; })();
+const AA_UPPER_TIER = Array.from({length:10}, (_, i) => ({ key:"upper-"+(i+1), label:"Upper Tier "+(i+1) }));
+const AA_HOME_RUN = ["Left Field","Left-Center","Center Field","Right-Center","Right Field"].map((l, i) => ({ key:"hr-"+i, label:l }));
 
 const AA_CATS = [
-  { group:"Ballpark signage", key:"uppertier", label:"Upper Tier Billboards", kind:"link", view:"displays", desc:"Kept as-is on the ballpark board — 10 upper-tier boards with 2:1 panel placement." },
-  { group:"Ballpark signage", key:"homerun", label:"Home Run Wall", kind:"link", view:"displays", desc:"Home Run Wall placement lives on the ballpark board (2:1 sets, LF/CF/RF)." },
+  { group:"Ballpark signage", key:"uppertier", label:"Upper Tier Billboards", kind:"leftright", slots:AA_UPPER_TIER, fields:[{key:"layout",label:"Layout",type:"select",options:["Single","Double Horizontal","Double Vertical","Triple","4-Panel","6-Panel"]},{key:"notes",label:"Notes",type:"text"}], desc:"10 upper-tier boards. Each board is built from 2:1 panels; choose Single, Double, Triple, 4-Panel, or 6-Panel." },
+  { group:"Ballpark signage", key:"homerun", label:"Home Run Wall", kind:"leftright", slots:AA_HOME_RUN, fields:AA_NOTE, desc:"Home Run Wall placement only. Drag signed Home Run Wall partners into the wall position." },
   { group:"Ballpark signage", key:"concourse", label:"Concourse & Alcoves", kind:"leftright", slots:AA_CONCOURSE, fields:AA_NOTE, desc:"Concourse sign slots with alcove signs. Drag a partner onto a slot." },
   { group:"Ballpark signage", key:"suites", label:"Suite Signs", kind:"leftright", slots:aaLabeledSlots("suite",AA_SUITE_SECTIONS), fields:AA_NOTE, desc:"One slot per suite sign section." },
   { group:"Ballpark signage", key:"sections", label:"Section Signs", kind:"leftright", slots:aaLabeledSlots("sect",AA_SECTION_SIGNS), fields:AA_NOTE, desc:"Simple two-row section sign allocation." },
@@ -17605,10 +17649,10 @@ function renderAssetAllocView(){
   const d = aaData();
   const groups = [];
   AA_CATS.forEach(c => { let g = groups.find(x=>x.label===c.group); if (!g){ g={label:c.group, items:[]}; groups.push(g); } g.items.push(c); });
-  rail.innerHTML = groups.map(g => `<div class="aa-cat-group-label">${esc(g.label)}</div>` + g.items.map(c => {
+  rail.innerHTML = groups.map(g => `<div class="aa-cat-group"><div class="aa-cat-group-label">${esc(g.label)}</div>` + g.items.map(c => {
     const count = aaCatCount(d, c);
     return `<button class="aa-cat-btn ${c.key===aaState.cat?'active':''}" data-aacat="${esc(c.key)}"><span>${esc(c.label)}</span>${c.kind==='link'?`<span class="aa-cat-tag">board ↗</span>`:count?`<span class="aa-cat-tag">${count}</span>`:''}</button>`;
-  }).join("")).join("");
+  }).join("") + `</div>`).join("");
   rail.querySelectorAll("[data-aacat]").forEach(b => b.onclick = () => { aaState.cat = b.dataset.aacat; renderAssetAllocView(); });
   renderAssetAllocBody();
 }
@@ -17629,7 +17673,7 @@ function renderAssetAllocBody(){
     body.querySelector("[data-aaopen]").onclick = () => showView(c.view);
     return;
   }
-  const cand = aaCandidates();
+  const cand = aaCandidates(c);
   body.innerHTML = `<div class="aa-lr">
     <aside class="aa-lr-left">
       <div class="aa-lr-left-head"><h2>Signed partners</h2></div>
@@ -17707,7 +17751,7 @@ function aaGetTarget(c, scope, id){
 function aaWireSlots(c){
   const setSponsor = (scope, id, spId) => { const d = aaData(); const store = aaCat(d, c.key); if (scope==="row"){ store.__rows=store.__rows||[]; if(store.__rows[+id]) store.__rows[+id].sponsorId = spId; } else { if(!store[id]) store[id]={}; store[id].sponsorId = spId; } aaPersist(d); renderAssetAllocView(); };
   document.querySelectorAll("#aaSlots [data-aadrop]").forEach(el => nt_wireDrop(el, spId => setSponsor(el.dataset.aadrop, el.dataset.aaid, spId)));
-  document.querySelectorAll("#aaSlots [data-aaassign]").forEach(b => b.addEventListener("click", () => nt_pickSponsor(b, aaCandidates(), r => { if (r) setSponsor(b.dataset.aaassign, b.dataset.aaid, r.id); })));
+  document.querySelectorAll("#aaSlots [data-aaassign]").forEach(b => b.addEventListener("click", () => nt_pickSponsor(b, aaCandidates(c), r => { if (r) setSponsor(b.dataset.aaassign, b.dataset.aaid, r.id); })));
   document.querySelectorAll("#aaSlots [data-aaclear]").forEach(b => b.addEventListener("click", () => { const d=aaData(); const store=aaCat(d,c.key); const scope=b.dataset.aaclear,id=b.dataset.aaid; if(scope==="row"){ if(store.__rows&&store.__rows[+id]) store.__rows[+id].sponsorId=null; } else if(store[id]){ store[id].sponsorId=null; } aaPersist(d); renderAssetAllocView(); }));
   document.querySelectorAll("#aaSlots [data-aaf]").forEach(el => el.addEventListener("change", () => {
     const d=aaData(); const store=aaCat(d,c.key); const scope=el.dataset.aaf,id=el.dataset.aaid,fk=el.dataset.aafk;
