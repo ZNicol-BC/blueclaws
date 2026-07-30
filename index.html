@@ -1253,6 +1253,19 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .renewal-pct.mid { background:#c68b00; }
 .renewal-pct.good { background:#207346; }
 .renewal-pct.perfect { background:var(--blue-text); }
+#statusView .mini-kpis { grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:var(--space-8); margin-bottom:var(--space-10); }
+#statusView .mini-kpi { min-height:auto; padding:var(--space-10) var(--space-12); }
+#statusView .mini-kpi span { font-size:11px; }
+#statusView .mini-kpi strong { font-size:18px; }
+#statusView .status-board { grid-template-columns:repeat(auto-fit,minmax(205px,1fr)); gap:var(--space-8); }
+#statusView .status-column-head { padding:var(--space-8) var(--space-10); }
+#statusView .status-column-head strong { font-size:12px; }
+#statusView .status-column-head small { font-size:11px; margin-top:1px; }
+#statusView .status-partner-pill { grid-template-columns:44px minmax(0,1fr); gap:var(--space-6); padding:var(--space-7) var(--space-9); }
+#statusView .status-partner-pill > strong { grid-column:2; font-size:11px; color:var(--muted); }
+#statusView .status-partner-pill div strong { font-size:13px; line-height:1.1; }
+#statusView .status-partner-pill div small { font-size:11px; line-height:1.25; }
+#statusView .renewal-pct { min-width:38px; height:21px; font-size:11px; padding:0 var(--space-5); }
 .gameday-category { border:1px solid var(--line); background:var(--card); border-radius:var(--radius-md); overflow:hidden; }
 .gameday-category h3 { margin:0; padding:var(--space-11) var(--space-14); font:800 13px var(--font-display); background:var(--blue-soft); border-bottom:1px solid var(--line); }
 .gameday-activity-row { display:grid; grid-template-columns:1fr 1fr 0.9fr 60px 1.3fr; gap:var(--space-10); align-items:start; padding:var(--space-10) var(--space-14); border-top:1px solid #f0efeb; font-size:var(--text-xs); }
@@ -1266,12 +1279,12 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 /* ---- Left/Right Asset Dropper shared layout (Marquee + Asset Allocation categories) ---- */
 .aa-lr { display:grid; grid-template-columns:minmax(240px, 340px) 1fr; gap:var(--space-16); align-items:start; }
 @media (max-width: 1000px) { .aa-lr { grid-template-columns:1fr; } }
-.aa-lr-left { position:sticky; top:80px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-12); }
+.aa-lr-left { position:sticky; top:80px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-12); max-height:calc(100vh - 96px); overflow:hidden; display:flex; flex-direction:column; }
 .aa-lr-left-head { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-8); margin-bottom:var(--space-8); }
 .aa-lr-left-head h2 { margin:0; font:800 14px var(--font-display); }
 .aa-lr-search { margin-bottom:var(--space-10); }
 .aa-lr-search input { border:0; background:transparent; font-size:var(--text-xs); width:100%; outline:none; }
-.sched-tray.aa-partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-8); max-height:72vh; overflow-y:auto; align-content:start; }
+.sched-tray.aa-partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-8); max-height:72vh; overflow-y:auto; align-content:start; flex:1 1 auto; min-height:0; }
 .sched-tray.aa-partner-grid .sched-card { min-width:0; }
 @media (max-width: 1000px) { .sched-tray.aa-partner-grid { max-height:none; } }
 .aa-lr-right { min-width:0; }
@@ -1281,6 +1294,8 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .aa-hub { display:grid; grid-template-columns:230px 1fr; gap:var(--space-16); align-items:start; }
 @media (max-width: 900px) { .aa-hub { grid-template-columns:1fr; } }
 .aa-cat-rail { position:sticky; top:80px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-8); max-height:82vh; overflow-y:auto; }
+.aa-cat-group { border:1px solid var(--line); border-radius:var(--radius-sm); padding:var(--space-4); margin-bottom:var(--space-8); background:rgba(255,255,255,.45); }
+.aa-cat-group:last-child { margin-bottom:0; }
 .aa-cat-group-label { padding:var(--space-8) var(--space-8) var(--space-4); color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; }
 .aa-cat-btn { width:100%; text-align:left; border:0; background:transparent; border-radius:var(--radius-sm); padding:var(--space-7) var(--space-10); font-size:var(--text-xs); font-weight:700; color:var(--ink); cursor:pointer; display:flex; align-items:center; gap:var(--space-6); }
 .aa-cat-btn:hover { background:var(--ink-100); }
@@ -1302,6 +1317,10 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .aa-cat-intro { color:var(--muted); font-size:var(--text-xs); margin-bottom:var(--space-12); line-height:1.5; }
 .aa-group-title { font:800 13px var(--font-display); margin:var(--space-16) 0 var(--space-8); padding-bottom:var(--space-4); border-bottom:2px solid var(--gold); }
 .aa-openboard { display:inline-flex; align-items:center; gap:var(--space-6); }
+.req-year-picker { display:flex; flex-wrap:wrap; gap:var(--space-6); margin-top:var(--space-6); }
+.req-year-picker label { display:inline-flex; align-items:center; gap:var(--space-4); border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:var(--space-5) var(--space-8); font-size:var(--text-xs); font-weight:700; color:var(--ink); }
+#requestsView .overview-hero-crest,
+#assetPrepView .overview-hero-crest { display:none; }
 .gameday-activity-row:first-of-type { border-top:0; }
 .gameday-activity-row strong { display:block; font-size:var(--text-xs); }
 .gameday-activity-row small { display:block; margin-top:var(--space-3); color:var(--muted); }
@@ -3034,9 +3053,9 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
               <button class="secondary-button" id="assetBackBtn" style="display:none;"><- All folders</button>
             </div>
           </div>
-          <div class="mini-kpis" id="inventoryKpis"></div>
+          <div class="mini-kpis" id="inventoryKpis" style="display:none;"></div>
 
-          <article class="table-card" id="invAvailPanel" style="margin-bottom:var(--space-16);">
+          <article class="table-card" id="invAvailPanel" style="display:none; margin-bottom:var(--space-16);">
             <div class="table-toolbar" style="display:flex; align-items:center; gap:var(--space-10); flex-wrap:wrap;">
               <strong style="font-size:14px;">Live availability</strong>
               <span style="color:var(--muted); font-size:var(--text-xs);">Total, sold &amp; remaining per asset — from the 2026 Master Sheet</span>
@@ -5991,7 +6010,7 @@ function sendDesktopNotice(title, detail, reqId) {
   if (st.desktopNotif !== "on" || !desktopNotificationsSupported() || Notification.permission !== "granted") return;
   try {
     const n = new Notification(title || "BlueClaws IQ", { body: detail || "", tag: reqId || title || "bciq-notice", silent: false });
-    n.onclick = () => { window.focus(); if (reqId) showView("requests"); };
+    n.onclick = () => { window.focus(); if (reqId) { location.hash = "#request=" + encodeURIComponent(reqId); openRequestFromHash(); } };
   } catch (e) {}
 }
 function resolvedTheme(pref) {
@@ -6193,6 +6212,20 @@ function pluralizeAssetName(name, qty) {
   parts[parts.length - 1] = pluralizeWord(last);
   return parts.join(" ") + tail;
 }
+function agPolishQuantityLanguage(text, assetName, qty) {
+  const n = Number(qty) || 1;
+  let out = String(text || "");
+  if (assetName && n > 1) {
+    const plural = pluralizeAssetName(assetName, n);
+    if (plural !== assetName) out = out.replace(new RegExp("\\b" + assetName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "g"), plural);
+  }
+  if (n > 1) {
+    out = out.replace(/\bDate(\s+(?:and details\s+)?to be mutually agreed)/gi, "Dates$1");
+  } else {
+    out = out.replace(/\bDates(\s+(?:and details\s+)?to be mutually agreed)/gi, "Date$1");
+  }
+  return out;
+}
 function buildAgreementText() {
   if (!agState.selected.length) return "";
   const bySection = {};
@@ -6219,9 +6252,9 @@ function buildAgreementText() {
       const letter = letters[iIdx] || `(${iIdx + 1})`;
       const qty = entry.sel.qty === "" || entry.sel.qty == null ? "" : entry.sel.qty;
       if (entry.tpl && entry.tpl.headline) {
-        lines.push(`   ${letter}. ${agApplyPlaceholders(entry.tpl.headline, qty)}`);
-        if (entry.tpl.deadline) lines.push(`      ${agApplyPlaceholders(entry.tpl.deadline, qty)}`);
-        (entry.tpl.details || "").split("\n").filter(l => l.trim()).forEach(dLine => lines.push(`      ${agApplyPlaceholders(dLine, qty)}`));
+        lines.push(`   ${letter}. ${agPolishQuantityLanguage(agApplyPlaceholders(entry.tpl.headline, qty), entry.sel.asset, qty)}`);
+        if (entry.tpl.deadline) lines.push(`      ${agPolishQuantityLanguage(agApplyPlaceholders(entry.tpl.deadline, qty), entry.sel.asset, qty)}`);
+        (entry.tpl.details || "").split("\n").filter(l => l.trim()).forEach(dLine => lines.push(`      ${agPolishQuantityLanguage(agApplyPlaceholders(dLine, qty), entry.sel.asset, qty)}`));
       } else {
         lines.push(`   ${letter}. SPONSOR will receive ${qty === "" || qty == null ? "[qty]" : agHouseQty(qty)} ${pluralizeAssetName(entry.sel.asset, qty)}`);
         if (entry.sel.note) lines.push(`      Note: ${entry.sel.note}`);
@@ -9455,7 +9488,7 @@ const REQ_TYPES = {
       // mis-spelled asset in it. Import pulls the whole list off an approved Options Creator.
       { key: "assets", label: "Assets", type: "assetlist", required: true },
       { key: "pricing", label: "Pricing", type: "money", required: true },
-      { key: "years", label: "Years / term", type: "text" },
+      { key: "years", label: "Years / term", type: "yearselect" },
       { key: "clientContact", label: "Client contact", type: "contactblock" },
       { key: "notes", label: "Notes", type: "textarea" }
     ],
@@ -9470,7 +9503,7 @@ const REQ_TYPES = {
     fields: [
       { key: "assets", label: "Assets", type: "assetlist", required: true },
       { key: "pricing", label: "Pricing", type: "money", required: true },
-      { key: "years", label: "Years / term", type: "text" },
+      { key: "years", label: "Years / term", type: "yearselect" },
       { key: "payments", label: "Payment schedule", type: "payments" },
       { key: "clientContact", label: "Client contact (signer)", type: "contactblock" },
       { key: "delivery", label: "Delivery method", type: "select", options: ["Adobe Sign", "PDF attachment"] },
@@ -10801,6 +10834,18 @@ function paintReqForm(sponsorsArg) {
           <label><span>Title</span><input id="${id}_title" type="text"></label>
           <label><span>Email</span><input id="${id}_email" type="email"></label>
           <label><span>Phone</span><input id="${id}_phone" type="tel"></label>
+          <label style="grid-column:1 / -1;"><span>Address</span><input id="${id}_address" type="text" placeholder="Street, city, state, ZIP"></label>
+        </div>
+        <input type="hidden" id="${id}">
+      </div>`;
+    }
+    if (f.type === "yearselect") {
+      const now = parseInt(sState.season, 10) || 2026;
+      const years = Array.from({ length: 6 }, (_, i) => String(now + i));
+      return `<div class="sfield">
+        <label>${esc(f.label)}${f.required ? " *" : ""}</label>
+        <div class="req-year-picker">
+          ${years.map((y, i) => `<label><input type="checkbox" data-yearselect="${id}" value="${esc(y)}"${i === 0 ? " checked" : ""}> ${esc(y)}</label>`).join("")}
         </div>
         <input type="hidden" id="${id}">
       </div>`;
@@ -10836,7 +10881,9 @@ function paintReqForm(sponsorsArg) {
       Approval chain: <strong>${chain.length ? esc(chain.join(" → ")) : "none configured"}</strong>${t.stageOnCreate ? ` &middot; submitting moves the deal stage to <strong>${esc(DEAL_STAGES[t.stageOnCreate].label)}</strong>` : ""}
     </p>
     <div class="req-form-grid">
-      <div class="sfield">${bcComboboxMarkup("reqf_sponsor", "Sponsor *", "Search sponsors…", sponsors.map(s => `<option value="${esc(s.id)}"${s.id === sel ? " selected" : ""}>${esc(s.sponsor)}</option>`).join(""))}</div>
+      <div class="sfield">${bcComboboxMarkup("reqf_sponsor", "Existing sponsor", "Search sponsors...", `<option value="">Search existing sponsors...</option>` + sponsors.map(s => `<option value="${esc(s.id)}"${s.id === sel ? " selected" : ""}>${esc(s.sponsor)}</option>`).join(""))}
+        <label style="margin-top:var(--space-8);"><span>Or new partner name</span><input id="reqf_newSponsor" type="text" placeholder="Type a partner that is not in the ledger yet"></label>
+      </div>
       <div class="sfield"><label for="reqf_type">Request type *</label><select id="reqf_type" aria-label="reqf type">${Object.entries(REQ_TYPES).map(([k, v]) => `<option value="${k}"${k === typeKey ? " selected" : ""}>${esc(v.label)}</option>`).join("")}</select></div>
       <div class="sfield"><label for="reqf_priority">Priority</label><select id="reqf_priority" aria-label="reqf priority"><option value="normal">Normal</option><option value="high">High</option></select></div>
       <div class="sfield"><label for="reqf_due">Due date</label><input id="reqf_due" type="date" min="${esc(reqEarliestDue())}"><span style="font-size:var(--text-xs); color:var(--muted); font-weight:400; text-transform:none; letter-spacing:0;">Two clear working days minimum — earliest is ${esc(reqEarliestDue())}</span></div>
@@ -10854,6 +10901,7 @@ function paintReqForm(sponsorsArg) {
   wireContactPickers();
   wireContactBlocks();
   wireMeetingDateFields();
+  wireYearSelectFields(wrap);
   wireMoneyFields(wrap);
   wireRichEditors(wrap);
   document.getElementById("reqf_type").onchange = e => { wrap.dataset.type = e.target.value; wrap.dataset.sponsor = document.getElementById("reqf_sponsor").value; paintReqForm(sponsors); };
@@ -10866,7 +10914,10 @@ function submitReqForm(t, typeKey) {
   if (!me) { toast("Pick your name first", "Use the \u201cActing as\u201d picker above."); return; }
   const sponsorId = document.getElementById("reqf_sponsor").value;
   const rec = getRecord(sponsorId);
-  if (!rec) { toast("Pick a sponsor", "Couldn't resolve that sponsor."); return; }
+  const newSponsorName = (document.getElementById("reqf_newSponsor")?.value || "").trim();
+  if (!rec && !newSponsorName) { toast("Pick or type a sponsor", "Choose an existing sponsor or enter a new partner name."); return; }
+  const sponsorName = rec ? rec.sponsor : newSponsorName;
+  const requestSponsorId = rec ? rec.id : "new_" + sponsorName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
 
   const fields = {};
   let missing = "";
@@ -10888,8 +10939,9 @@ function submitReqForm(t, typeKey) {
 
   const req = {
     id: "req_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-    sponsorId: rec.id,
-    sponsorName: rec.sponsor,
+    sponsorId: requestSponsorId,
+    sponsorName,
+    prospectiveSponsor: !rec,
     type: typeKey,
     status: "requested",
     priority: document.getElementById("reqf_priority").value || "normal",
@@ -10913,7 +10965,7 @@ function submitReqForm(t, typeKey) {
   all.unshift(req);
   saveRequests(all);
 
-  if (t.stageOnCreate) advanceDealStage(rec.id, t.stageOnCreate, `${t.short} requested`);
+  if (rec && t.stageOnCreate) advanceDealStage(rec.id, t.stageOnCreate, `${t.short} requested`);
 
   const wrap = document.getElementById("reqFormWrap");
   wrap.style.display = "none";
@@ -10921,7 +10973,7 @@ function submitReqForm(t, typeKey) {
   reqState.status = "open";
   reqState.expanded = req.id;
   renderRequestsView();
-  toast("Request submitted", `${rec.sponsor} \u2014 ${t.short}. It's unclaimed until someone picks it up.`);
+  toast("Request submitted", `${sponsorName} \u2014 ${t.short}. It's unclaimed until someone picks it up.`);
 }
 
 /* Opened from the sponsor drawer: jump to Requests with the sponsor prefilled. */
@@ -10971,7 +11023,11 @@ function renderAssetLibrary() {
   const ratedTotal = catalog.filter(a => rates[a.id] !== undefined || RATE_CARD[a.asset] !== undefined).length;
   const invT = inventoryTotals();
   const invPct = invT.total ? Math.round(invT.sold / invT.total * 100) : 0;
-  document.getElementById("inventoryKpis").innerHTML = `
+  const kpis = document.getElementById("inventoryKpis");
+  if (kpis) kpis.style.display = "none";
+  const livePanel = document.getElementById("invAvailPanel");
+  if (livePanel) livePanel.style.display = "none";
+  if (kpis) kpis.innerHTML = `
     <div class="mini-kpi"><span>Total catalog assets</span><strong>${catalog.length}</strong></div>
     <div class="mini-kpi"><span>Inventory units (capacity)</span><strong>${invT.total.toLocaleString()}</strong></div>
     <div class="mini-kpi"><span>Sold</span><strong>${invT.sold.toLocaleString()}</strong></div>
@@ -10979,7 +11035,6 @@ function renderAssetLibrary() {
     <div class="mini-kpi"><span>Sell-through</span><strong>${invPct}%</strong></div>
     <div class="mini-kpi"><span>Assets with a rate set</span><strong>${ratedTotal}</strong></div>
   `;
-  renderInventoryAvailability();
   aState.mode = "folders"; aState.category = null; aState.pickedSponsor = "";
   document.getElementById("folderSearch").value = "";
   const names = [...new Set(getAllRecords().map(r => r.sponsor).filter(Boolean))].sort();
@@ -12062,11 +12117,12 @@ function wireContactBlocks() {
         get("name").value.trim(),
         get("title").value.trim(),
         get("email").value.trim(),
-        get("phone").value.trim()
+        get("phone").value.trim(),
+        get("address") && get("address").value.trim() && `Address: ${get("address").value.trim()}`
       ].filter(Boolean);
       if (hidden) hidden.value = parts.join(" · ");
     };
-    ["company","name","title","email","phone"].forEach(k => { const el = get(k); if (el) el.addEventListener("input", sync); });
+    ["company","name","title","email","phone","address"].forEach(k => { const el = get(k); if (el) el.addEventListener("input", sync); });
     if (pick) pick.onchange = () => {
       const c = (Array.isArray(rec.contacts) ? rec.contacts : [])[+pick.value];
       if (!c) return;
@@ -12074,8 +12130,23 @@ function wireContactBlocks() {
       get("title").value = c.title || "";
       get("email").value = c.email || "";
       get("phone").value = c.phone || "";
+      if (get("address")) get("address").value = c.address || "";
       sync();
     };
+    sync();
+  });
+}
+function wireYearSelectFields(scope) {
+  (scope || document).querySelectorAll("[data-yearselect]").forEach(box => {
+    const fieldId = box.dataset.yearselect;
+    if (!fieldId || box.dataset.yearSelectWired) return;
+    box.dataset.yearSelectWired = "1";
+    const sync = () => {
+      const hidden = document.getElementById(fieldId);
+      if (!hidden) return;
+      hidden.value = [...(scope || document).querySelectorAll(`[data-yearselect="${fieldId}"]:checked`)].map(x => x.value).join(", ");
+    };
+    (scope || document).querySelectorAll(`[data-yearselect="${fieldId}"]`).forEach(cb => cb.addEventListener("change", sync));
     sync();
   });
 }
@@ -14828,6 +14899,13 @@ function openDrawer(id) {
       ]
     };
     const wasNewSponsor = pendingNewSponsorId === id;
+    if (wasNewSponsor) {
+      const custom = loadCustom();
+      const idx = custom.findIndex(c => c.id === id);
+      const savedCustom = { ...(idx >= 0 ? custom[idx] : { id, _custom: true }), ...patch, id, _custom: true, hidden: false };
+      if (idx >= 0) custom[idx] = savedCustom; else custom.push(savedCustom);
+      saveCustom(custom);
+    }
     updateOverride(id, patch);
     pendingNewSponsorId = null;
     if (wasNewSponsor) {
@@ -14841,7 +14919,7 @@ function openDrawer(id) {
       if (sortFilter) sortFilter.value = "status-name";
       if (searchFilter) searchFilter.value = sState.search;
     }
-    toast("Saved", r.sponsor);
+    toast("Saved", patch.sponsor);
     refreshCurrentView();
     closeDrawer();
   };
@@ -15915,7 +15993,7 @@ function notifyAssignee(r, who) {
   openMailDraft(addr, subject, body);
 }
 function reqDeepLink(r) {
-  const base = location.href.split("#")[0];
+  const base = location.protocol === "file:" ? "https://blueclaws26.netlify.app/" : location.href.split("#")[0];
   return `${base}#request=${encodeURIComponent(r.id)}`;
 }
 /* Opening a #request=<id> link lands on the Requests view with that request expanded. */
@@ -16072,7 +16150,7 @@ function notifyClaimedToTeam(r, who) {
   if (!addrs.length) return;
   // A mailto cannot reply into an existing thread, so this reuses the original subject line —
   // most clients will thread on that. A true reply needs a mail backend.
-  const body = `${who} has claimed the ${typeLabel} for ${r.sponsorName}.\n\n${reqDeepLink(r)}`;
+  const body = `${who} has claimed the ${typeLabel} task for ${r.sponsorName}.\n\n${reqDeepLink(r)}`;
   openMailDraft(addrs.join(","), `Re: [BlueClaws IQ] Claim needed — ${r.sponsorName} ${typeLabel}`, body);
 }
 
@@ -16124,7 +16202,11 @@ function pushInAppNotice(title, detail, reqId) {
   const list = loadInAppNotices();
   list.unshift({ title, detail, reqId, at: nowStamp(), read: false });
   try { memStore.setItem(INAPP_NOTICE_KEY, JSON.stringify(list.slice(0, 60))); } catch (e) {}
-  sendDesktopNotice(title, detail, reqId);
+  if (loadSettings().desktopNotif === "on" && desktopNotificationsSupported() && Notification.permission === "default") {
+    maybeRequestDesktopNotifications("on").then(ok => { if (ok) sendDesktopNotice(title, detail, reqId); });
+  } else {
+    sendDesktopNotice(title, detail, reqId);
+  }
   if (typeof renderNotifDot === "function") renderNotifDot();
 }
 
