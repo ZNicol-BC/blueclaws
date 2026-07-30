@@ -1268,6 +1268,46 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 #statusView .status-partner-pill div strong { display:block; font-size:12px; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #statusView .status-partner-pill div small { display:block; font-size:10px; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #statusView .renewal-pct { min-width:33px; height:19px; font-size:10px; padding:0 var(--space-4); }
+#statusView { padding-top:var(--space-10); }
+#statusView .overview-hero { padding:var(--space-12) 0 var(--space-8); margin-bottom:var(--space-8); }
+#statusView .overview-hero-brand { gap:var(--space-10); align-items:center; }
+#statusView .overview-hero-crest { width:52px!important; height:52px!important; flex-basis:52px!important; }
+#statusView .overview-hero-title { font-size:24px; line-height:1.05; margin-bottom:var(--space-3); }
+#statusView .overview-hero p { font-size:12px; max-width:760px; }
+#statusView .mini-kpis { display:flex; flex-wrap:wrap; gap:var(--space-6); margin-bottom:var(--space-8); }
+#statusView .mini-kpi { flex:1 1 150px; min-height:0; padding:var(--space-7) var(--space-9); border-radius:var(--radius-sm); }
+#statusView .mini-kpi span { font-size:10px; }
+#statusView .mini-kpi strong { font-size:16px; }
+#statusView .status-board { grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:var(--space-6); }
+#statusView .status-column-head { padding:var(--space-7) var(--space-8); }
+#statusView .status-column-head strong { font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#statusView .status-column-head small { font-size:10px; }
+#statusView .status-partner-pill { grid-template-columns:32px minmax(0,1fr); padding:var(--space-4) var(--space-6); }
+#statusView .status-partner-pill > strong:last-child { display:none!important; }
+#statusView .status-partner-pill div strong { font-size:11px; -webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical; white-space:normal; }
+#statusView .status-stage-chip { display:inline-flex; width:max-content; max-width:100%; margin-top:2px; padding:1px var(--space-5); border-radius:var(--radius-pill); background:#eef3f9; color:var(--muted); font-size:9px; font-weight:900; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#requestsView #reqFormWrap .agr-contact img { display:none!important; }
+#assetallocView .aa-partner-grid { grid-template-columns:1fr!important; }
+#assetallocView .aa-partner-grid .sched-card { width:100%; border-left:4px solid var(--red); }
+#assetallocView .aa-partner-grid .sched-card.is-placed,
+#assetallocView .aa-partner-grid .sched-card.is-complete { border-left-color:#207346; background:#eff8f2; }
+#assetallocView .aa-partner-grid .sched-card.is-missing { background:#fff3f4; }
+#assetallocView .aa-partner-grid .sched-card .nt-card-name { white-space:normal; overflow:visible; text-overflow:clip; line-height:1.2; }
+#assetallocView .aa-place-state { margin-left:auto; flex:0 0 auto; padding:2px var(--space-6); border-radius:var(--radius-pill); font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.03em; }
+#assetallocView .aa-place-state.good { background:#dff3e6; color:#207346; }
+#assetallocView .aa-place-state.need { background:#ffe2e6; color:#b10f2e; }
+#assetallocView .utg-signed-strip { display:grid; grid-template-columns:1fr; max-height:260px; overflow:auto; }
+#assetallocView .utg-drag { justify-content:flex-start; border-left:4px solid var(--red); }
+#assetallocView .utg-drag.is-placed { border-left-color:#207346; background:#eff8f2; }
+#assetallocView .utg-drag.is-missing { background:#fff3f4; }
+#assetallocView .utg-drag span { white-space:normal; overflow:visible; text-overflow:clip; line-height:1.2; }
+#assetallocView .marquee-slots { grid-template-columns:repeat(3,minmax(0,1fr)); }
+#assetallocView .mq-slot { min-width:0; overflow:hidden; }
+#assetallocView .mq-slot-dates { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-5); }
+#assetallocView .mq-slot-dates label,
+#assetallocView .mq-slot-dates input { min-width:0; width:100%; box-sizing:border-box; }
+@media (max-width: 1180px){ #assetallocView .marquee-slots { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width: 760px){ #assetallocView .marquee-slots { grid-template-columns:1fr; } }
 .gameday-category { border:1px solid var(--line); background:var(--card); border-radius:var(--radius-md); overflow:hidden; }
 .gameday-category h3 { margin:0; padding:var(--space-11) var(--space-14); font:800 13px var(--font-display); background:var(--blue-soft); border-bottom:1px solid var(--line); }
 .gameday-activity-row { display:grid; grid-template-columns:1fr 1fr 0.9fr 60px 1.3fr; gap:var(--space-10); align-items:start; padding:var(--space-10) var(--space-14); border-top:1px solid #f0efeb; font-size:var(--text-xs); }
@@ -1317,6 +1357,31 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .aa-fieldrow label { display:flex; flex-direction:column; font-size:10px; color:var(--muted); font-weight:700; gap:2px; flex:1 1 90px; }
 .aa-fieldrow input, .aa-fieldrow select { border:1px solid var(--line); border-radius:var(--radius-sm); padding:var(--space-4) var(--space-6); font-size:var(--text-xs); font-family:var(--font-body); }
 .aa-cat-intro { color:var(--muted); font-size:var(--text-xs); margin-bottom:var(--space-12); line-height:1.5; }
+#assetallocView .upper-tier-layout { margin:0; }
+#assetallocView .upper-tier-layout h3 { margin-top:0; }
+.aa-embed-board { border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-14); }
+.aa-embed-board .overview-hero { display:none; }
+.aa-hr-shell { display:grid; grid-template-rows:auto auto; gap:var(--space-14); }
+.aa-hr-top { position:sticky; top:80px; z-index:2; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-12); }
+.aa-hr-top .aa-partner-grid { max-height:190px; overflow:auto; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); }
+.aa-hr-wall { display:flex; flex-direction:column; gap:var(--space-12); }
+.aa-hr-region { border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-12); }
+.aa-hr-region h3 { margin:0 0 var(--space-10); font:800 14px var(--font-display); color:var(--ink); }
+.aa-hr-set-row { display:flex; align-items:stretch; gap:var(--space-8); overflow-x:auto; padding-bottom:var(--space-4); }
+.aa-hr-set { flex:0 0 188px; }
+.aa-hr-set.single { flex-basis:94px; }
+.aa-hr-set-title { font:800 11px var(--font-display); color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:var(--space-5); }
+.aa-hr-panels { display:grid; grid-template-columns:repeat(2, minmax(84px,1fr)); border:2px solid #123f22; background:#123f22; gap:0; min-height:58px; }
+.aa-hr-set.single .aa-hr-panels { grid-template-columns:1fr; }
+.aa-hr-panel { min-height:58px; border:0; border-right:1px solid #123f22; border-radius:0; background:#f8fbf6; display:grid; place-items:center; padding:var(--space-5); text-align:center; }
+.aa-hr-panel:last-child { border-right:0; }
+.aa-hr-panel .aa-slot-placed { justify-content:center; font-size:10px; }
+.aa-hr-panel .logo-chip { flex:0 0 auto; }
+.aa-hr-panel .aa-assign { border:0; background:transparent; color:var(--muted); font-size:10px; font-weight:800; cursor:pointer; }
+.aa-hr-banner-set { flex:0 0 170px; }
+.aa-hr-banner-set .aa-hr-panels { grid-template-columns:1fr; border-color:#0d4b6d; background:#0d4b6d; }
+.aa-hr-banner-set .aa-hr-panel { background:#eef8ff; border:0; min-height:76px; }
+.aa-hr-gap { flex:0 0 10px; align-self:stretch; border-radius:var(--radius-pill); background:#123f22; opacity:.88; }
 .aa-group-title { font:800 13px var(--font-display); margin:var(--space-16) 0 var(--space-8); padding-bottom:var(--space-4); border-bottom:2px solid var(--gold); }
 .aa-openboard { display:inline-flex; align-items:center; gap:var(--space-6); }
 .req-year-picker { display:flex; flex-wrap:wrap; gap:var(--space-6); margin-top:var(--space-6); }
@@ -8337,7 +8402,7 @@ function renderStatusView() {
         const odds = renewalProbability(r);
         const nOdds = Number(odds);
         const cls = Number.isFinite(nOdds) ? (nOdds >= 100 ? "perfect" : nOdds >= 70 ? "good" : nOdds >= 40 ? "mid" : "") : "mid";
-        return `<div class="status-partner-pill" data-status-open="${esc(r.id)}"><span class="renewal-pct ${cls}">${Number.isFinite(nOdds) ? nOdds + "%" : "N/A"}</span><div><strong>${esc(r.sponsor)}</strong><small>${esc(r.rep || "No rep")} · ${fmtMoney(displayValueForSeason(r) || selectedSeasonTotal(r) || 0)}</small></div><strong>${esc(DEAL_STAGES[dealStageOf(r)].label)}</strong></div>`;
+        return `<div class="status-partner-pill" data-status-open="${esc(r.id)}"><span class="renewal-pct ${cls}">${Number.isFinite(nOdds) ? nOdds + "%" : "N/A"}</span><div><strong>${esc(r.sponsor)}</strong><small>${esc(r.rep || "No rep")} · ${fmtMoney(displayValueForSeason(r) || selectedSeasonTotal(r) || 0)}</small><span class="status-stage-chip">${esc(DEAL_STAGES[dealStageOf(r)].label)}</span></div></div>`;
       }).join("") : `<div style="padding:var(--space-14); color:var(--muted); font-size:var(--text-xs);">No partners in this status.</div>`}</div>
     </section>`;
   }).join("")}</div>`;
@@ -11419,11 +11484,7 @@ function folderTagCount(cat) { const occ = computeTagOccupancy(); return Object.
 function renderFolderAssignments(cat) {
   const el = document.getElementById("folderAssignments");
   if (!el) return;
-  const occ = computeTagOccupancy();
-  const tags = Object.keys(TAG_FOLDER).filter(t => TAG_FOLDER[t] === cat && occ[t] && occ[t].length).sort((a, b) => occ[b].length - occ[a].length);
-  if (!tags.length) { el.innerHTML = ""; return; }
-  el.innerHTML = `<h3 style="margin:0 0 var(--space-8);font:700 15px/1.3 var(--font-display);color:var(--ink);">Currently assigned (from sponsor records)</h3>
-  <div class="entitlement-groups">${tags.map(tag => `<section class="entitlement-group"><h4>${escDisplay(tag)} <span class="micro-tag muted">${occ[tag].length}</span></h4>${occ[tag].map(o => `<div class="entitlement-row"><strong>${escDisplay(o.sponsor)}</strong><span>${escDisplay(o.status)}</span></div>`).join("")}</section>`).join("")}</div>`;
+  el.innerHTML = "";
 }
 function openFolder(cat) {
   aState.mode = "category"; aState.category = cat; aState.search = "";
@@ -15506,7 +15567,7 @@ function utgCanPlace(blocks,shape,anchor,exceptId){const cs=utgCells(shape,ancho
 function utgStatusOf(r){try{if(typeof isActiveForSelectedSeason==="function"&&isActiveForSelectedSeason(r))return "signed";}catch(e){}try{if(typeof isInProgressForSelectedSeason==="function"&&isInProgressForSelectedSeason(r))return "renewal";}catch(e){}let stage="";try{stage=(typeof dealStageOf==="function")?dealStageOf(r):"";}catch(e){}if(stage==="signed")return "signed";if(stage==="renewal"||/renew/i.test((r&&r.outlook)||""))return "renewal";return "proposed";}
 function utgUpperTierSponsors(){let all=[];try{all=(typeof getAllRecords==="function")?getAllRecords():[];}catch(e){all=[];}const flagged=all.filter(r=>{try{const lines=(typeof dealAssetsFor==="function")?(dealAssetsFor(r)||[]):[];return lines.some(a=>/upper tier/i.test((a&&(a.name||a.asset))||""));}catch(e){return false;}});if(flagged.length)return flagged;try{return (typeof activeSeasonRecords==="function")?activeSeasonRecords():all;}catch(e){return all;}}
 function utgBoardBlocks(st,tier){st.upperGrid=st.upperGrid||{};return st.upperGrid[String(tier)]=st.upperGrid[String(tier)]||[];}
-function utgSave(st){saveBallparkDisplays(st);renderBallparkDisplays();}
+function utgSave(st){saveBallparkDisplays(st);document.getElementById("assetallocView")?.classList.contains("active")?renderAssetAllocView():renderBallparkDisplays();}
 function utgPlaceSponsor(tier,anchor,sponsorId){const st=loadBallparkDisplays();const blocks=utgBoardBlocks(st,tier);if(!utgCanPlace(blocks,"single",anchor)){toast("Panel taken","That 2:1 slot already has a partner",true);return;}blocks.push({id:"utg-"+Date.now()+"-"+Math.random().toString(36).slice(2,6),sponsorId,shape:"single",anchor,artwork:null});utgSave(st);}
 function utgReassign(tier,blockId,sponsorId){const st=loadBallparkDisplays();const b=utgBoardBlocks(st,tier).find(x=>x.id===blockId);if(!b)return;b.sponsorId=sponsorId;utgSave(st);}
 function utgRemove(tier,blockId){const st=loadBallparkDisplays();st.upperGrid=st.upperGrid||{};st.upperGrid[String(tier)]=(st.upperGrid[String(tier)]||[]).filter(x=>x.id!==blockId);utgSave(st);}
@@ -15517,7 +15578,7 @@ function utgSetBoardPhoto(tier,dataUrl){const st=loadBallparkDisplays();st.upper
 function utgBlockHtml(b,tier){const rec=(typeof displayRecord==="function")?displayRecord(b.sponsorId):null;const status=rec?utgStatusOf(rec):"signed";const s=UTG_SHAPES[b.shape]||UTG_SHAPES.single;const r=utgRow(b.anchor),c=utgCol(b.anchor);const style=`grid-column:${c+1}/span ${s.w};grid-row:${r+1}/span ${s.h};`;const nm=rec?rec.sponsor:"Unknown";const isDouble=(b.shape==="dh"||b.shape==="dv");let inner;if(utgViewMode==="artwork"){inner=b.artwork?`<img class="utg-art" src="${esc(b.artwork)}" alt="${escDisplay(nm)} artwork" loading="lazy" decoding="async">`:`<div class="utg-noart">No artwork yet<small>Drag artwork here</small></div>`;}else{inner=(rec&&rec.logoDataUrl)?`<img class="utg-logo" src="${esc(rec.logoDataUrl)}" alt="${escDisplay(nm)} logo" loading="lazy" decoding="async">`:`<strong style="font-size:var(--text-xs)">${escDisplay(nm)}</strong>`;}return `<div class="utg-block status-${status} shape-${b.shape}" data-utg-block="${b.id}" data-utg-tier="${tier}" data-utg-shape="${b.shape}" style="${style}" title="${escDisplay(nm+" — "+s.label+(isDouble?" (right-click to flip)":""))}">${inner}<div class="utg-block-bar"><span class="utg-name">${escDisplay(nm)}</span><span class="utg-shape-tag">${escDisplay(s.label)}</span></div><div class="utg-block-actions"><button type="button" data-utg-cycle="${b.id}" data-utg-tier="${tier}" title="Change size: Single → Double → Triple → 4-Panel → 6-Panel">⤢</button>${isDouble?`<button type="button" data-utg-flip="${b.id}" data-utg-tier="${tier}" title="Flip orientation">⟳</button>`:""}<button type="button" data-utg-remove="${b.id}" data-utg-tier="${tier}" title="Remove partner">✕</button></div></div>`;}
 function utgEmptyCellHtml(i,tier){const r=utgRow(i),c=utgCol(i);return `<div class="utg-cell utg-empty" data-utg-cell="${i}" data-utg-tier="${tier}" style="grid-column:${c+1}/span 1;grid-row:${r+1}/span 1;" title="Open 2:1 single panel"><span>+</span><small>Single 2:1</small></div>`;}
 function utgRenderBoardGrid(st,tier){const blocks=(st.upperGrid&&st.upperGrid[String(tier)])||[];const anchorMap={};blocks.forEach(b=>{anchorMap[b.anchor]=b;});const covered=new Set();blocks.forEach(b=>{const cs=utgCells(b.shape,b.anchor);if(cs)cs.forEach(c=>covered.add(c));});let html="";for(let i=0;i<UTG_CELLS;i++){if(anchorMap[i])html+=utgBlockHtml(anchorMap[i],tier);else if(!covered.has(i))html+=utgEmptyCellHtml(i,tier);}return `<div class="utg-grid" data-utg-board="${tier}">${html}</div>`;}
-function utgSignedStripHtml(){const list=utgUpperTierSponsors();const filtered=list.filter(r=>utgStatusFilter.has(utgStatusOf(r))).sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||""));const chips=[["signed","Signed / Active"],["renewal","In-Renewal"],["proposed","Proposed"]].map(kv=>`<button type="button" class="utg-chip status-${kv[0]} ${utgStatusFilter.has(kv[0])?"on":""}" data-utg-status="${kv[0]}">${kv[1]}</button>`).join("");const toggle=`<div class="utg-viewtoggle"><button type="button" data-utg-view="placement" class="${utgViewMode==="placement"?"on":""}">Placement</button><button type="button" data-utg-view="artwork" class="${utgViewMode==="artwork"?"on":""}">Artwork</button></div>`;const items=filtered.map(r=>`<div class="utg-drag status-${utgStatusOf(r)}" draggable="true" data-utg-drag="${r.id}">${r.logoDataUrl?`<img src="${esc(r.logoDataUrl)}" alt="" loading="lazy" decoding="async">`:""}<span>${escDisplay(r.sponsor)}</span></div>`).join("")||`<span class="utg-strip-empty">No Upper Tier partners match these statuses.</span>`;return `<div class="utg-controls"><div class="utg-status-chips">${chips}</div>${toggle}</div><div class="utg-signed-strip">${items}</div>`;}
+function utgSignedStripHtml(){const list=utgUpperTierSponsors();const placed=aaPlacedSponsorIds(aaCatDef("uppertier"));const filtered=list.filter(r=>utgStatusFilter.has(utgStatusOf(r))).sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||""));const chips=[["signed","Signed / Active"],["renewal","In-Renewal"],["proposed","Proposed"]].map(kv=>`<button type="button" class="utg-chip status-${kv[0]} ${utgStatusFilter.has(kv[0])?"on":""}" data-utg-status="${kv[0]}">${kv[1]}</button>`).join("");const toggle=`<div class="utg-viewtoggle"><button type="button" data-utg-view="placement" class="${utgViewMode==="placement"?"on":""}">Placement</button><button type="button" data-utg-view="artwork" class="${utgViewMode==="artwork"?"on":""}">Artwork</button></div>`;const items=filtered.map(r=>{const ok=placed.has(r.id);return `<div class="utg-drag status-${utgStatusOf(r)} ${ok?"is-placed":"is-missing"}" draggable="true" data-utg-drag="${r.id}">${r.logoDataUrl?`<img src="${esc(r.logoDataUrl)}" alt="" loading="lazy" decoding="async">`:""}<span>${escDisplay(r.sponsor)}</span><span class="aa-place-state ${ok?"good":"need"}">${ok?"Placed":"Move"}</span></div>`;}).join("")||`<span class="utg-strip-empty">No Upper Tier partners match these statuses.</span>`;return `<div class="utg-controls"><div class="utg-status-chips">${chips}</div>${toggle}</div><div class="utg-signed-strip">${items}</div>`;}
 function utgRenderUpperTier(st){try{st.upperGrid=st.upperGrid||{};st.upperPhotos=st.upperPhotos||{};const tiers=[1,2,3,4,5,6,7,8,9,10];const boards=tiers.map(tier=>{const boardArt=(st.upperPhotos[String(tier)])||BOARD_ART_SEED[String(tier)]||"";return `<section class="upper-billboard"><div class="upper-billboard-head"><span>⋮⋮ &nbsp; Upper Tier ${tier}</span><span class="bp-occ-count">Board ${tier}/10</span></div>${utgRenderBoardGrid(st,tier)}<div class="upper-board-photo" data-utg-photo-drop="${tier}">${boardArt?`<img src="${esc(boardArt)}" alt="Upper Tier ${tier} display" loading="lazy" decoding="async">`:`<div class="upper-board-photo-empty">Drop a ballpark photo or saved artwork here</div>`}</div><div class="upper-board-actions"><button data-utg-photo-upload="${tier}">+ ${boardArt?"Replace":"Add"} photo</button>${st.upperPhotos[String(tier)]?`<button data-utg-photo-clear="${tier}">Remove photo</button>`:""}</div></section>`;}).join("");return `<section class="display-layout upper-tier-layout"><h3>Upper Tier Board Gallery</h3><p class="display-location-tabs-note">Ten physical boards, six 2:1 panels each. Drag a signed Upper Tier partner from the strip onto an open panel, then use ⤢ to make a Double, Triple, 4-Panel or 6-Panel. Doubles default horizontal — right-click a double (or press ⟳) to flip it vertical. Toggle Placement / Artwork to switch between logos and submitted art.</p>${utgSignedStripHtml()}<div class="upper-20-grid">${boards}</div></section>`;}catch(err){console.error("Upper Tier grid render failed",err);return `<section class="display-layout"><h3>Upper Tier Board Gallery</h3><p class="upper-board-overflow">The Upper Tier board view hit an error and was skipped so the rest of the app keeps working. (${escDisplay(err&&err.message||"")})</p></section>`;}}
 let utgPhotoInput=null;
 function utgEnsurePhotoInput(){if(utgPhotoInput)return utgPhotoInput;utgPhotoInput=document.createElement("input");utgPhotoInput.type="file";utgPhotoInput.accept="image/*";utgPhotoInput.capture="environment";utgPhotoInput.style.display="none";document.body.appendChild(utgPhotoInput);utgPhotoInput.onchange=()=>{const f=utgPhotoInput.files&&utgPhotoInput.files[0];const tier=utgPhotoInput.dataset.tier;utgPhotoInput.value="";if(!f||!tier)return;compressForBoard(f).then(u=>{if(!u)return toast("Couldn't read that image","Try a different file",true);utgSetBoardPhoto(tier,u);});};return utgPhotoInput;}
@@ -17620,16 +17681,16 @@ const AA_UPPER_TIER = Array.from({length:10}, (_, i) => ({ key:"upper-"+(i+1), l
 const AA_HOME_RUN = ["Left Field","Left-Center","Center Field","Right-Center","Right Field"].map((l, i) => ({ key:"hr-"+i, label:l }));
 
 const AA_CATS = [
-  { group:"Ballpark signage", key:"uppertier", label:"Upper Tier Billboards", kind:"leftright", slots:AA_UPPER_TIER, fields:[{key:"layout",label:"Layout",type:"select",options:["Single","Double Horizontal","Double Vertical","Triple","4-Panel","6-Panel"]},{key:"notes",label:"Notes",type:"text"}], desc:"10 upper-tier boards. Each board is built from 2:1 panels; choose Single, Double, Triple, 4-Panel, or 6-Panel." },
-  { group:"Ballpark signage", key:"homerun", label:"Home Run Wall", kind:"leftright", slots:AA_HOME_RUN, fields:AA_NOTE, desc:"Home Run Wall placement only. Drag signed Home Run Wall partners into the wall position." },
+  { group:"Ballpark signage", key:"uppertier", label:"Upper Tier Billboards", kind:"uppergrid", desc:"10 upper-tier boards. Each board is built from 2:1 panels; choose Single, Double, Triple, 4-Panel, or 6-Panel." },
+  { group:"Ballpark signage", key:"homerun", label:"Home Run Wall", kind:"hrwall", desc:"Home Run Wall placement by physical set. Drag signed Home Run Wall partners onto the 2:1 wall panels." },
   { group:"Ballpark signage", key:"concourse", label:"Concourse & Alcoves", kind:"leftright", slots:AA_CONCOURSE, fields:AA_NOTE, desc:"Concourse sign slots with alcove signs. Drag a partner onto a slot." },
   { group:"Ballpark signage", key:"suites", label:"Suite Signs", kind:"leftright", slots:aaLabeledSlots("suite",AA_SUITE_SECTIONS), fields:AA_NOTE, desc:"One slot per suite sign section." },
   { group:"Ballpark signage", key:"sections", label:"Section Signs", kind:"leftright", slots:aaLabeledSlots("sect",AA_SECTION_SIGNS), fields:AA_NOTE, desc:"Simple two-row section sign allocation." },
   { group:"Ballpark signage", key:"entitlements", label:"Entitlement Areas & Other", kind:"leftright", slots:aaEntitlementSlots(), grouped:true, fields:AA_NOTE, desc:"Naming rights and every inventory item, grouped by category." },
-  { group:"Digital & broadcast", key:"marquee", label:"Digital Marquee", kind:"link", view:"marquee", desc:"32 marquee slots with run windows, artwork & history." },
+  { group:"Digital & broadcast", key:"marquee", label:"Digital Marquee Slots & Schedule", kind:"embedded", embed:"marquee", desc:"32 marquee slots with run windows, artwork & history." },
   { group:"Digital & broadcast", key:"ddn", label:"Digital Display Network", kind:"leftright", slots:aaLabeledSlots("ddn",Array.from({length:30},(_,i)=>"Display Slot "+(i+1))), fields:[{key:"file",label:"File",type:"select",options:["JPG","MP4"]},{key:"dur",label:"Duration",type:"text"}], desc:"30 display slots. Add JPG/MP4 and a duration to each." },
-  { group:"Digital & broadcast", key:"scoreboard", label:"Scoreboard", kind:"link", view:"scoreboard", desc:"Inning sponsor, elite & premiere rotators — on the Scoreboard board." },
-  { group:"Digital & broadcast", key:"enews", label:"E-Newsletters", kind:"link", view:"enews", desc:"Top/Bottom dropper — weekly e-newsletter slots & schedule." },
+  { group:"Digital & broadcast", key:"scoreboard", label:"Scoreboard", kind:"embedded", embed:"scoreboard", desc:"Inning sponsor, elite and premiere rotators on the Scoreboard board." },
+  { group:"Digital & broadcast", key:"enews", label:"E-Newsletter Slots & Schedule", kind:"embedded", embed:"enews", desc:"Weekly e-newsletter slots and schedule." },
   { group:"Digital & broadcast", key:"website", label:"Website Advertisements", kind:"leftright", dynamic:true, fields:[{key:"link",label:"Link",type:"text"},{key:"notes",label:"Notes",type:"text"}], desc:"Add a partner per website ad placement." },
   { group:"Digital & broadcast", key:"social", label:"Social Media", kind:"leftright", dynamic:true, fields:[{key:"action",label:"Action/Promotion",type:"text"},{key:"outlets",label:"Outlets",type:"text"},{key:"qty",label:"Quantity",type:"text"},{key:"timing",label:"Date/Timing",type:"text"}], desc:"Drag a partner into a social slot and fill the details." },
   { group:"Digital & broadcast", key:"broadcast", label:"Broadcast & Podcast", kind:"leftright", dynamic:true, groups:["Audio Broadcast","Podcast Partners"], fields:[{key:"notes",label:"Notes / read",type:"text"}], desc:"One list for audio broadcast (commercials & live reads), one for podcast partners." },
@@ -17661,9 +17722,80 @@ function aaCatCount(d, c){
   if (c.dynamic) return (store.__rows||[]).filter(r=>r.sponsorId).length;
   return Object.keys(store).filter(k=>k!=="__rows" && store[k] && store[k].sponsorId).length;
 }
+function aaPlacedSponsorIds(c){
+  const ids = new Set();
+  if (!c) return ids;
+  if (c.kind === "uppergrid"){
+    const st = loadBallparkDisplays();
+    Object.values(st.upperGrid || {}).forEach(rows => (rows || []).forEach(b => { if (b.sponsorId) ids.add(b.sponsorId); }));
+    return ids;
+  }
+  const store = aaCat(aaData(), c.key);
+  Object.keys(store || {}).forEach(k => {
+    if (k === "__rows") (store.__rows || []).forEach(r => { if (r.sponsorId) ids.add(r.sponsorId); });
+    else if (store[k] && store[k].sponsorId) ids.add(store[k].sponsorId);
+  });
+  return ids;
+}
+function aaRenderEmbedded(c){
+  if (c.embed === "scoreboard"){
+    return `<div class="aa-embed-board"><div class="sb-toolbar"><div class="sb-mode-switch" id="scoreboardModeSwitch"><button type="button" class="sb-mode-btn is-active" data-sb-mode="sponsor">Sponsor grid</button><button type="button" class="sb-mode-btn" data-sb-mode="artwork">Artwork grid</button></div><div class="sb-toolbar-note" id="scoreboardModeNote"></div></div><div class="sb-split"><aside class="sb-tray" id="scoreboardTray"></aside><div class="sb-grid-wrap" id="scoreboardGridWrap"></div></div></div>`;
+  }
+  if (c.embed === "marquee"){
+    return `<div class="aa-embed-board"><div class="aa-lr"><aside class="aa-lr-left"><div class="aa-lr-left-head"><h2>Signed marquee partners</h2><span class="sched-hint">Drag a card into a slot on the right</span></div><div class="search-box aa-lr-search">⌕ <input id="marqueePartnerSearch" type="search" placeholder="Search partners"></div><div class="sched-tray aa-partner-grid" id="marqueeTray"></div></aside><section class="aa-lr-right"><div class="sched-section-head"><h2>Dedicated slots</h2><span class="sched-hint">32 fixed slots: assign a sponsor, run window, artwork and notes</span></div><div class="marquee-slots" id="marqueeSlots"></div></section></div></div>`;
+  }
+  if (c.embed === "enews"){
+    return `<div class="aa-embed-board"><div class="sched-section"><div class="sched-section-head"><h2>Signed e-newsletter partners</h2><div style="display:flex; gap:var(--space-8); align-items:center; flex-wrap:wrap;"><select id="enewsYear" aria-label="Schedule year" class="sb-select"></select><button class="primary-button" id="enewsAlertBtn" type="button" style="padding:0 var(--space-12);">✉ Alert Greg with schedule</button></div></div><div class="sched-tray" id="enewsTray"></div></div><div class="sched-section"><div class="sched-section-head"><h2>Weekly schedule</h2><span class="sched-hint">Drag a partner card onto a name cell, or use Add.</span></div><div class="enews-grid-scroll"><div id="enewsGrid"></div></div></div></div>`;
+  }
+  return `<div class="table-card" style="padding:var(--space-24);"><p class="aa-cat-intro">This asset board is not available yet.</p></div>`;
+}
+function aaHrSlotHTML(c, label, id, banner){
+  const store = aaCat(aaData(), c.key);
+  const obj = store[id] || {};
+  const r = obj.sponsorId ? getRecord(obj.sponsorId) : null;
+  return `<div class="aa-hr-panel aa-slot-drop ${banner?'banner':''}" data-aadrop="slot" data-aaid="${esc(id)}">${r?`<div class="aa-slot-placed">${nt_logoHTML(r,18)}<span>${esc(r.sponsor)}</span><button class="sb-x" data-aaclear="slot" data-aaid="${esc(id)}" title="Clear">×</button></div>`:`<button class="aa-assign" data-aaassign="slot" data-aaid="${esc(id)}">${esc(label)}</button>`}</div>`;
+}
+function aaHrSetHTML(c, n){
+  const single = n === 16;
+  return `<div class="aa-hr-set ${single?'single':''}"><div class="aa-hr-set-title">HR Wall Set ${n}</div><div class="aa-hr-panels">${aaHrSlotHTML(c,"Single",`hr-${n}-a`,false)}${single?"":aaHrSlotHTML(c,"Single",`hr-${n}-b`,false)}</div></div>`;
+}
+function aaHrBannerHTML(c, key, label){
+  return `<div class="aa-hr-banner-set"><div class="aa-hr-set-title">${esc(label)}</div><div class="aa-hr-panels">${aaHrSlotHTML(c,"Assign banner",key,true)}</div></div>`;
+}
+function aaHrRegionHTML(c, title, sets, banners){
+  const chunks = [];
+  sets.forEach((n,i) => { if (i) chunks.push(`<div class="aa-hr-gap" aria-hidden="true"></div>`); chunks.push(aaHrSetHTML(c,n)); });
+  (banners || []).forEach(b => chunks.push(aaHrBannerHTML(c,b.key,b.label)));
+  return `<section class="aa-hr-region"><h3>${esc(title)}</h3><div class="aa-hr-set-row">${chunks.join("")}</div></section>`;
+}
+function aaRenderHomeRunWall(c){
+  const cand = aaCandidates(c);
+  return `<div class="aa-hr-shell"><section class="aa-hr-top"><div class="aa-lr-left-head"><h2>Signed Home Run Wall partners</h2><span class="sched-hint">Red needs placement, green is placed</span></div><div class="search-box aa-lr-search">⌕ <input id="aaPartnerSearch" type="search" placeholder="Search partners" value="${esc(aaState.q||'')}"></div><div class="sched-tray aa-partner-grid" id="aaPartnerGrid"></div></section><section class="aa-hr-wall"><div class="aa-group-title" style="margin-top:0;">${esc(c.label)}</div><p class="aa-cat-intro">${esc(c.desc||"")}</p><div id="aaSlots">${aaHrRegionHTML(c,"Left Field",Array.from({length:8},(_,i)=>i+1))}${aaHrRegionHTML(c,"Centerfield",[9],[{key:"upper-hr-lf",label:"Upper HR Wall Banner - LF"},{key:"upper-hr-cf",label:"Upper HR Wall Banner CF"}])}${aaHrRegionHTML(c,"Right Field",Array.from({length:7},(_,i)=>i+10))}</div></section></div>`;
+}
 function renderAssetAllocBody(){
   const body = document.getElementById("assetallocBody");
   const c = aaCatDef(aaState.cat); if (!body || !c) return;
+  if (c.kind === "uppergrid"){
+    body.innerHTML = utgRenderUpperTier(completeBallparkState(loadBallparkDisplays()));
+    try { wireUpperGrid(); } catch(e){ console.warn("Upper Tier grid wiring failed", e); }
+    return;
+  }
+  if (c.kind === "embedded"){
+    body.innerHTML = `<div class="aa-group-title" style="margin-top:0;">${esc(c.label)}</div><p class="aa-cat-intro">${esc(c.desc||"")}</p>${aaRenderEmbedded(c)}`;
+    if (c.embed === "scoreboard") renderScoreboardView();
+    if (c.embed === "marquee") renderMarqueeView();
+    if (c.embed === "enews") renderEnewsView();
+    return;
+  }
+  if (c.kind === "hrwall"){
+    const cand = aaCandidates(c);
+    body.innerHTML = aaRenderHomeRunWall(c);
+    const search = document.getElementById("aaPartnerSearch");
+    search.oninput = () => { aaState.q = search.value; aaRenderPartners(cand, c); };
+    aaRenderPartners(cand, c);
+    aaWireSlots(c);
+    return;
+  }
   if (c.kind === "link"){
     body.innerHTML = `<div class="table-card" style="padding:var(--space-24);">
       <div class="aa-group-title" style="margin-top:0;">${esc(c.label)}</div>
@@ -17687,15 +17819,19 @@ function renderAssetAllocBody(){
     </section>
   </div>`;
   const search = document.getElementById("aaPartnerSearch");
-  search.oninput = () => { aaState.q = search.value; aaRenderPartners(cand); };
-  aaRenderPartners(cand);
+  search.oninput = () => { aaState.q = search.value; aaRenderPartners(cand, c); };
+  aaRenderPartners(cand, c);
   aaRenderSlots(c);
 }
-function aaRenderPartners(cand){
+function aaRenderPartners(cand, cat){
   const grid = document.getElementById("aaPartnerGrid"); if (!grid) return;
   const q = (aaState.q||"").toLowerCase().trim();
   const list = cand.filter(r => !q || (r.sponsor||"").toLowerCase().includes(q));
-  grid.innerHTML = list.length ? list.map(r => `<div class="sched-card" draggable="true" data-aasp="${esc(r.id)}"><div class="sched-card-top">${nt_logoHTML(r,24)}<span class="nt-card-name">${esc(r.sponsor)}</span></div></div>`).join("") : `<div class="nt-empty">No matching partners</div>`;
+  const placed = aaPlacedSponsorIds(cat);
+  grid.innerHTML = list.length ? list.map(r => {
+    const ok = placed.has(r.id);
+    return `<div class="sched-card ${ok?'is-placed':'is-missing'}" draggable="true" data-aasp="${esc(r.id)}"><div class="sched-card-top">${nt_logoHTML(r,24)}<span class="nt-card-name">${esc(r.sponsor)}</span><span class="aa-place-state ${ok?'good':'need'}">${ok?'Placed':'Move'}</span></div></div>`;
+  }).join("") : `<div class="nt-empty">No matching partners</div>`;
   grid.querySelectorAll("[data-aasp]").forEach(c => c.addEventListener("dragstart", e => nt_dragStart(e, c.dataset.aasp)));
 }
 function aaFieldsHTML(c, obj, scope, id){
