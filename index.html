@@ -1286,6 +1286,11 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 #statusView .status-partner-pill > strong:last-child { display:none!important; }
 #statusView .status-partner-pill div strong { font-size:11px; -webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical; white-space:normal; }
 #statusView .status-stage-chip { display:inline-flex; width:max-content; max-width:100%; margin-top:2px; padding:1px var(--space-5); border-radius:var(--radius-pill); background:#eef3f9; color:var(--muted); font-size:9px; font-weight:900; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#statusView .status-board { grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); }
+#statusView .status-partner-pill { grid-template-columns:42px minmax(0,1fr); gap:var(--space-7); padding:var(--space-7) var(--space-9); align-items:start; }
+#statusView .status-partner-pill div strong { font-size:13px; line-height:1.15; -webkit-line-clamp:3; }
+#statusView .status-partner-pill div small { font-size:11px; margin-top:2px; }
+#statusView .status-stage-chip { display:none!important; }
 #requestsView #reqFormWrap .agr-contact img { display:none!important; }
 #assetallocView .aa-partner-grid { grid-template-columns:1fr!important; }
 #assetallocView .aa-partner-grid .sched-card { width:100%; border-left:4px solid var(--red); }
@@ -1297,17 +1302,21 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 #assetallocView .aa-place-state.good { background:#dff3e6; color:#207346; }
 #assetallocView .aa-place-state.need { background:#ffe2e6; color:#b10f2e; }
 #assetallocView .utg-signed-strip { display:grid; grid-template-columns:1fr; max-height:260px; overflow:auto; }
+#assetallocView .utg-signed-strip { grid-template-columns:repeat(3,minmax(0,1fr)); }
 #assetallocView .utg-drag { justify-content:flex-start; border-left:4px solid var(--red); }
 #assetallocView .utg-drag.is-placed { border-left-color:#207346; background:#eff8f2; }
 #assetallocView .utg-drag.is-missing { background:#fff3f4; }
 #assetallocView .utg-drag span { white-space:normal; overflow:visible; text-overflow:clip; line-height:1.2; }
+#assetallocView .utg-drag .aa-place-state { margin-left:0; }
+#assetallocView .utg-size-tag { margin-left:auto; flex:0 0 auto; padding:2px var(--space-6); border-radius:var(--radius-pill); background:#eef3f9; color:var(--ink); font-size:9px; font-weight:900; white-space:nowrap; }
 #assetallocView .marquee-slots { grid-template-columns:repeat(3,minmax(0,1fr)); }
 #assetallocView .mq-slot { min-width:0; overflow:hidden; }
 #assetallocView .mq-slot-dates { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-5); }
 #assetallocView .mq-slot-dates label,
 #assetallocView .mq-slot-dates input { min-width:0; width:100%; box-sizing:border-box; }
 @media (max-width: 1180px){ #assetallocView .marquee-slots { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media (max-width: 760px){ #assetallocView .marquee-slots { grid-template-columns:1fr; } }
+@media (max-width: 1180px){ #assetallocView .utg-signed-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width: 760px){ #assetallocView .marquee-slots, #assetallocView .utg-signed-strip { grid-template-columns:1fr; } }
 .gameday-category { border:1px solid var(--line); background:var(--card); border-radius:var(--radius-md); overflow:hidden; }
 .gameday-category h3 { margin:0; padding:var(--space-11) var(--space-14); font:800 13px var(--font-display); background:var(--blue-soft); border-bottom:1px solid var(--line); }
 .gameday-activity-row { display:grid; grid-template-columns:1fr 1fr 0.9fr 60px 1.3fr; gap:var(--space-10); align-items:start; padding:var(--space-10) var(--space-14); border-top:1px solid #f0efeb; font-size:var(--text-xs); }
@@ -1363,11 +1372,13 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .aa-embed-board .overview-hero { display:none; }
 .aa-hr-shell { display:grid; grid-template-rows:auto auto; gap:var(--space-14); }
 .aa-hr-top { position:sticky; top:80px; z-index:2; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-12); }
-.aa-hr-top .aa-partner-grid { max-height:190px; overflow:auto; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); }
+.aa-hr-top .aa-partner-grid { max-height:190px; overflow:auto; grid-template-columns:repeat(3,minmax(0,1fr))!important; }
 .aa-hr-wall { display:flex; flex-direction:column; gap:var(--space-12); }
+.aa-hr-wall #aaSlots { overflow-x:auto; padding-bottom:var(--space-8); }
 .aa-hr-region { border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-12); }
 .aa-hr-region h3 { margin:0 0 var(--space-10); font:800 14px var(--font-display); color:var(--ink); }
 .aa-hr-set-row { display:flex; align-items:stretch; gap:var(--space-8); overflow-x:auto; padding-bottom:var(--space-4); }
+.aa-hr-set-row { min-width:max-content; }
 .aa-hr-set { flex:0 0 188px; }
 .aa-hr-set.single { flex-basis:94px; }
 .aa-hr-set-title { font:800 11px var(--font-display); color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:var(--space-5); }
@@ -1382,6 +1393,10 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .aa-hr-banner-set .aa-hr-panels { grid-template-columns:1fr; border-color:#0d4b6d; background:#0d4b6d; }
 .aa-hr-banner-set .aa-hr-panel { background:#eef8ff; border:0; min-height:76px; }
 .aa-hr-gap { flex:0 0 10px; align-self:stretch; border-radius:var(--radius-pill); background:#123f22; opacity:.88; }
+@media (max-width:1180px){ .aa-hr-top .aa-partner-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; } }
+@media (max-width:760px){ .aa-hr-top .aa-partner-grid { grid-template-columns:1fr!important; } }
+.ap-preview { white-space:pre-wrap; font-family:var(--font-body); font-size:var(--text-xs); line-height:1.55; margin:0; padding:var(--space-14); border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); max-height:52vh; overflow:auto; }
+.ap-placeholder-mark { background:#fff1a8; border-radius:3px; box-shadow:0 0 0 1px rgba(198,139,0,.35) inset; padding:0 2px; color:var(--ink); font-weight:800; }
 .aa-group-title { font:800 13px var(--font-display); margin:var(--space-16) 0 var(--space-8); padding-bottom:var(--space-4); border-bottom:2px solid var(--gold); }
 .aa-openboard { display:inline-flex; align-items:center; gap:var(--space-6); }
 .req-year-picker { display:flex; flex-wrap:wrap; gap:var(--space-6); margin-top:var(--space-6); }
@@ -8402,7 +8417,7 @@ function renderStatusView() {
         const odds = renewalProbability(r);
         const nOdds = Number(odds);
         const cls = Number.isFinite(nOdds) ? (nOdds >= 100 ? "perfect" : nOdds >= 70 ? "good" : nOdds >= 40 ? "mid" : "") : "mid";
-        return `<div class="status-partner-pill" data-status-open="${esc(r.id)}"><span class="renewal-pct ${cls}">${Number.isFinite(nOdds) ? nOdds + "%" : "N/A"}</span><div><strong>${esc(r.sponsor)}</strong><small>${esc(r.rep || "No rep")} · ${fmtMoney(displayValueForSeason(r) || selectedSeasonTotal(r) || 0)}</small><span class="status-stage-chip">${esc(DEAL_STAGES[dealStageOf(r)].label)}</span></div></div>`;
+        return `<div class="status-partner-pill" data-status-open="${esc(r.id)}"><span class="renewal-pct ${cls}">${Number.isFinite(nOdds) ? nOdds + "%" : "N/A"}</span><div><strong>${esc(r.sponsor)}</strong><small>${esc(r.rep || "No rep")} · ${fmtMoney(displayValueForSeason(r) || selectedSeasonTotal(r) || 0)}</small></div></div>`;
       }).join("") : `<div style="padding:var(--space-14); color:var(--muted); font-size:var(--text-xs);">No partners in this status.</div>`}</div>
     </section>`;
   }).join("")}</div>`;
@@ -9196,12 +9211,21 @@ function apGuessStatus(r) {
   try { if (r._custom || !(r.seasons && r.seasons.length) && !(r.historicalValues && r.historicalValues.length)) return "New sponsor"; } catch (e) {}
   return "Returning sponsor";
 }
+function apDealAssetLines(r) {
+  if (!r) return [];
+  let rows = [];
+  try { rows = dealAssetsFor(r) || []; } catch (e) { rows = []; }
+  if (!rows.length) { try { rows = fulfillmentAssetsFor(r) || []; } catch (e) { rows = []; } }
+  if (!rows.length) { try { rows = parseSponsorAssetLines(r.assets || "").map(a => ({ asset: a.text || a.label, qty: "", notes: "" })); } catch (e) { rows = []; } }
+  return [...new Set(rows.map(a => {
+    const nm = String(a.asset || a.name || "").trim();
+    const qty = String(a.qty || "").trim();
+    if (!nm) return "";
+    return qty && qty !== "1" ? `${nm} (${qty})` : nm;
+  }).filter(Boolean))];
+}
 function apPrefillFromSponsor(r) {
-  // Assets: pull the sponsor's own asset list (includes inventory auto-derived in Fulfillment).
-  let lines = [];
-  try { lines = fulfillmentAssetsFor(r).map(a => a.asset).filter(Boolean); } catch (e) {}
-  if (!lines.length) { try { lines = dealAssetsFor(r).map(a => a.asset).filter(Boolean); } catch (e) {} }
-  apState.assets = [...new Set(lines)].join("\n");
+  apState.assets = apDealAssetLines(r).join("\n");
   // Recipient: first contact with an email, else primary/email on the record.
   let rec = "";
   const c = (r.contacts || []).find(x => x && x.email) || (r.contacts || [])[0];
@@ -9220,7 +9244,10 @@ function apUpdatePreview() {
   const el = document.getElementById("apPreview");
   if (!el) return;
   if (!apState.sponsorId) { el.textContent = "Pick a sponsor above to build the email."; return; }
-  el.textContent = buildAssetPrepEmail(apRequestObj());
+  el.innerHTML = apEmailPreviewHTML(buildAssetPrepEmail(apRequestObj()));
+}
+function apEmailPreviewHTML(text) {
+  return esc(text).replace(/(\({0,1}_{2,}\){0,1})/g, '<mark class="ap-placeholder-mark">$1</mark>');
 }
 function renderAssetPrepView() {
   if (apState.timing == null) apState.timing = currentPrepTiming();
@@ -9249,7 +9276,7 @@ function renderApRun(body) {
       </div>
       <div class="sfield" style="margin-top:var(--space-10);"><label for="apRecipients">Client recipient(s)</label><input id="apRecipients" placeholder="Name &lt;email@company.com&gt;, second@company.com" value="${esc(apState.recipients)}"></div>
       <div class="sfield-grid" style="grid-template-columns:1fr 1fr; gap:var(--space-12); margin-top:var(--space-6);">
-        <div class="sfield"><label for="apAssets">Assets to cover <span style="color:var(--muted); font-weight:400;">(one per line — prefilled from the sponsor)</span></label><textarea id="apAssets" style="min-height:150px;">${esc(apState.assets)}</textarea></div>
+        <div class="sfield"><label for="apAssets">All assets in the deal <span style="color:var(--muted); font-weight:400;">(one per line - prefilled from the sponsor)</span></label><textarea id="apAssets" style="min-height:150px;">${esc(apState.assets)}</textarea></div>
         <div class="sfield"><label for="apNotes">Extra notes (optional)</label><textarea id="apNotes" style="min-height:150px;" placeholder="Anything specific to add at the end of the email">${esc(apState.notes)}</textarea></div>
       </div>
       <div style="display:flex; flex-wrap:wrap; gap:var(--space-8); margin-top:var(--space-12);">
@@ -9261,7 +9288,7 @@ function renderApRun(body) {
     </div>
     <div class="table-card" style="padding:var(--space-18);">
       <div class="table-toolbar" style="padding:0 0 var(--space-10);"><strong style="font-size:14px;">Email preview</strong><span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs);">Built live from the template + spec library</span></div>
-      <pre id="apPreview" style="white-space:pre-wrap; font-family:var(--font-body); font-size:var(--text-xs); line-height:1.55; margin:0; padding:var(--space-14); border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); max-height:52vh; overflow:auto;"></pre>
+      <div id="apPreview" class="ap-preview"></div>
     </div>`;
   const sel = document.getElementById("apSponsor");
   sel.addEventListener("change", () => { apState.sponsorId = sel.value; const r = getRecord(sel.value); if (r) apPrefillFromSponsor(r); renderApRun(body); });
@@ -9597,7 +9624,7 @@ const REQ_TYPES = {
     fields: [
       { key: "recipients", label: "Client recipient(s)", type: "contactpick", required: true },
       { key: "tone", label: "Template", type: "select", options: ["New sponsor", "Returning sponsor", "Expansion"] },
-      { key: "assets", label: "Assets to cover", type: "assetprefill", required: true },
+      { key: "assets", label: "All assets in the deal", type: "assetprefill", required: true },
       { key: "notes", label: "Extra notes", type: "textarea" }
     ],
     wantsLink: "Sent email reference (optional)"
@@ -10854,7 +10881,7 @@ function paintReqForm(sponsorsArg) {
     if (f.type === "assetprefill") {
       const rec = getRecord((document.getElementById("reqf_sponsor") || {}).value || sel) || {};
       let lines = [];
-      try { lines = parseSponsorAssetLines(rec.assets || "").map(l => l.text); } catch (e) {}
+      try { lines = apDealAssetLines(rec); } catch (e) {}
       return `<div class="sfield">
         <label for="${id}">${esc(f.label)}${f.required ? " *" : ""}</label>
         <textarea id="${id}" rows="4" placeholder="One asset per line">${esc(lines.join("\n"))}</textarea>
@@ -15558,18 +15585,31 @@ const UTG_COLS=2, UTG_ROWS=3, UTG_CELLS=6;
 const UTG_SHAPES={single:{w:1,h:1,label:"Single"},dh:{w:2,h:1,label:"Double (H)"},dv:{w:1,h:2,label:"Double (V)"},triple:{w:1,h:3,label:"Triple"},quad:{w:2,h:2,label:"4-Panel"},six:{w:2,h:3,label:"6-Panel"}};
 const UTG_CYCLE=["single","dh","dv","triple","quad","six"];
 let utgViewMode="placement";
-let utgStatusFilter=new Set(["signed","renewal","proposed"]);
+let utgStatusFilter=new Set(["signed"]);
 const utgRow=i=>Math.floor(i/UTG_COLS);
 const utgCol=i=>i%UTG_COLS;
 function utgCells(shape,anchor){const s=UTG_SHAPES[shape];if(!s)return null;const r0=utgRow(anchor),c0=utgCol(anchor);if(c0+s.w>UTG_COLS||r0+s.h>UTG_ROWS)return null;const out=[];for(let r=r0;r<r0+s.h;r++)for(let c=c0;c<c0+s.w;c++)out.push(r*UTG_COLS+c);return out;}
 function utgOccupied(blocks,exceptId){const set=new Set();(blocks||[]).forEach(b=>{if(b.id===exceptId)return;const cs=utgCells(b.shape,b.anchor);if(cs)cs.forEach(c=>set.add(c));});return set;}
 function utgCanPlace(blocks,shape,anchor,exceptId){const cs=utgCells(shape,anchor);if(!cs)return false;const occ=utgOccupied(blocks,exceptId);return cs.every(c=>!occ.has(c));}
 function utgStatusOf(r){try{if(typeof isActiveForSelectedSeason==="function"&&isActiveForSelectedSeason(r))return "signed";}catch(e){}try{if(typeof isInProgressForSelectedSeason==="function"&&isInProgressForSelectedSeason(r))return "renewal";}catch(e){}let stage="";try{stage=(typeof dealStageOf==="function")?dealStageOf(r):"";}catch(e){}if(stage==="signed")return "signed";if(stage==="renewal"||/renew/i.test((r&&r.outlook)||""))return "renewal";return "proposed";}
-function utgUpperTierSponsors(){let all=[];try{all=(typeof getAllRecords==="function")?getAllRecords():[];}catch(e){all=[];}const flagged=all.filter(r=>{try{const lines=(typeof dealAssetsFor==="function")?(dealAssetsFor(r)||[]):[];return lines.some(a=>/upper tier/i.test((a&&(a.name||a.asset))||""));}catch(e){return false;}});if(flagged.length)return flagged;try{return (typeof activeSeasonRecords==="function")?activeSeasonRecords():all;}catch(e){return all;}}
+function utgUpperTierAssetRows(r){try{return (typeof dealAssetsFor==="function"?(dealAssetsFor(r)||[]):[]).filter(a=>/upper tier/i.test([a.asset,a.notes].join(" ")));}catch(e){return[];}}
+function utgSponsorSize(r){
+  const txt = utgUpperTierAssetRows(r).map(a=>[a.asset,a.qty,a.notes].join(" ")).join(" ").toLowerCase();
+  if (/6[\s-]*panel|six[\s-]*panel/.test(txt)) return { shape:"six", label:"6-Panel" };
+  if (/4[\s-]*panel|four[\s-]*panel/.test(txt)) return { shape:"quad", label:"4-Panel" };
+  if (/triple|3[\s-]*panel|three[\s-]*panel/.test(txt)) return { shape:"triple", label:"Triple" };
+  if (/double|2[\s-]*panel|two[\s-]*panel/.test(txt)){
+    if (/vert|vertical/.test(txt)) return { shape:"dv", label:"Double-Vert" };
+    if (/horiz|horizontal/.test(txt)) return { shape:"dh", label:"Double-Horiz" };
+    return { shape:"dh", label:"Double-TBD" };
+  }
+  return { shape:"single", label:"Single" };
+}
+function utgUpperTierSponsors(){let all=[];try{all=(typeof activeSeasonRecords==="function")?activeSeasonRecords():getAllRecords();}catch(e){all=[];}return all.filter(r=>utgUpperTierAssetRows(r).length);}
 function utgBoardBlocks(st,tier){st.upperGrid=st.upperGrid||{};return st.upperGrid[String(tier)]=st.upperGrid[String(tier)]||[];}
 function utgSave(st){saveBallparkDisplays(st);document.getElementById("assetallocView")?.classList.contains("active")?renderAssetAllocView():renderBallparkDisplays();}
-function utgPlaceSponsor(tier,anchor,sponsorId){const st=loadBallparkDisplays();const blocks=utgBoardBlocks(st,tier);if(!utgCanPlace(blocks,"single",anchor)){toast("Panel taken","That 2:1 slot already has a partner",true);return;}blocks.push({id:"utg-"+Date.now()+"-"+Math.random().toString(36).slice(2,6),sponsorId,shape:"single",anchor,artwork:null});utgSave(st);}
-function utgReassign(tier,blockId,sponsorId){const st=loadBallparkDisplays();const b=utgBoardBlocks(st,tier).find(x=>x.id===blockId);if(!b)return;b.sponsorId=sponsorId;utgSave(st);}
+function utgPlaceSponsor(tier,anchor,sponsorId){const st=loadBallparkDisplays();const blocks=utgBoardBlocks(st,tier);const rec=(typeof displayRecord==="function")?displayRecord(sponsorId):getRecord(sponsorId);const sz=utgSponsorSize(rec||{});if(!utgCanPlace(blocks,sz.shape,anchor)){toast("Not enough open space",`${sz.label} needs a matching open block from the panel you dropped onto. Try another open panel.`,true);return;}blocks.push({id:"utg-"+Date.now()+"-"+Math.random().toString(36).slice(2,6),sponsorId,shape:sz.shape,contractShape:sz.shape,contractSizeLabel:sz.label,anchor,artwork:null});utgSave(st);}
+function utgReassign(tier,blockId,sponsorId){const st=loadBallparkDisplays();const blocks=utgBoardBlocks(st,tier);const b=blocks.find(x=>x.id===blockId);if(!b)return;const rec=(typeof displayRecord==="function")?displayRecord(sponsorId):getRecord(sponsorId);const sz=utgSponsorSize(rec||{});if(utgCanPlace(blocks,sz.shape,b.anchor,blockId)){b.shape=sz.shape;b.contractShape=sz.shape;b.contractSizeLabel=sz.label;}b.sponsorId=sponsorId;utgSave(st);}
 function utgRemove(tier,blockId){const st=loadBallparkDisplays();st.upperGrid=st.upperGrid||{};st.upperGrid[String(tier)]=(st.upperGrid[String(tier)]||[]).filter(x=>x.id!==blockId);utgSave(st);}
 function utgCycleShape(tier,blockId){const st=loadBallparkDisplays();const blocks=utgBoardBlocks(st,tier);const b=blocks.find(x=>x.id===blockId);if(!b)return;const start=UTG_CYCLE.indexOf(b.shape);for(let k=1;k<=UTG_CYCLE.length;k++){const cand=UTG_CYCLE[(start+k)%UTG_CYCLE.length];if(cand===b.shape)continue;if(utgCanPlace(blocks,cand,b.anchor,blockId)){b.shape=cand;utgSave(st);return;}}toast("No room to grow","This panel can't fit a bigger shape without moving other partners first",true);}
 function utgFlipDouble(tier,blockId){const st=loadBallparkDisplays();const blocks=utgBoardBlocks(st,tier);const b=blocks.find(x=>x.id===blockId);if(!b)return;const to=b.shape==="dh"?"dv":b.shape==="dv"?"dh":null;if(!to)return;if(!utgCanPlace(blocks,to,b.anchor,blockId)){toast("Can't flip here","No room to turn this double the other way on this board",true);return;}b.shape=to;utgSave(st);}
@@ -15578,7 +15618,7 @@ function utgSetBoardPhoto(tier,dataUrl){const st=loadBallparkDisplays();st.upper
 function utgBlockHtml(b,tier){const rec=(typeof displayRecord==="function")?displayRecord(b.sponsorId):null;const status=rec?utgStatusOf(rec):"signed";const s=UTG_SHAPES[b.shape]||UTG_SHAPES.single;const r=utgRow(b.anchor),c=utgCol(b.anchor);const style=`grid-column:${c+1}/span ${s.w};grid-row:${r+1}/span ${s.h};`;const nm=rec?rec.sponsor:"Unknown";const isDouble=(b.shape==="dh"||b.shape==="dv");let inner;if(utgViewMode==="artwork"){inner=b.artwork?`<img class="utg-art" src="${esc(b.artwork)}" alt="${escDisplay(nm)} artwork" loading="lazy" decoding="async">`:`<div class="utg-noart">No artwork yet<small>Drag artwork here</small></div>`;}else{inner=(rec&&rec.logoDataUrl)?`<img class="utg-logo" src="${esc(rec.logoDataUrl)}" alt="${escDisplay(nm)} logo" loading="lazy" decoding="async">`:`<strong style="font-size:var(--text-xs)">${escDisplay(nm)}</strong>`;}return `<div class="utg-block status-${status} shape-${b.shape}" data-utg-block="${b.id}" data-utg-tier="${tier}" data-utg-shape="${b.shape}" style="${style}" title="${escDisplay(nm+" — "+s.label+(isDouble?" (right-click to flip)":""))}">${inner}<div class="utg-block-bar"><span class="utg-name">${escDisplay(nm)}</span><span class="utg-shape-tag">${escDisplay(s.label)}</span></div><div class="utg-block-actions"><button type="button" data-utg-cycle="${b.id}" data-utg-tier="${tier}" title="Change size: Single → Double → Triple → 4-Panel → 6-Panel">⤢</button>${isDouble?`<button type="button" data-utg-flip="${b.id}" data-utg-tier="${tier}" title="Flip orientation">⟳</button>`:""}<button type="button" data-utg-remove="${b.id}" data-utg-tier="${tier}" title="Remove partner">✕</button></div></div>`;}
 function utgEmptyCellHtml(i,tier){const r=utgRow(i),c=utgCol(i);return `<div class="utg-cell utg-empty" data-utg-cell="${i}" data-utg-tier="${tier}" style="grid-column:${c+1}/span 1;grid-row:${r+1}/span 1;" title="Open 2:1 single panel"><span>+</span><small>Single 2:1</small></div>`;}
 function utgRenderBoardGrid(st,tier){const blocks=(st.upperGrid&&st.upperGrid[String(tier)])||[];const anchorMap={};blocks.forEach(b=>{anchorMap[b.anchor]=b;});const covered=new Set();blocks.forEach(b=>{const cs=utgCells(b.shape,b.anchor);if(cs)cs.forEach(c=>covered.add(c));});let html="";for(let i=0;i<UTG_CELLS;i++){if(anchorMap[i])html+=utgBlockHtml(anchorMap[i],tier);else if(!covered.has(i))html+=utgEmptyCellHtml(i,tier);}return `<div class="utg-grid" data-utg-board="${tier}">${html}</div>`;}
-function utgSignedStripHtml(){const list=utgUpperTierSponsors();const placed=aaPlacedSponsorIds(aaCatDef("uppertier"));const filtered=list.filter(r=>utgStatusFilter.has(utgStatusOf(r))).sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||""));const chips=[["signed","Signed / Active"],["renewal","In-Renewal"],["proposed","Proposed"]].map(kv=>`<button type="button" class="utg-chip status-${kv[0]} ${utgStatusFilter.has(kv[0])?"on":""}" data-utg-status="${kv[0]}">${kv[1]}</button>`).join("");const toggle=`<div class="utg-viewtoggle"><button type="button" data-utg-view="placement" class="${utgViewMode==="placement"?"on":""}">Placement</button><button type="button" data-utg-view="artwork" class="${utgViewMode==="artwork"?"on":""}">Artwork</button></div>`;const items=filtered.map(r=>{const ok=placed.has(r.id);return `<div class="utg-drag status-${utgStatusOf(r)} ${ok?"is-placed":"is-missing"}" draggable="true" data-utg-drag="${r.id}">${r.logoDataUrl?`<img src="${esc(r.logoDataUrl)}" alt="" loading="lazy" decoding="async">`:""}<span>${escDisplay(r.sponsor)}</span><span class="aa-place-state ${ok?"good":"need"}">${ok?"Placed":"Move"}</span></div>`;}).join("")||`<span class="utg-strip-empty">No Upper Tier partners match these statuses.</span>`;return `<div class="utg-controls"><div class="utg-status-chips">${chips}</div>${toggle}</div><div class="utg-signed-strip">${items}</div>`;}
+function utgSignedStripHtml(){const list=utgUpperTierSponsors();const placed=aaPlacedSponsorIds(aaCatDef("uppertier"));const filtered=list.filter(r=>utgStatusOf(r)==="signed").sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||""));const chips=`<span class="utg-chip status-signed on">Signed / Active only</span>`;const toggle=`<div class="utg-viewtoggle"><button type="button" data-utg-view="placement" class="${utgViewMode==="placement"?"on":""}">Placement</button><button type="button" data-utg-view="artwork" class="${utgViewMode==="artwork"?"on":""}">Artwork</button></div>`;const items=filtered.map(r=>{const ok=placed.has(r.id),sz=utgSponsorSize(r);return `<div class="utg-drag status-${utgStatusOf(r)} ${ok?"is-placed":"is-missing"}" draggable="true" data-utg-drag="${r.id}" data-utg-shape="${esc(sz.shape)}">${r.logoDataUrl?`<img src="${esc(r.logoDataUrl)}" alt="" loading="lazy" decoding="async">`:""}<span>${escDisplay(r.sponsor)}</span><span class="utg-size-tag">${esc(sz.label)}</span><span class="aa-place-state ${ok?"good":"need"}">${ok?"Placed":"Move"}</span></div>`;}).join("")||`<span class="utg-strip-empty">No signed Upper Tier partners found.</span>`;return `<div class="utg-controls"><div class="utg-status-chips">${chips}</div>${toggle}</div><div class="utg-signed-strip">${items}</div>`;}
 function utgRenderUpperTier(st){try{st.upperGrid=st.upperGrid||{};st.upperPhotos=st.upperPhotos||{};const tiers=[1,2,3,4,5,6,7,8,9,10];const boards=tiers.map(tier=>{const boardArt=(st.upperPhotos[String(tier)])||BOARD_ART_SEED[String(tier)]||"";return `<section class="upper-billboard"><div class="upper-billboard-head"><span>⋮⋮ &nbsp; Upper Tier ${tier}</span><span class="bp-occ-count">Board ${tier}/10</span></div>${utgRenderBoardGrid(st,tier)}<div class="upper-board-photo" data-utg-photo-drop="${tier}">${boardArt?`<img src="${esc(boardArt)}" alt="Upper Tier ${tier} display" loading="lazy" decoding="async">`:`<div class="upper-board-photo-empty">Drop a ballpark photo or saved artwork here</div>`}</div><div class="upper-board-actions"><button data-utg-photo-upload="${tier}">+ ${boardArt?"Replace":"Add"} photo</button>${st.upperPhotos[String(tier)]?`<button data-utg-photo-clear="${tier}">Remove photo</button>`:""}</div></section>`;}).join("");return `<section class="display-layout upper-tier-layout"><h3>Upper Tier Board Gallery</h3><p class="display-location-tabs-note">Ten physical boards, six 2:1 panels each. Drag a signed Upper Tier partner from the strip onto an open panel, then use ⤢ to make a Double, Triple, 4-Panel or 6-Panel. Doubles default horizontal — right-click a double (or press ⟳) to flip it vertical. Toggle Placement / Artwork to switch between logos and submitted art.</p>${utgSignedStripHtml()}<div class="upper-20-grid">${boards}</div></section>`;}catch(err){console.error("Upper Tier grid render failed",err);return `<section class="display-layout"><h3>Upper Tier Board Gallery</h3><p class="upper-board-overflow">The Upper Tier board view hit an error and was skipped so the rest of the app keeps working. (${escDisplay(err&&err.message||"")})</p></section>`;}}
 let utgPhotoInput=null;
 function utgEnsurePhotoInput(){if(utgPhotoInput)return utgPhotoInput;utgPhotoInput=document.createElement("input");utgPhotoInput.type="file";utgPhotoInput.accept="image/*";utgPhotoInput.capture="environment";utgPhotoInput.style.display="none";document.body.appendChild(utgPhotoInput);utgPhotoInput.onchange=()=>{const f=utgPhotoInput.files&&utgPhotoInput.files[0];const tier=utgPhotoInput.dataset.tier;utgPhotoInput.value="";if(!f||!tier)return;compressForBoard(f).then(u=>{if(!u)return toast("Couldn't read that image","Try a different file",true);utgSetBoardPhoto(tier,u);});};return utgPhotoInput;}
@@ -17737,6 +17777,27 @@ function aaPlacedSponsorIds(c){
   });
   return ids;
 }
+function aaAssetSizeLabel(cat, r){
+  if (cat && cat.key === "uppertier") return utgSponsorSize(r).label;
+  const keys = aaKeywords(cat).map(x=>String(x).toLowerCase());
+  let text = "";
+  try {
+    text = (dealAssetsFor(r)||[]).filter(a => {
+      const hay = [a.asset,a.notes].join(" ").toLowerCase();
+      return !keys.length || keys.some(k => hay.includes(k));
+    }).map(a => [a.asset,a.qty,a.notes].join(" ")).join(" ");
+  } catch(e) {}
+  text = text.toLowerCase();
+  if (/6[\s-]*panel|six[\s-]*panel/.test(text)) return "6-Panel";
+  if (/4[\s-]*panel|four[\s-]*panel/.test(text)) return "4-Panel";
+  if (/triple|3[\s-]*panel|three[\s-]*panel/.test(text)) return "Triple";
+  if (/double|2[\s-]*panel|two[\s-]*panel/.test(text)){
+    if (/vert|vertical/.test(text)) return "Double-Vert";
+    if (/horiz|horizontal/.test(text)) return "Double-Horiz";
+    return "Double-TBD";
+  }
+  return "";
+}
 function aaRenderEmbedded(c){
   if (c.embed === "scoreboard"){
     return `<div class="aa-embed-board"><div class="sb-toolbar"><div class="sb-mode-switch" id="scoreboardModeSwitch"><button type="button" class="sb-mode-btn is-active" data-sb-mode="sponsor">Sponsor grid</button><button type="button" class="sb-mode-btn" data-sb-mode="artwork">Artwork grid</button></div><div class="sb-toolbar-note" id="scoreboardModeNote"></div></div><div class="sb-split"><aside class="sb-tray" id="scoreboardTray"></aside><div class="sb-grid-wrap" id="scoreboardGridWrap"></div></div></div>`;
@@ -17830,7 +17891,8 @@ function aaRenderPartners(cand, cat){
   const placed = aaPlacedSponsorIds(cat);
   grid.innerHTML = list.length ? list.map(r => {
     const ok = placed.has(r.id);
-    return `<div class="sched-card ${ok?'is-placed':'is-missing'}" draggable="true" data-aasp="${esc(r.id)}"><div class="sched-card-top">${nt_logoHTML(r,24)}<span class="nt-card-name">${esc(r.sponsor)}</span><span class="aa-place-state ${ok?'good':'need'}">${ok?'Placed':'Move'}</span></div></div>`;
+    const size = aaAssetSizeLabel(cat, r);
+    return `<div class="sched-card ${ok?'is-placed':'is-missing'}" draggable="true" data-aasp="${esc(r.id)}"><div class="sched-card-top">${nt_logoHTML(r,24)}<span class="nt-card-name">${esc(r.sponsor)}</span>${size?`<span class="utg-size-tag">${esc(size)}</span>`:""}<span class="aa-place-state ${ok?'good':'need'}">${ok?'Placed':'Move'}</span></div></div>`;
   }).join("") : `<div class="nt-empty">No matching partners</div>`;
   grid.querySelectorAll("[data-aasp]").forEach(c => c.addEventListener("dragstart", e => nt_dragStart(e, c.dataset.aasp)));
 }
