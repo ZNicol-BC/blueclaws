@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 161 -->
+<!-- BUILD_VERSION: 162 -->
 <!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
 <!-- BUILD_VERSION: 56 -->
@@ -6,6 +6,8 @@
 <!-- BUILD_VERSION: 151 -->
 <!-- BUILD_VERSION: 161 -->
 <!-- index161: tri-lens polish (impeccable / design-audit / motion) — border-only nt-menu, green→blue on sched complete/ok states, two outlier page titles brought into sentence-case voice -->
+<!-- BUILD_VERSION: 162 -->
+<!-- index162: asset-prep email templates — removed Renewal (status) & Postseason (timing), season boundaries set to Offseason Aug1-Dec31 / Preseason Jan1-Mar30 / In-season Apr1+, standard "Hope all is well…" intro + annual-report line; FIX: prep templates now sync cross-browser (were local-only) -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -4537,7 +4539,7 @@ async function pullSharedData() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const shared = await res.json();
     lastSyncedAt = Date.now(); lastSyncError = null;
-    const WHOLE_STORE_CHANNELS = {teamChat:CHAT_KEY,proposals:OPTIONS_KEY,rates:RATES_KEY,assetDetails:ASSET_DETAILS_KEY,links:LINKS_KEY,decks:DECKS_KEY,reportOverrides:REPORT_OVERRIDES_KEY,customSponsors:CUSTOM_KEY,customAssets:CUSTOM_ASSETS_KEY,photoChecklist:PHOTO_CHECK_KEY,quickLinks:QUICK_LINKS_KEY,staffSchedule:STAFF_SCHEDULE_KEY,repsList:REPS_KEY,serviceRepsList:SERVICE_REPS_KEY,sponsorCategoriesList:SPONSOR_CATEGORIES_KEY,agreementTemplates:AGREEMENT_TEMPLATES_KEY,requests:REQUESTS_KEY,approvalConfig:APPROVAL_CONFIG_KEY,scoreboardLayout:"bciq_scoreboard_layout",marqueeSchedule:"bciq_marquee_schedule",enewsSchedule:"bciq_enews_schedule",presenceNames:"bciq_presence_names",squadSchedule:"bciq_squad_schedule",assetSpecsV2:"bciq_asset_specs_v2"};
+    const WHOLE_STORE_CHANNELS = {teamChat:CHAT_KEY,proposals:OPTIONS_KEY,rates:RATES_KEY,assetDetails:ASSET_DETAILS_KEY,links:LINKS_KEY,decks:DECKS_KEY,reportOverrides:REPORT_OVERRIDES_KEY,customSponsors:CUSTOM_KEY,customAssets:CUSTOM_ASSETS_KEY,photoChecklist:PHOTO_CHECK_KEY,quickLinks:QUICK_LINKS_KEY,staffSchedule:STAFF_SCHEDULE_KEY,repsList:REPS_KEY,serviceRepsList:SERVICE_REPS_KEY,sponsorCategoriesList:SPONSOR_CATEGORIES_KEY,agreementTemplates:AGREEMENT_TEMPLATES_KEY,requests:REQUESTS_KEY,approvalConfig:APPROVAL_CONFIG_KEY,scoreboardLayout:"bciq_scoreboard_layout",marqueeSchedule:"bciq_marquee_schedule",enewsSchedule:"bciq_enews_schedule",presenceNames:"bciq_presence_names",squadSchedule:"bciq_squad_schedule",assetSpecsV2:"bciq_asset_specs_v2",prepTemplates:"bciq_prep_templates_v1"};
     let changed=false;
     Object.entries(WHOLE_STORE_CHANNELS).forEach(([id,key])=>{if(hasPendingWrite(id,"overrides")||recentlyPushed(id,"overrides"))return;const incoming=shared[id];const serverValue=incoming&&incoming.value!==undefined?incoming.value:null;if(serverValue===null){if(memStore.getItem(key)!==null){memStore.removeItem(key);changed=true;}}else if(memStore.getItem(key)!==serverValue){memStore.setItem(key,serverValue);changed=true;}});
     const local=loadOverrides(),authoritative={};
@@ -10338,11 +10340,15 @@ function assetSpecFor(name) {
   return specs.find(s => (s.match || []).length && s.match.every(has) && assetSpecHasDetail(s)) ||
          specs.find(s => (s.match || []).some(has) && assetSpecHasDetail(s)) || null;
 }
+/* Intros are the BODY that follows the "Hey {firstName}," greeting the email builder already
+   prepends — so they start at "Hope all is well!", never with another "Hey". The standard
+   returning/expansion copy carries the prior-year Annual Report line; New sponsor omits it
+   (no prior report for a first-year partner). {sponsor}/name is available but unused here. */
 const ASSET_PREP_INTROS = {
-  "New sponsor": name => `Excited about the new partnership! I know it's a little early, but I wanted to give a quick heads up on the asset prep for the 2026 season. See below for those assets with notes and needs and we can get into further details as we get a little closer. If you have any questions, let me know! Thanks!`,
-  "Returning sponsor": name => `Great to have you back for the 2026 season! Wanted to get a jump on asset prep — see below for your assets with notes and needs, and we'll fill in details as we get closer. Any questions, just let me know. Thanks!`,
-  "Renewal": name => `Thanks for renewing for 2026 — excited to keep this going! Here's a quick head start on asset prep. See your assets below with notes and needs, and we'll dial in the details closer to the season. Let me know if you have any questions. Thanks!`,
-  "Expansion": name => `Excited about growing the partnership for 2026! Here's the asset prep for everything, including the new additions. See below with notes and needs and we'll get into specifics as we get closer. Any questions, let me know. Thanks!`
+  "New sponsor": name => `Hope all is well, and welcome aboard for the 2026 season! See below for your Asset Prep with notes and needs for each asset. This is your first season with us, so there's no prior Annual Report to reference yet — happy to walk you through anything. Let me know if you have any questions, thanks!`,
+  "Returning sponsor": name => `Hope all is well! See below for your 2026 Asset Prep with notes and needs for each asset, as well as your 2025 Annual Report for reference. Let me know if you have any questions, thanks!\n\n[Paste 2025 Annual Report link]`,
+  "Renewal": name => `Hope all is well! See below for your 2026 Asset Prep with notes and needs for each asset, as well as your 2025 Annual Report for reference. Let me know if you have any questions, thanks!\n\n[Paste 2025 Annual Report link]`,
+  "Expansion": name => `Hope all is well! See below for your 2026 Asset Prep with notes and needs for each asset, including the new additions to the partnership, as well as your 2025 Annual Report for reference. Let me know if you have any questions, thanks!\n\n[Paste 2025 Annual Report link]`
 };
 /* ---- Editable Asset Prep email templates (partner status x time of year) --------------------
    The four partner statuses were already a dimension (the request "Template" select). Time of
@@ -10350,15 +10356,16 @@ const ASSET_PREP_INTROS = {
    offseason than three days before Opening Day. Templates are stored per (status, timing); a
    blank cell falls back to In-season, then to the built-in default. {sponsor} is substituted. */
 const PREP_TEMPLATE_KEY = "bciq_prep_templates_v1";
-const PREP_STATUSES = ["New sponsor", "Returning sponsor", "Renewal", "Expansion"];
-const PREP_TIMINGS = ["Offseason", "Preseason", "In-season", "Postseason"];
+const PREP_STATUSES = ["New sponsor", "Returning sponsor", "Expansion"];
+const PREP_TIMINGS = ["Offseason", "Preseason", "In-season"];
+/* Season phase for the season we're prepping (2026):
+   Offseason = Aug 1 – Dec 31 (of the prior year), Preseason = Jan 1 – Mar 30, In-season = Apr 1 on. */
 function currentPrepTiming() {
   let m = 6;
   try { m = new Date().getMonth() + 1; } catch (e) {}
-  if (m >= 4 && m <= 8) return "In-season";
-  if (m === 2 || m === 3) return "Preseason";
-  if (m === 9 || m === 10) return "Postseason";
-  return "Offseason";
+  if (m >= 8) return "Offseason";   // Aug 1 – Dec 31
+  if (m <= 3) return "Preseason";   // Jan 1 – Mar 30
+  return "In-season";                // Apr 1 onward
 }
 function defaultPrepTemplates() {
   const out = {};
@@ -10374,7 +10381,14 @@ function loadPrepTemplates() {
   return base;
 }
 function savePrepTemplates(map) {
-  try { memStore.setItem(PREP_TEMPLATE_KEY, JSON.stringify(map || {})); return true; }
+  try {
+    const payload = JSON.stringify(map || {});
+    memStore.setItem(PREP_TEMPLATE_KEY, payload);
+    // Sync cross-browser like every other shared store (channel "prepTemplates" is registered in
+    // WHOLE_STORE_CHANNELS). Previously local-only, so edited templates never left the machine.
+    if (typeof pushSharedData === "function") pushSharedData("prepTemplates", { value: payload }, "overrides");
+    return true;
+  }
   catch (e) { console.error("BlueClaws IQ: prep template save failed", e); return false; }
 }
 function resetPrepTemplates() { try { memStore.removeItem(PREP_TEMPLATE_KEY); } catch (e) {} }
