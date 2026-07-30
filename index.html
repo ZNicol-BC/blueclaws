@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 162 -->
+<!-- BUILD_VERSION: 163 -->
 <!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
 <!-- BUILD_VERSION: 56 -->
@@ -6,7 +6,9 @@
 <!-- BUILD_VERSION: 151 -->
 <!-- BUILD_VERSION: 161 -->
 <!-- index161: tri-lens polish (impeccable / design-audit / motion) — border-only nt-menu, green→blue on sched complete/ok states, two outlier page titles brought into sentence-case voice -->
-<!-- BUILD_VERSION: 162 -->
+<!-- BUILD_VERSION: 163 -->
+<!-- index163: (1) removed leftover "Renewal" from asset-prep Template select (season defs already Offseason Aug1-Dec31 / Preseason Jan1-Mar30 / In-season Apr1+). (2) FIX Sponsor Fulfillment: statuses on duplicate-named assets (e.g. Homeplate/Planter Signage) now stick per-row — positional match preferred over name match. (3) Gameday: added labeled header (Sponsor/Rep · Asset · Date · Qty · Notes) + per-row date. (4) Multiple agreements per sponsor, each with a Quick Title (drawer + Agreements hub); bodies in IndexedDB under composite keys, metadata synced. (5) Marquee reworked into a Left/Right Asset Dropper (searchable 2-col partner grid left, slots right with bigger blue titles). (6) Hamburger now collapses the sidebar to a slim icon rail instead of hiding it. (7) NEW Asset Allocation hub (renamed from Ballpark Displays entry; old board kept as "Signage Boards"): grouped category rail + reusable Left/Right dropper engine covering Concourse, Suite, Section, Entitlement/Other, Digital Display Network (30 slots, JPG/MP4+duration), Game Sponsors (date/day/theme/fireworks), Gameday Script, Weekly Promotions, Website, Social, Broadcast/Podcast, Table & Plaza, Tickets, Other — Upper Tier/Home Run/Marquee/Scoreboard/E-News link to their existing boards. New store bciq_asset_alloc_v1 synced via WHOLE_STORE_CHANNELS. (8) Quick-link topbar strip now wheel/trackpad-scrolls horizontally when squeezed. -->
+<!-- index162: asset-prep email templates — removed Renewal (status) & Postseason (timing), season boundaries set to O
 <!-- index162: asset-prep email templates — removed Renewal (status) & Postseason (timing), season boundaries set to Offseason Aug1-Dec31 / Preseason Jan1-Mar30 / In-season Apr1+, standard "Hope all is well…" intro + annual-report line; FIX: prep templates now sync cross-browser (were local-only) -->
 <!doctype html>
 <html lang="en">
@@ -1182,8 +1184,25 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
   .chapter-body .nav-item { padding-left: var(--space-30); }
   .chapter-caret { display: none; }
 }
-.app-shell.sidebar-collapsed .sidebar { width: 0; min-width: 0; padding: 0; overflow: hidden; border: 0; }
-.app-shell.sidebar-collapsed .sidebar * { display: none; }
+/* Collapsed = a slim icon rail (keeps nav reachable and "gives more view"), not a full disappear.
+   Labels are raw text nodes after each .nav-icon span, so font-size:0 collapses the text while the
+   icons are re-sized back up — an icon rail with no markup changes. */
+.app-shell.sidebar-collapsed .sidebar { width: 60px; min-width: 60px; overflow: hidden; }
+.app-shell.sidebar-collapsed .sidebar .brand > div,
+.app-shell.sidebar-collapsed .sidebar-affiliation,
+.app-shell.sidebar-collapsed .onclock,
+.app-shell.sidebar-collapsed .sidebar-links,
+.app-shell.sidebar-collapsed .sidebar-watermark,
+.app-shell.sidebar-collapsed .side-chat,
+.app-shell.sidebar-collapsed .nav-label,
+.app-shell.sidebar-collapsed .nav-count,
+.app-shell.sidebar-collapsed .nav-beta,
+.app-shell.sidebar-collapsed .chapter-caret { display: none !important; }
+.app-shell.sidebar-collapsed .brand { justify-content: center; padding-left: 0; margin: 0; }
+.app-shell.sidebar-collapsed .brand-mark { width: 40px !important; }
+.app-shell.sidebar-collapsed .nav-item,
+.app-shell.sidebar-collapsed .chapter-head { font-size: 0; justify-content: center; gap: 0; padding-left: 0; padding-right: 0; }
+.app-shell.sidebar-collapsed .nav-icon { font-size: 15px; width: auto; }
 @media (max-width: 900px) { .sponsor-panel-grid { grid-template-columns: 1fr; } .sponsor-info-col { position: static; } }
 .sponsor-asset-rate { color: var(--muted); font-weight: 700; white-space: nowrap; }
 
@@ -1236,7 +1255,53 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .renewal-pct.perfect { background:var(--blue-text); }
 .gameday-category { border:1px solid var(--line); background:var(--card); border-radius:var(--radius-md); overflow:hidden; }
 .gameday-category h3 { margin:0; padding:var(--space-11) var(--space-14); font:800 13px var(--font-display); background:var(--blue-soft); border-bottom:1px solid var(--line); }
-.gameday-activity-row { display:grid; grid-template-columns:1fr 1fr 70px 1.4fr; gap:var(--space-10); align-items:start; padding:var(--space-10) var(--space-14); border-top:1px solid #f0efeb; font-size:var(--text-xs); }
+.gameday-activity-row { display:grid; grid-template-columns:1fr 1fr 0.9fr 60px 1.3fr; gap:var(--space-10); align-items:start; padding:var(--space-10) var(--space-14); border-top:1px solid #f0efeb; font-size:var(--text-xs); }
+.gameday-activity-head { font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; font-size:10px; background:var(--paper); border-top:0; }
+.agreement-list { display:flex; flex-direction:column; gap:var(--space-6); margin-bottom:var(--space-8); }
+.agreement-item { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-10); padding:var(--space-8) var(--space-10); border:1px solid var(--line); border-left:3px solid var(--blue); border-radius:var(--radius-sm); background:var(--card); }
+.agreement-item-main { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.agreement-item-title { font-size:var(--text-xs); font-weight:800; }
+.agreement-item-date { color:var(--muted); font-size:10px; }
+.agreement-item-actions { display:flex; gap:var(--space-8); flex:0 0 auto; font-size:var(--text-xs); }
+/* ---- Left/Right Asset Dropper shared layout (Marquee + Asset Allocation categories) ---- */
+.aa-lr { display:grid; grid-template-columns:minmax(240px, 340px) 1fr; gap:var(--space-16); align-items:start; }
+@media (max-width: 1000px) { .aa-lr { grid-template-columns:1fr; } }
+.aa-lr-left { position:sticky; top:80px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-12); }
+.aa-lr-left-head { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-8); margin-bottom:var(--space-8); }
+.aa-lr-left-head h2 { margin:0; font:800 14px var(--font-display); }
+.aa-lr-search { margin-bottom:var(--space-10); }
+.aa-lr-search input { border:0; background:transparent; font-size:var(--text-xs); width:100%; outline:none; }
+.sched-tray.aa-partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-8); max-height:72vh; overflow-y:auto; align-content:start; }
+.sched-tray.aa-partner-grid .sched-card { min-width:0; }
+@media (max-width: 1000px) { .sched-tray.aa-partner-grid { max-height:none; } }
+.aa-lr-right { min-width:0; }
+/* Bigger, colored slot titles per the Left/Right Asset Dropper concept */
+.mq-slot-num, .aa-slot-num { font:800 15px var(--font-display) !important; color:var(--blue) !important; letter-spacing:.3px; }
+/* ---- Asset Allocation hub ---- */
+.aa-hub { display:grid; grid-template-columns:230px 1fr; gap:var(--space-16); align-items:start; }
+@media (max-width: 900px) { .aa-hub { grid-template-columns:1fr; } }
+.aa-cat-rail { position:sticky; top:80px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--card); padding:var(--space-8); max-height:82vh; overflow-y:auto; }
+.aa-cat-group-label { padding:var(--space-8) var(--space-8) var(--space-4); color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; }
+.aa-cat-btn { width:100%; text-align:left; border:0; background:transparent; border-radius:var(--radius-sm); padding:var(--space-7) var(--space-10); font-size:var(--text-xs); font-weight:700; color:var(--ink); cursor:pointer; display:flex; align-items:center; gap:var(--space-6); }
+.aa-cat-btn:hover { background:var(--ink-100); }
+.aa-cat-btn.active { background:var(--blue-soft); color:var(--blue-text); box-shadow:inset 3px 0 0 var(--blue); }
+.aa-cat-btn .aa-cat-tag { margin-left:auto; font-size:9px; color:var(--muted); font-weight:800; }
+.aa-cat-body { min-width:0; }
+.aa-slot { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:var(--space-10); display:flex; flex-direction:column; gap:var(--space-6); border-top:3px solid var(--blue); }
+.aa-slot.filled { border-top-color:var(--gold); }
+.aa-slot-head { display:flex; align-items:center; justify-content:space-between; gap:var(--space-6); }
+.aa-slot-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:var(--space-10); }
+.aa-slot-drop { min-height:40px; border:1px dashed var(--ink-300); border-radius:var(--radius-sm); display:flex; align-items:center; gap:var(--space-6); padding:var(--space-6) var(--space-8); }
+.aa-slot-drop.nt-dragover { border-color:var(--blue); background:var(--blue-soft); }
+.aa-slot-placed { display:flex; align-items:center; gap:var(--space-6); font-size:var(--text-xs); font-weight:700; min-width:0; }
+.aa-slot-placed span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.aa-assign { border:0; background:transparent; color:var(--blue-text); font-size:var(--text-xs); font-weight:700; cursor:pointer; }
+.aa-fieldrow { display:flex; flex-wrap:wrap; gap:var(--space-6); }
+.aa-fieldrow label { display:flex; flex-direction:column; font-size:10px; color:var(--muted); font-weight:700; gap:2px; flex:1 1 90px; }
+.aa-fieldrow input, .aa-fieldrow select { border:1px solid var(--line); border-radius:var(--radius-sm); padding:var(--space-4) var(--space-6); font-size:var(--text-xs); font-family:var(--font-body); }
+.aa-cat-intro { color:var(--muted); font-size:var(--text-xs); margin-bottom:var(--space-12); line-height:1.5; }
+.aa-group-title { font:800 13px var(--font-display); margin:var(--space-16) 0 var(--space-8); padding-bottom:var(--space-4); border-bottom:2px solid var(--gold); }
+.aa-openboard { display:inline-flex; align-items:center; gap:var(--space-6); }
 .gameday-activity-row:first-of-type { border-top:0; }
 .gameday-activity-row strong { display:block; font-size:var(--text-xs); }
 .gameday-activity-row small { display:block; margin-top:var(--space-3); color:var(--muted); }
@@ -2530,8 +2595,11 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <button class="nav-item" data-view="stadiummap">
               <span class="nav-icon">&#9678;</span> Stadium Map
             </button>
+            <button class="nav-item" data-view="assetalloc">
+              <span class="nav-icon">&#9638;</span> Asset Allocation
+            </button>
             <button class="nav-item" data-view="displays">
-              <span class="nav-icon">&#9637;</span> Ballpark Displays
+              <span class="nav-icon">&#9637;</span> Signage Boards (Ballpark)
             </button>
             <button class="nav-item" data-view="scoreboard">
               <span class="nav-icon">&#9632;</span> Scoreboard Layout
@@ -2931,6 +2999,14 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
         </section>
 
         <!-- ============ BALLPARK DISPLAYS ============ -->
+        <section class="view" id="assetallocView">
+          <div class="overview-hero"><div class="overview-hero-brand"><img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws"><div><div class="eyebrow">ASSET ALLOCATION<span class="season-badge">2026 SEASON</span></div><h1 class="overview-hero-title">Every asset category, one place to allocate.</h1><p>Pick a category on the left, then drag signed partners into slots. Left/Right and Top/Bottom droppers work the same across every asset type.</p></div></div></div>
+          <div class="aa-hub">
+            <aside class="aa-cat-rail" id="assetallocRail"></aside>
+            <div class="aa-cat-body" id="assetallocBody"></div>
+          </div>
+        </section>
+
         <section class="view" id="displaysView">
           <div class="overview-hero"><div class="overview-hero-brand"><img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws bell"><div><div class="eyebrow">BALLPARK DISPLAYS<span class="season-badge">2026 SEASON</span></div><h1 class="overview-hero-title">Every display, mapped to the park.</h1><p>Drag a sponsor or saved artwork onto a sourced signage position. Unclear source matches remain flagged for review.</p></div></div></div>
           <div class="display-layout-tabs" id="displayLayoutTabs" aria-label="Ballpark display section">
@@ -3652,13 +3728,16 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
               </div>
             </div>
           </div>
-          <div class="sched-section">
-            <div class="sched-section-head"><h2>Signed marquee partners</h2><span class="sched-hint">Scheduled / contracted · drag a card into a slot below</span></div>
-            <div class="sched-tray" id="marqueeTray"></div>
-          </div>
-          <div class="sched-section">
-            <div class="sched-section-head"><h2>Dedicated slots</h2><span class="sched-hint">32 fixed slots — assign a sponsor, run window, artwork &amp; notes</span></div>
-            <div class="marquee-slots" id="marqueeSlots"></div>
+          <div class="aa-lr">
+            <aside class="aa-lr-left">
+              <div class="aa-lr-left-head"><h2>Signed marquee partners</h2><span class="sched-hint">Drag a card into a slot on the right</span></div>
+              <div class="search-box aa-lr-search">⌕ <input id="marqueePartnerSearch" type="search" placeholder="Search partners"></div>
+              <div class="sched-tray aa-partner-grid" id="marqueeTray"></div>
+            </aside>
+            <section class="aa-lr-right">
+              <div class="sched-section-head"><h2>Dedicated slots</h2><span class="sched-hint">32 fixed slots — assign a sponsor, run window, artwork &amp; notes</span></div>
+              <div class="marquee-slots" id="marqueeSlots"></div>
+            </section>
           </div>
         </section>
 
@@ -4539,7 +4618,7 @@ async function pullSharedData() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const shared = await res.json();
     lastSyncedAt = Date.now(); lastSyncError = null;
-    const WHOLE_STORE_CHANNELS = {teamChat:CHAT_KEY,proposals:OPTIONS_KEY,rates:RATES_KEY,assetDetails:ASSET_DETAILS_KEY,links:LINKS_KEY,decks:DECKS_KEY,reportOverrides:REPORT_OVERRIDES_KEY,customSponsors:CUSTOM_KEY,customAssets:CUSTOM_ASSETS_KEY,photoChecklist:PHOTO_CHECK_KEY,quickLinks:QUICK_LINKS_KEY,staffSchedule:STAFF_SCHEDULE_KEY,repsList:REPS_KEY,serviceRepsList:SERVICE_REPS_KEY,sponsorCategoriesList:SPONSOR_CATEGORIES_KEY,agreementTemplates:AGREEMENT_TEMPLATES_KEY,requests:REQUESTS_KEY,approvalConfig:APPROVAL_CONFIG_KEY,scoreboardLayout:"bciq_scoreboard_layout",marqueeSchedule:"bciq_marquee_schedule",enewsSchedule:"bciq_enews_schedule",presenceNames:"bciq_presence_names",squadSchedule:"bciq_squad_schedule",assetSpecsV2:"bciq_asset_specs_v2",prepTemplates:"bciq_prep_templates_v1"};
+    const WHOLE_STORE_CHANNELS = {teamChat:CHAT_KEY,proposals:OPTIONS_KEY,rates:RATES_KEY,assetDetails:ASSET_DETAILS_KEY,links:LINKS_KEY,decks:DECKS_KEY,reportOverrides:REPORT_OVERRIDES_KEY,customSponsors:CUSTOM_KEY,customAssets:CUSTOM_ASSETS_KEY,photoChecklist:PHOTO_CHECK_KEY,quickLinks:QUICK_LINKS_KEY,staffSchedule:STAFF_SCHEDULE_KEY,repsList:REPS_KEY,serviceRepsList:SERVICE_REPS_KEY,sponsorCategoriesList:SPONSOR_CATEGORIES_KEY,agreementTemplates:AGREEMENT_TEMPLATES_KEY,requests:REQUESTS_KEY,approvalConfig:APPROVAL_CONFIG_KEY,scoreboardLayout:"bciq_scoreboard_layout",marqueeSchedule:"bciq_marquee_schedule",enewsSchedule:"bciq_enews_schedule",presenceNames:"bciq_presence_names",squadSchedule:"bciq_squad_schedule",assetSpecsV2:"bciq_asset_specs_v2",prepTemplates:"bciq_prep_templates_v1",assetAlloc:"bciq_asset_alloc_v1"};
     let changed=false;
     Object.entries(WHOLE_STORE_CHANNELS).forEach(([id,key])=>{if(hasPendingWrite(id,"overrides")||recentlyPushed(id,"overrides"))return;const incoming=shared[id];const serverValue=incoming&&incoming.value!==undefined?incoming.value:null;if(serverValue===null){if(memStore.getItem(key)!==null){memStore.removeItem(key);changed=true;}}else if(memStore.getItem(key)!==serverValue){memStore.setItem(key,serverValue);changed=true;}});
     const local=loadOverrides(),authoritative={};
@@ -5060,6 +5139,84 @@ function downloadContract(id, name) {
     a.href = body.dataUrl; a.download = body.name || name || "agreement";
     document.body.appendChild(a); a.click(); a.remove();
   }).catch(() => toast("Couldn't open that file", "IndexedDB read failed."));
+}
+
+/* ---- Multiple agreements per sponsor, each with a Quick Title ------------------------------
+   The single r.contractFile stays fully supported (shown as the first agreement, keeps the ledger
+   "Contract" indicator and cross-browser sync). Extra agreements live in r.agreements =
+   [{aid,title,name,uploadedAt,size}] (an override field, so it syncs), with their file bodies in
+   the same IndexedDB store under the composite key `${sponsorId}::${aid}`. Because loadContractBody/
+   viewContract/downloadContract are keyed by whatever id they're handed, passing that composite key
+   reuses the existing viewer and download with no new plumbing. */
+function agrBodyKey(sponsorId, aid) { return aid === "primary" ? sponsorId : sponsorId + "::" + aid; }
+function sponsorAgreements(r) {
+  if (!r) return [];
+  const list = [];
+  if (r.contractFile) list.push({ aid: "primary", title: r.contractTitle || "Agreement", name: r.contractFile.name, uploadedAt: r.contractFile.uploadedAt, size: r.contractFile.size, key: agrBodyKey(r.id, "primary") });
+  (Array.isArray(r.agreements) ? r.agreements : []).forEach(a => { if (a && a.aid) list.push({ aid: a.aid, title: a.title || "Agreement", name: a.name, uploadedAt: a.uploadedAt, size: a.size, key: agrBodyKey(r.id, a.aid) }); });
+  return list;
+}
+function addAgreementFile(sponsorId, title, fileObj) {
+  const rec = getRecord(sponsorId); if (!rec || !fileObj) return false;
+  // First agreement and no legacy file? Use the primary slot so it lights up the ledger and syncs.
+  if (!rec.contractFile && !(Array.isArray(rec.agreements) && rec.agreements.length)) {
+    updateOverride(sponsorId, { contractTitle: title || "Agreement" });
+    return saveContractFile(sponsorId, fileObj);
+  }
+  const aid = "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const arr = (Array.isArray(rec.agreements) ? rec.agreements.slice() : []);
+  arr.push({ aid, title: title || "Agreement", name: fileObj.name, uploadedAt: fileObj.uploadedAt, size: fileObj.size || null });
+  updateOverride(sponsorId, { agreements: arr });
+  const key = agrBodyKey(sponsorId, aid);
+  _contractBodies[key] = fileObj;
+  contractDbPut(key, fileObj).catch(() => { try { saveContractBodyFallback(key, fileObj); } catch (e) {} });
+  return true;
+}
+function removeAgreement(sponsorId, aid) {
+  const rec = getRecord(sponsorId); if (!rec) return;
+  if (aid === "primary") { saveContractFile(sponsorId, null); updateOverride(sponsorId, { contractTitle: null }); return; }
+  const arr = (Array.isArray(rec.agreements) ? rec.agreements : []).filter(a => a.aid !== aid);
+  updateOverride(sponsorId, { agreements: arr });
+  const key = agrBodyKey(sponsorId, aid);
+  delete _contractBodies[key];
+  contractDbPut(key, null).catch(() => {});
+  try { saveContractBodyFallback(key, null); } catch (e) {}
+}
+function renameAgreement(sponsorId, aid, title) {
+  const rec = getRecord(sponsorId); if (!rec) return;
+  if (aid === "primary") { updateOverride(sponsorId, { contractTitle: title || "Agreement" }); return; }
+  const arr = (Array.isArray(rec.agreements) ? rec.agreements : []).map(a => a.aid === aid ? { ...a, title: title || "Agreement" } : a);
+  updateOverride(sponsorId, { agreements: arr });
+}
+/* Shared hidden file input + pending Quick Title for adding agreements from the drawer. */
+let _pendingAgreement = { sponsorId: null, title: "" };
+function promptAddAgreement(sponsorId) {
+  const title = prompt("Quick Title for this agreement (what is it?) — e.g. \"2026 Partnership Agreement\", \"Term Sheet\", \"Addendum\":", "");
+  if (title === null) return;
+  _pendingAgreement = { sponsorId, title: title.trim() || "Agreement" };
+  let input = document.getElementById("multiAgreementInput");
+  if (!input) {
+    input = document.createElement("input");
+    input.type = "file"; input.id = "multiAgreementInput"; input.style.display = "none";
+    input.addEventListener("change", () => {
+      const f = input.files && input.files[0]; input.value = "";
+      if (!f || !_pendingAgreement.sponsorId) return;
+      if (f.size > 40 * 1024 * 1024) { toast("File too large", "Keep agreement uploads under 40MB"); return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        addAgreementFile(_pendingAgreement.sponsorId, _pendingAgreement.title, { name: f.name, dataUrl: reader.result, size: f.size, uploadedAt: new Date().toISOString() });
+        toast("Agreement added", `"${_pendingAgreement.title}" — ${f.name}`, true);
+        if (typeof refreshCurrentView === "function") refreshCurrentView();
+        const sid = _pendingAgreement.sponsorId;
+        const openId = (typeof currentDrawerId !== "undefined" && currentDrawerId) || sid;
+        if (document.getElementById("sdrawer")?.classList.contains("open") && openId === sid && typeof openDrawer === "function") openDrawer(sid);
+      };
+      reader.onerror = () => toast("Couldn't read that file", "Try a different file");
+      reader.readAsDataURL(f);
+    });
+    document.body.appendChild(input);
+  }
+  input.click();
 }
 
 /* migrate any logos already stored inside overrides (old format) */
@@ -6427,8 +6584,8 @@ function fulfillmentAssetsFor(r) {
     // Do" — wiping work that had already been marked done. Fall back to the saved row
     // in the same position when the lists are the same length, which is the case for a
     // rename, so an edit to the wording keeps the status attached to it.
-    const prior = savedByAsset[String(a.asset || "").trim().toLowerCase()]
-      || (saved.length === base.length ? saved[idx] : null)
+    const prior = (saved.length === base.length ? saved[idx] : null)
+      || savedByAsset[String(a.asset || "").trim().toLowerCase()]
       || a;
     const savedDates = normalizeFulfillmentDates(prior.dates || prior.date);
     const inferredDates = savedDates.length ? savedDates : fulfillmentDatesFromText([prior.notes, a.notes, prior.qty, a.qty].join(" "));
@@ -6825,6 +6982,7 @@ const VIEW_TITLES = {
   renewals: "Renewal Center",
   categories: "Category Insights",
   inventory: "Assets & Inventory",
+  assetalloc: "Asset Allocation",
   displays: "Ballpark Displays",
   stadiummap: "Stadium Map",
   fulfillment: "Sponsor Fulfillment",
@@ -6853,7 +7011,7 @@ const VIEW_CHAPTER = {
   sponsors: "accounts-hub",
   statusview: "sales-hub", renewals: "sales-hub", prospecting: "sales-hub",
   fulfillment: "service-hub", gameday: "service-hub", process: "service-hub", digideck: "service-hub", photolibrary: "service-hub", options: "service-hub", agreements: "service-hub", assetprep: "service-hub", breakdown: "service-hub",
-  inventory: "assets-hub", stadiummap: "assets-hub", displays: "assets-hub", scoreboard: "assets-hub", marquee: "assets-hub", enews: "assets-hub",
+  inventory: "assets-hub", assetalloc: "assets-hub", stadiummap: "assets-hub", displays: "assets-hub", scoreboard: "assets-hub", marquee: "assets-hub", enews: "assets-hub",
   requests: "tasks-hub", mytasks: "tasks-hub", service: "tasks-hub", squad: "tasks-hub",
   agreementhub: "agreements-hub"
 };
@@ -6895,6 +7053,7 @@ function showView(name) {
   if (name === "requests") renderRequestsView();
   if (name === "mytasks") renderMyTasksView();
   if (name === "scoreboard") { try { renderScoreboardView(); } catch(e){ console.error("Scoreboard render failed", e); } }
+  if (name === "assetalloc") { try { renderAssetAllocView(); } catch(e){ console.error("Asset Allocation render failed", e); } }
   if (name === "marquee") { try { renderMarqueeView(); } catch(e){ console.error("Marquee render failed", e); } }
   if (name === "enews") { try { renderEnewsView(); } catch(e){ console.error("E-news render failed", e); } }
   if (name === "agreementhub") { try { renderAgreementHubView(); } catch(e){ console.error("Agreement hub render failed", e); } }
@@ -6957,6 +7116,16 @@ function renderQuickLinks() {
 
   document.querySelectorAll("[data-editlinks]").forEach(b => b.addEventListener("click", openLinksModal));
   document.getElementById("editLinksBtn").addEventListener("click", openLinksModal);
+  // The quick-link strip can get squeezed on some zoom levels/widths; make a vertical wheel/trackpad
+  // gesture scroll it horizontally so the links are always reachable even when the scrollbar is hidden.
+  const strip = document.getElementById("quickLinks");
+  if (strip && !strip.dataset.wheelWired) {
+    strip.dataset.wheelWired = "1";
+    strip.addEventListener("wheel", e => {
+      if (strip.scrollWidth <= strip.clientWidth) return;
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { strip.scrollLeft += e.deltaY; e.preventDefault(); }
+    }, { passive: false });
+  }
 }
 function openLinksModal() {
   const links = loadLinks();
@@ -8153,7 +8322,9 @@ function renderGamedayView() {
     .filter(a => normalizeFulfillmentDates(a.dates).includes(picked))
     .map(a => {
       const cat = canonicalCategory((getFullCatalog().find(c => assetNameMatch(c.asset, a.asset)) || {}).category || "Other");
-      return { sponsor: r.sponsor, rep: r.rep || "", asset: a.asset, category: cat, qty: a.qty || "1", notes: a.notes || "" };
+      const allDates = normalizeFulfillmentDates(a.dates);
+      const dateLabel = allDates.length ? (allDates.includes(picked) ? picked : allDates.join(", ")) : picked;
+      return { sponsor: r.sponsor, rep: r.rep || "", asset: a.asset, category: cat, date: dateLabel, qty: a.qty || "1", notes: a.notes || "" };
     }));
   const kpis = document.getElementById("gamedayKpis");
   if (kpis) kpis.innerHTML = `
@@ -8168,7 +8339,7 @@ function renderGamedayView() {
     return;
   }
   const grouped = CATEGORY_ORDER.map(cat => [cat, rows.filter(r => r.category === cat)]).filter(([, items]) => items.length);
-  wrap.innerHTML = grouped.map(([cat, items]) => `<section class="gameday-category"><h3>${esc(cat)} <span class="micro-tag muted">${items.length}</span></h3>${items.map(item => `<div class="gameday-activity-row"><div><strong>${esc(item.sponsor)}</strong><small>${esc(item.rep || "No rep")}</small></div><div><strong>${esc(item.asset)}</strong></div><div>Qty ${esc(item.qty)}</div><div>${esc(item.notes || "No details")}</div></div>`).join("")}</section>`).join("");
+  wrap.innerHTML = grouped.map(([cat, items]) => `<section class="gameday-category"><h3>${esc(cat)} <span class="micro-tag muted">${items.length}</span></h3><div class="gameday-activity-row gameday-activity-head"><div>Sponsor / Rep</div><div>Asset</div><div>Date</div><div>Qty</div><div>Notes</div></div>${items.map(item => `<div class="gameday-activity-row"><div><strong>${esc(item.sponsor)}</strong><small>${esc(item.rep || "No rep")}</small></div><div><strong>${esc(item.asset)}</strong></div><div>${esc(item.date || picked)}</div><div>${esc(item.qty)}</div><div>${esc(item.notes || "No details")}</div></div>`).join("")}</section>`).join("");
 }
 
 /* ================= STADIUM MAP ================= */
@@ -9314,7 +9485,7 @@ const REQ_TYPES = {
     revisable: false,
     fields: [
       { key: "recipients", label: "Client recipient(s)", type: "contactpick", required: true },
-      { key: "tone", label: "Template", type: "select", options: ["New sponsor", "Returning sponsor", "Renewal", "Expansion"] },
+      { key: "tone", label: "Template", type: "select", options: ["New sponsor", "Returning sponsor", "Expansion"] },
       { key: "assets", label: "Assets to cover", type: "assetprefill", required: true },
       { key: "notes", label: "Extra notes", type: "textarea" }
     ],
@@ -14199,9 +14370,21 @@ function drawerTemplate(r) {
       </div>
 
       <div class="sdsection drawer-agreement-upload-section">
-        <div class="sdsection-title">Agreement</div>
-        <div class="readonly-note" style="margin-bottom:var(--space-8);">${r.contractFile ? `Current file: <button type="button" class="link-button" onclick="viewContract('${esc(r.id)}')">${esc(r.contractFile.name)}</button> — uploaded ${esc((r.contractFile.uploadedAt || "").slice(0, 10))}` : "No agreement uploaded yet for this sponsor."}</div>
-        <button type="button" class="secondary-button" id="drawerUploadAgreementBtn">${r.contractFile ? "Replace agreement" : "Upload agreement"}</button>
+        <div class="sdsection-title">Agreements</div>
+        ${(() => { const ags = sponsorAgreements(r); return ags.length
+          ? `<div class="agreement-list">${ags.map(a => `<div class="agreement-item">
+                <div class="agreement-item-main">
+                  <strong class="agreement-item-title">${esc(a.title)}</strong>
+                  <button type="button" class="link-button" onclick="viewContract('${esc(a.key)}','${esc(a.name || "Agreement")}')">${esc(a.name || "View file")}</button>
+                  <small class="agreement-item-date">${a.uploadedAt ? "uploaded " + esc((a.uploadedAt || "").slice(0, 10)) : ""}</small>
+                </div>
+                <div class="agreement-item-actions">
+                  <button type="button" class="link-button" data-agr-rename="${esc(a.aid)}">Rename</button>
+                  <button type="button" class="link-button" data-agr-remove="${esc(a.aid)}" style="color:var(--red);">Remove</button>
+                </div>
+              </div>`).join("")}</div>`
+          : `<div class="readonly-note" style="margin-bottom:var(--space-8);">No agreements uploaded yet for this sponsor.</div>`; })()}
+        <button type="button" class="secondary-button" id="drawerAddAgreementBtn" style="margin-top:var(--space-8);">+ Add agreement</button>
       </div>
 
       <div class="sdsection drawer-uploads-section">
@@ -14282,8 +14465,18 @@ function openDrawer(id) {
     setDrawerSection(btn.hasAttribute("data-sd-all") ? "all" : btn.dataset.sdJump);
   }));
   setDrawerSection("sdsec-account");
-  const uploadAgreementBtn = document.getElementById("drawerUploadAgreementBtn");
-  if (uploadAgreementBtn) uploadAgreementBtn.onclick = () => openContractModal(r.id);
+  const addAgreementBtn = document.getElementById("drawerAddAgreementBtn");
+  if (addAgreementBtn) addAgreementBtn.onclick = () => promptAddAgreement(r.id);
+  drawer.querySelectorAll("[data-agr-remove]").forEach(b => b.onclick = () => {
+    if (!confirm("Remove this agreement?")) return;
+    removeAgreement(r.id, b.dataset.agrRemove); openDrawer(r.id);
+  });
+  drawer.querySelectorAll("[data-agr-rename]").forEach(b => b.onclick = () => {
+    const cur = sponsorAgreements(getRecord(r.id)).find(a => a.aid === b.dataset.agrRename);
+    const t = prompt("Quick Title for this agreement:", cur ? cur.title : "Agreement");
+    if (t === null) return;
+    renameAgreement(r.id, b.dataset.agrRename, t.trim() || "Agreement"); openDrawer(r.id);
+  });
   const upBtn = document.getElementById("drawerUploadBtn");
   const upInput = document.getElementById("drawerUploadInput");
   if (upBtn && upInput) {
@@ -17142,7 +17335,10 @@ function mqScheduled(d, id){ let n = 0; for (let i=1;i<=MARQUEE_SLOTS;i++){ if (
 function mqAutoHistory(r, s){ if (r && (s.start || s.end)) return `${r.sponsor}: ${s.start||'?'} - ${s.end||'?'}`; return ""; }
 function renderMarqueeView(){
   const d = mqData();
-  const sponsors = mqSponsors();
+  const pq = (document.getElementById("marqueePartnerSearch")?.value || "").toLowerCase().trim();
+  const sponsors = mqSponsors().filter(r => !pq || (r.sponsor || "").toLowerCase().includes(pq));
+  const psearch = document.getElementById("marqueePartnerSearch");
+  if (psearch && !psearch.dataset.wired) { psearch.dataset.wired = "1"; psearch.addEventListener("input", renderMarqueeView); }
   const tray = document.getElementById("marqueeTray");
   tray.innerHTML = sponsors.length ? sponsors.map(r => {
     const sched = mqScheduled(d, r.id), con = mqContracted(r), done = con > 0 && sched >= con, t = d.tray[r.id] || {};
@@ -17264,6 +17460,181 @@ function eneAlertGreg(){
   try { window.location.href = url; toast("Opening email", "Drafting the schedule to Greg in your mail app."); } catch(e){ toast("Could not open email", "Copy the schedule manually."); }
 }
 
+/* ===================== ASSET ALLOCATION HUB =====================
+   One place for every asset category. Two reusable dropper concepts:
+   • Left/Right Asset Dropper — searchable signed-partner grid on the left, allocation slots on the
+     right (this engine). • Top/Bottom — the E-Newsletter / Marquee style (their own views).
+   Categories that already have a dedicated visual board (Upper Tier, Home Run Wall, Digital Marquee,
+   Scoreboard, E-Newsletters) link out to that board so nothing is lost or duplicated. New categories
+   are allocated inline here. State: bciq_asset_alloc_v1, synced like the other shared stores. */
+const AA_STORE_KEY = "bciq_asset_alloc_v1";
+const AA_CHANNEL = "assetAlloc";
+function aaData(){ return nt_load(AA_STORE_KEY); }
+function aaPersist(d){ nt_save(AA_STORE_KEY, AA_CHANNEL, d); }
+function aaCat(d, key){ if (!d[key]) d[key] = {}; return d[key]; }
+function aaCandidates(){ return (typeof activeSeasonRecords === "function" ? activeSeasonRecords() : getAllRecords()).slice().sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||"")); }
+let aaState = { cat: null };
+
+const AA_NOTE = [{ key:"notes", label:"Notes", type:"text" }];
+function aaLabeledSlots(prefix, labels){ return labels.map((l,i)=>({ key: prefix+"-"+i, label: l })); }
+const AA_ENTITLEMENT = [
+  ["Naming Rights", ["The Ballpark","The Boardwalk","The Sand Bar","Mini Golf","1B Gate Sponsor","3B Gate Sponsor","3B Party Deck","3B Picnic Area","Champions Club","1B Party Deck","1B Picnic Area","Promo Zone","Concession Stand 1B","Concession Stand 3B","CF Picnic Area (Fan Zone)","Ticket Kiosk","Blue Wave Bar","Box Office"]],
+  ["Field & Dugout Signage", ["On Deck Circle Wall Signage","Dugout Top 1B","Dugout Top 3B","Field Walls","Homeplate Signage","Homeplate Signage (2)","Dugout Lips, Rails and Interior","Inner Dugout 1B","1B Field Print","3B Field Print","Home Plate Field Print"]],
+  ["Scoreboard & Outfield Signage", ["Clock","Elevator","Lifeguard Chairs","Scoreboard Left","Scoreboard Right"]],
+  ["Concourse & Outside Signage", ["Seating Bowl Signage 101","Seating Bowl Signage 103","Seating Bowl Signage 105","Seating Bowl Signage 107","Seating Bowl Signage 109","Seating Bowl Signage 111","Seating Bowl Signage 113","Seating Bowl Signage 115","Parking Lot Poles","Plaza Light Poles","Stairs","Turnstiles","Inner Bathroom Signs","Inner Bathroom Signs (2)","Urinals","Concourse Display 1B","Concourse Display 3B","Caricature Stand","Henna Tattos","Face Painting","Activity Kiosk","Fixed Concourse Kiosk","Food Stand or Truck 1","Food Stand or Truck 2","Food Stand or Truck 3","Food Stand or Truck 4","Food Stand or Truck 5","Food Stand or Truck 6","Food Stand or Truck 7","Food Stand or Truck 8","Food Stand or Truck 9"]],
+  ["Food", ["RF Food Court 1","RF Food Court 2","1B Food Court Side Stand","3B Food Court Side Stand","Biergarten Food Stand","Blue Point Bar","Heavy Reel Brewing Taphouse","Behind Homeplate Signage","Walls behind On-Deck Signage","Dugout Rails","Concourse Photo Spot (1 of 1)","Concourse Vending Machine","Fan Engagement Signage throughout the ballpark","Lawn Signs","Photo Spot Chair","Buster's Photo Spot"]],
+  ["Misc. Signage", ["Planter Signage","Planter Signage (2)","Planter Signage (3)","Team Store Signage","Planter Signage (4)","Concourse Kiosk"]]
+];
+function aaEntitlementSlots(){ const out=[]; AA_ENTITLEMENT.forEach(([grp,items],gi)=>items.forEach((l,i)=>out.push({ key:"ent-"+gi+"-"+i, label:l, group:grp }))); return out; }
+const AA_GAMEDAY_SCRIPT = ["Pre-Game PA Read","Pre-Game Commercial","Pre-Game Ceremony","Pre-Game Action","In-Game PA Read","In-Game Commercial","In-Game Feature","In-Game Action","Post-Game Commercial","Post-Game PA Read","Post-Game Activities"];
+const AA_WEEKLY_PROMOS = ["Summer Concert Series","Kids Club","Kids Eat Free","Kids Run the Bases","Silver Sluggers","Seniors Eat Free","Thirsty Thursday","Pooch Passes","Wednesdays","Thirsty Thursday Wings","Summer Concert Series Wings","Saturday Special","Pups in the Park","Medusas","Sunday Special"];
+const AA_TICKET_TYPES = ["Season Tickets","Half-Season Tickets","Party Deck Outings","Champions Club Outings","Luxury Suite Outings","Picnic Outings","Fire Pit Outings","Miscellaneous Tickets"];
+const AA_SUITE_SECTIONS = ["Section 104","Section 105","Section 106","Section 106 (b)","Section 107","Section 107 (b)","Section 108","Section 109","Section 109 (b)","Section 110","Section 111","Section 111 (b)"];
+const AA_SECTION_SIGNS = ["Section 104","Section 105","Section 106","Section 106 (b)","Section 107 (DOWN)","Section 108/109","Section 109","Section 110","Section 111","Section 112"];
+const AA_CONCOURSE = (()=>{ const o=[]; for(let i=1;i<=18;i++){ o.push({key:"csign-"+i,label:"Concourse Sign "+i}); if(i<=7) o.push({key:"alcove-"+i,label:"Alcove Sign "+i,alcove:true}); } return o; })();
+
+const AA_CATS = [
+  { group:"Ballpark signage", key:"uppertier", label:"Upper Tier Billboards", kind:"link", view:"displays", desc:"Kept as-is on the ballpark board — 10 upper-tier boards with 2:1 panel placement." },
+  { group:"Ballpark signage", key:"homerun", label:"Home Run Wall", kind:"link", view:"displays", desc:"Home Run Wall placement lives on the ballpark board (2:1 sets, LF/CF/RF)." },
+  { group:"Ballpark signage", key:"concourse", label:"Concourse & Alcoves", kind:"leftright", slots:AA_CONCOURSE, fields:AA_NOTE, desc:"Concourse sign slots with alcove signs. Drag a partner onto a slot." },
+  { group:"Ballpark signage", key:"suites", label:"Suite Signs", kind:"leftright", slots:aaLabeledSlots("suite",AA_SUITE_SECTIONS), fields:AA_NOTE, desc:"One slot per suite sign section." },
+  { group:"Ballpark signage", key:"sections", label:"Section Signs", kind:"leftright", slots:aaLabeledSlots("sect",AA_SECTION_SIGNS), fields:AA_NOTE, desc:"Simple two-row section sign allocation." },
+  { group:"Ballpark signage", key:"entitlements", label:"Entitlement Areas & Other", kind:"leftright", slots:aaEntitlementSlots(), grouped:true, fields:AA_NOTE, desc:"Naming rights and every inventory item, grouped by category." },
+  { group:"Digital & broadcast", key:"marquee", label:"Digital Marquee", kind:"link", view:"marquee", desc:"32 marquee slots with run windows, artwork & history." },
+  { group:"Digital & broadcast", key:"ddn", label:"Digital Display Network", kind:"leftright", slots:aaLabeledSlots("ddn",Array.from({length:30},(_,i)=>"Display Slot "+(i+1))), fields:[{key:"file",label:"File",type:"select",options:["JPG","MP4"]},{key:"dur",label:"Duration",type:"text"}], desc:"30 display slots. Add JPG/MP4 and a duration to each." },
+  { group:"Digital & broadcast", key:"scoreboard", label:"Scoreboard", kind:"link", view:"scoreboard", desc:"Inning sponsor, elite & premiere rotators — on the Scoreboard board." },
+  { group:"Digital & broadcast", key:"enews", label:"E-Newsletters", kind:"link", view:"enews", desc:"Top/Bottom dropper — weekly e-newsletter slots & schedule." },
+  { group:"Digital & broadcast", key:"website", label:"Website Advertisements", kind:"leftright", dynamic:true, fields:[{key:"link",label:"Link",type:"text"},{key:"notes",label:"Notes",type:"text"}], desc:"Add a partner per website ad placement." },
+  { group:"Digital & broadcast", key:"social", label:"Social Media", kind:"leftright", dynamic:true, fields:[{key:"action",label:"Action/Promotion",type:"text"},{key:"outlets",label:"Outlets",type:"text"},{key:"qty",label:"Quantity",type:"text"},{key:"timing",label:"Date/Timing",type:"text"}], desc:"Drag a partner into a social slot and fill the details." },
+  { group:"Digital & broadcast", key:"broadcast", label:"Broadcast & Podcast", kind:"leftright", dynamic:true, groups:["Audio Broadcast","Podcast Partners"], fields:[{key:"notes",label:"Notes / read",type:"text"}], desc:"One list for audio broadcast (commercials & live reads), one for podcast partners." },
+  { group:"Gameday", key:"gamesponsors", label:"Game Sponsors", kind:"leftright", dynamic:true, fields:[{key:"date",label:"Date",type:"date"},{key:"dow",label:"Day",type:"text"},{key:"theme",label:"Theme night",type:"text"},{key:"fw",label:"Fireworks",type:"select",options:["No","Yes"]}], desc:"Allocate a game sponsor with its date, day of week, theme night & fireworks." },
+  { group:"Gameday", key:"gamedayscript", label:"Gameday Script", kind:"leftright", slots:aaLabeledSlots("gds",AA_GAMEDAY_SCRIPT), fields:AA_NOTE, desc:"Pre/in/post-game reads, commercials, features & actions." },
+  { group:"Gameday", key:"weekly", label:"Weekly Promotions", kind:"leftright", slots:aaLabeledSlots("wk",AA_WEEKLY_PROMOS), fields:AA_NOTE, desc:"Recurring weekly promotions." },
+  { group:"Hospitality & tickets", key:"tableplaza", label:"Table & Plaza Displays", kind:"leftright", dynamic:true, fields:[{key:"kind",label:"Table/Plaza",type:"select",options:["Table","Plaza"]},{key:"qty",label:"Quantity",type:"text"},{key:"dates",label:"Dates",type:"text"}], desc:"Table or plaza, sponsor, quantity & dates." },
+  { group:"Hospitality & tickets", key:"tickets", label:"Tickets", kind:"leftright", dynamic:true, groups:AA_TICKET_TYPES, fields:[{key:"qty",label:"Quantity",type:"text"},{key:"dates",label:"Dates",type:"text"},{key:"notes",label:"Notes",type:"text"}], desc:"Ticket & outing allocation, separated by type." },
+  { group:"Hospitality & tickets", key:"other", label:"Other Assets", kind:"leftright", dynamic:true, fields:AA_NOTE, desc:"Anything that doesn't fit another category." }
+];
+function aaCatDef(key){ return AA_CATS.find(c=>c.key===key); }
+
+function renderAssetAllocView(){
+  const rail = document.getElementById("assetallocRail");
+  if (!rail) return;
+  if (!aaState.cat) aaState.cat = AA_CATS[0].key;
+  const d = aaData();
+  const groups = [];
+  AA_CATS.forEach(c => { let g = groups.find(x=>x.label===c.group); if (!g){ g={label:c.group, items:[]}; groups.push(g); } g.items.push(c); });
+  rail.innerHTML = groups.map(g => `<div class="aa-cat-group-label">${esc(g.label)}</div>` + g.items.map(c => {
+    const count = aaCatCount(d, c);
+    return `<button class="aa-cat-btn ${c.key===aaState.cat?'active':''}" data-aacat="${esc(c.key)}"><span>${esc(c.label)}</span>${c.kind==='link'?`<span class="aa-cat-tag">board ↗</span>`:count?`<span class="aa-cat-tag">${count}</span>`:''}</button>`;
+  }).join("")).join("");
+  rail.querySelectorAll("[data-aacat]").forEach(b => b.onclick = () => { aaState.cat = b.dataset.aacat; renderAssetAllocView(); });
+  renderAssetAllocBody();
+}
+function aaCatCount(d, c){
+  const store = d[c.key]; if (!store) return 0;
+  if (c.dynamic) return (store.__rows||[]).filter(r=>r.sponsorId).length;
+  return Object.keys(store).filter(k=>k!=="__rows" && store[k] && store[k].sponsorId).length;
+}
+function renderAssetAllocBody(){
+  const body = document.getElementById("assetallocBody");
+  const c = aaCatDef(aaState.cat); if (!body || !c) return;
+  if (c.kind === "link"){
+    body.innerHTML = `<div class="table-card" style="padding:var(--space-24);">
+      <div class="aa-group-title" style="margin-top:0;">${esc(c.label)}</div>
+      <p class="aa-cat-intro">${esc(c.desc||"")}</p>
+      <button class="primary-button aa-openboard" data-aaopen="${esc(c.view)}">Open ${esc(c.label)} board →</button>
+    </div>`;
+    body.querySelector("[data-aaopen]").onclick = () => showView(c.view);
+    return;
+  }
+  const cand = aaCandidates();
+  body.innerHTML = `<div class="aa-lr">
+    <aside class="aa-lr-left">
+      <div class="aa-lr-left-head"><h2>Signed partners</h2></div>
+      <div class="search-box aa-lr-search">⌕ <input id="aaPartnerSearch" type="search" placeholder="Search partners" value="${esc(aaState.q||'')}"></div>
+      <div class="sched-tray aa-partner-grid" id="aaPartnerGrid"></div>
+    </aside>
+    <section class="aa-lr-right">
+      <div class="aa-group-title" style="margin-top:0;">${esc(c.label)}</div>
+      <p class="aa-cat-intro">${esc(c.desc||"")}</p>
+      <div id="aaSlots"></div>
+    </section>
+  </div>`;
+  const search = document.getElementById("aaPartnerSearch");
+  search.oninput = () => { aaState.q = search.value; aaRenderPartners(cand); };
+  aaRenderPartners(cand);
+  aaRenderSlots(c);
+}
+function aaRenderPartners(cand){
+  const grid = document.getElementById("aaPartnerGrid"); if (!grid) return;
+  const q = (aaState.q||"").toLowerCase().trim();
+  const list = cand.filter(r => !q || (r.sponsor||"").toLowerCase().includes(q));
+  grid.innerHTML = list.length ? list.map(r => `<div class="sched-card" draggable="true" data-aasp="${esc(r.id)}"><div class="sched-card-top">${nt_logoHTML(r,24)}<span class="nt-card-name">${esc(r.sponsor)}</span></div></div>`).join("") : `<div class="nt-empty">No matching partners</div>`;
+  grid.querySelectorAll("[data-aasp]").forEach(c => c.addEventListener("dragstart", e => nt_dragStart(e, c.dataset.aasp)));
+}
+function aaFieldsHTML(c, obj, scope, id){
+  if (!c.fields || !c.fields.length) return "";
+  const f = (obj && obj.fields) || {};
+  return `<div class="aa-fieldrow">` + c.fields.map(fd => {
+    const v = f[fd.key] != null ? f[fd.key] : "";
+    const attr = `data-aaf="${esc(scope)}" data-aaid="${esc(id)}" data-aafk="${esc(fd.key)}"`;
+    if (fd.type === "select") return `<label>${esc(fd.label)}<select ${attr}>${["",...fd.options].map(o=>`<option value="${esc(o)}" ${String(v)===o?'selected':''}>${o?esc(o):"—"}</option>`).join("")}</select></label>`;
+    const t = fd.type === "date" ? "date" : "text";
+    return `<label>${esc(fd.label)}<input type="${t}" ${attr} value="${esc(v)}"></label>`;
+  }).join("") + `</div>`;
+}
+function aaSlotCardHTML(c, label, scope, id, obj, extraHead){
+  const r = obj && obj.sponsorId ? getRecord(obj.sponsorId) : null;
+  return `<div class="aa-slot ${r?'filled':''}">
+    <div class="aa-slot-head"><span class="aa-slot-num">${esc(label)}</span><span style="display:flex; gap:var(--space-6);">${extraHead||""}${r?`<button class="sb-x" data-aaclear="${esc(scope)}" data-aaid="${esc(id)}" title="Clear">×</button>`:''}</span></div>
+    <div class="aa-slot-drop" data-aadrop="${esc(scope)}" data-aaid="${esc(id)}">${r?`<div class="aa-slot-placed">${nt_logoHTML(r,20)}<span>${esc(r.sponsor)}</span></div>`:`<button class="aa-assign" data-aaassign="${esc(scope)}" data-aaid="${esc(id)}">＋ Assign sponsor</button>`}</div>
+    ${aaFieldsHTML(c, obj, scope, id)}
+  </div>`;
+}
+function aaRenderSlots(c){
+  const wrap = document.getElementById("aaSlots"); if (!wrap) return;
+  const d = aaData(); const store = aaCat(d, c.key);
+  let html = "";
+  if (c.dynamic){
+    const rows = store.__rows || [];
+    const groups = c.groups || [null];
+    groups.forEach(g => {
+      if (g) html += `<div class="aa-group-title">${esc(g)}</div>`;
+      const groupRows = rows.map((r,i)=>({r,i})).filter(x => (x.r.group||null) === (g||null) || (!c.groups));
+      html += `<div class="aa-slot-grid">` + groupRows.map(x => aaSlotCardHTML(c, "Slot "+(x.i+1), "row", String(x.i), x.r)).join("") + `</div>`;
+      html += `<button class="secondary-button" data-aaaddrow="${esc(g||'')}" style="margin:var(--space-8) 0 var(--space-12);">+ Add ${esc(g||c.label.replace(/s$/,''))}</button>`;
+    });
+  } else {
+    const slots = c.slots || [];
+    if (c.grouped){
+      const byGroup = [];
+      slots.forEach(s => { let gg=byGroup.find(x=>x.label===s.group); if(!gg){gg={label:s.group,items:[]}; byGroup.push(gg);} gg.items.push(s); });
+      byGroup.forEach(gg => { html += `<div class="aa-group-title">${esc(gg.label)}</div><div class="aa-slot-grid">` + gg.items.map(s => aaSlotCardHTML(c, s.label, "slot", s.key, store[s.key])).join("") + `</div>`; });
+    } else {
+      html += `<div class="aa-slot-grid">` + slots.map(s => aaSlotCardHTML(c, s.label, "slot", s.key, store[s.key])).join("") + `</div>`;
+    }
+  }
+  wrap.innerHTML = html;
+  aaWireSlots(c);
+}
+function aaGetTarget(c, scope, id){
+  const d = aaData(); const store = aaCat(d, c.key);
+  if (scope === "row"){ store.__rows = store.__rows || []; return { d, obj: store.__rows[+id] }; }
+  if (!store[id]) store[id] = {}; return { d, obj: store[id] };
+}
+function aaWireSlots(c){
+  const setSponsor = (scope, id, spId) => { const d = aaData(); const store = aaCat(d, c.key); if (scope==="row"){ store.__rows=store.__rows||[]; if(store.__rows[+id]) store.__rows[+id].sponsorId = spId; } else { if(!store[id]) store[id]={}; store[id].sponsorId = spId; } aaPersist(d); renderAssetAllocView(); };
+  document.querySelectorAll("#aaSlots [data-aadrop]").forEach(el => nt_wireDrop(el, spId => setSponsor(el.dataset.aadrop, el.dataset.aaid, spId)));
+  document.querySelectorAll("#aaSlots [data-aaassign]").forEach(b => b.addEventListener("click", () => nt_pickSponsor(b, aaCandidates(), r => { if (r) setSponsor(b.dataset.aaassign, b.dataset.aaid, r.id); })));
+  document.querySelectorAll("#aaSlots [data-aaclear]").forEach(b => b.addEventListener("click", () => { const d=aaData(); const store=aaCat(d,c.key); const scope=b.dataset.aaclear,id=b.dataset.aaid; if(scope==="row"){ if(store.__rows&&store.__rows[+id]) store.__rows[+id].sponsorId=null; } else if(store[id]){ store[id].sponsorId=null; } aaPersist(d); renderAssetAllocView(); }));
+  document.querySelectorAll("#aaSlots [data-aaf]").forEach(el => el.addEventListener("change", () => {
+    const d=aaData(); const store=aaCat(d,c.key); const scope=el.dataset.aaf,id=el.dataset.aaid,fk=el.dataset.aafk;
+    let obj; if(scope==="row"){ store.__rows=store.__rows||[]; obj=store.__rows[+id]; } else { if(!store[id]) store[id]={}; obj=store[id]; }
+    if(!obj) return; obj.fields = obj.fields || {}; obj.fields[fk] = el.value; aaPersist(d);
+  }));
+  document.querySelectorAll("#aaSlots [data-aaaddrow]").forEach(b => b.addEventListener("click", () => { const d=aaData(); const store=aaCat(d,c.key); store.__rows=store.__rows||[]; store.__rows.push({ group: b.dataset.aaaddrow||null, sponsorId:null, fields:{} }); aaPersist(d); renderAssetAllocView(); }));
+}
+
 /* ============================ AGREEMENTS ============================ */
 function nt_recordYears(r){
   const ys = new Set();
@@ -17299,7 +17670,7 @@ function agrHubRenderList(){
     return false;
   });
   if (q) recs = recs.filter(r => (r.sponsor||"").toLowerCase().includes(q) || (r.rep||"").toLowerCase().includes(q));
-  const hasAgr = r => !!r.contractFile;
+  const hasAgr = r => sponsorAgreements(r).length > 0;
   recs.sort((a,b) => {
     if (sortMode === "rep") return (a.rep||"~").localeCompare(b.rep||"~") || (a.sponsor||"").localeCompare(b.sponsor||"");
     if (sortMode === "missing") return (hasAgr(a)?1:0) - (hasAgr(b)?1:0) || (a.sponsor||"").localeCompare(b.sponsor||"");
@@ -17319,13 +17690,14 @@ function agrHubRenderList(){
       ${nt_logoHTML(r,34)}
       <div style="min-width:0;"><div class="agr-row-name">${esc(r.sponsor)}</div><div class="agr-row-meta">${esc(r.rep||'No rep')}${r.department?' · '+esc(r.department):''}${extra?` · ${extra} other file${extra===1?'':'s'}`:''}</div></div>
       <div class="agr-row-spacer"></div>
-      ${has
-        ? `<button class="agr-btn-view" data-agrview="${esc(r.id)}" data-agrname="${esc(r.contractFile.name||'Agreement')}">View agreement</button><button class="agr-btn-add" data-agrmanage="${esc(r.id)}">Manage</button>`
-        : `<button class="agr-btn-missing" data-agrmanage="${esc(r.id)}">No Agreement Found — Add</button>`}
+      ${(() => { const ags = sponsorAgreements(r); const first = ags[0];
+        return has
+        ? `<button class="agr-btn-view" data-agrview="${esc(first.key)}" data-agrname="${esc(first.name||'Agreement')}">View${ags.length>1?` (${ags.length})`:''}</button><button class="agr-btn-add" data-agrmanage="${esc(r.id)}">Manage</button>`
+        : `<button class="agr-btn-missing" data-agrmanage="${esc(r.id)}">No Agreement Found — Add</button>`; })()}
     </div>`;
   }).join("") : `<div class="nt-empty">No partners whose term covers ${year}. Try another year.</div>`;
   list.querySelectorAll("[data-agrview]").forEach(b => b.addEventListener("click", () => { if (typeof viewContract === "function") viewContract(b.dataset.agrview, b.dataset.agrname); }));
-  list.querySelectorAll("[data-agrmanage]").forEach(b => b.addEventListener("click", () => { if (typeof openContractModal === "function") openContractModal(b.dataset.agrmanage); }));
+  list.querySelectorAll("[data-agrmanage]").forEach(b => b.addEventListener("click", () => { if (typeof openDrawer === "function") { openDrawer(b.dataset.agrmanage); setTimeout(() => { if (typeof setDrawerSection === "function") try { setDrawerSection("all"); } catch(e){} }, 40); } else if (typeof openContractModal === "function") openContractModal(b.dataset.agrmanage); }));
 }
 
 /* ---- hash deep-link (used by the "Alert Greg" email link, e.g. .../#enews) ---- */
