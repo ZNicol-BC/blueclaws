@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 31 -->
+<!-- BUILD_VERSION: 32 -->
 <!-- BUILD_VERSION: 163 -->
 <!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
@@ -19302,21 +19302,34 @@ function renderSquadView() {
         </td>
       </tr>`;
   }).join("");
-  // season summary
+  // season summary — bar = hours already logged (homestand days on/before today) / each person's
+  // full-summer scheduled hours. "% of their summer done", not vs. a goal target.
+  const seasonToday = (typeof isoTodayLocal === "function") ? isoTodayLocal() : new Date().toISOString().slice(0, 10);
   const seasonMap = {};
-  hs.forEach(h => (h.people || []).forEach(p => {
-    const k = (p.name || "").trim(); if (!k) return;
-    if (!seasonMap[k]) seasonMap[k] = { name: k, hours: 0, goal: 0 };
-    seasonMap[k].hours += squadWeekTotal(p);
-    seasonMap[k].goal += squadNum(p.goal);
-  }));
-  const seasonRows = Object.values(seasonMap).sort((a, b) => b.hours - a.hours).map((s, i) => {
+  hs.forEach(h => {
+    const gd = (h.games || []).map(g => g.date || "");
+    const lastDate = gd.filter(Boolean).sort().slice(-1)[0] || "";
+    const standPast = !!lastDate && lastDate <= seasonToday;   // whole homestand already finished
+    (h.people || []).forEach(p => {
+      const k = (p.name || "").trim(); if (!k) return;
+      if (!seasonMap[k]) seasonMap[k] = { name: k, done: 0, total: 0 };
+      (p.days || []).forEach((d, di) => {
+        const hrs = squadNum(d.hours);
+        seasonMap[k].total += hrs;                       // full-summer scheduled hours
+        const dt = gd[di] || "";
+        const dayDone = dt ? (dt <= seasonToday) : standPast;
+        if (dayDone) seasonMap[k].done += hrs;           // hours already logged to date
+      });
+    });
+  });
+  const seasonRows = Object.values(seasonMap).sort((a, b) => b.total - a.total).map((s, i) => {
     const cols = ["var(--blue)", "var(--gold)", "var(--red)", "var(--navy)"];
-    const pct = s.goal ? Math.min(100, Math.round(s.hours / s.goal * 100)) : 0;
-    return `<div class="renewal-row" style="grid-template-columns:1fr 120px 90px; align-items:center; border-left:3px solid ${cols[i % 4]}; padding-left:var(--space-10);">
+    const pct = s.total ? Math.min(100, Math.round(s.done / s.total * 100)) : 0;
+    const doneR = Math.round(s.done * 10) / 10, totalR = Math.round(s.total * 10) / 10;
+    return `<div class="renewal-row" style="grid-template-columns:1fr 120px 150px; align-items:center; border-left:3px solid ${cols[i % 4]}; padding-left:var(--space-10);">
         <strong>${esc(s.name)}</strong>
-        <div style="height:6px; border-radius:3px; background:var(--line); overflow:hidden;"><div style="height:100%; width:${pct}%; background:${squadGoalColor(s.hours, s.goal)};"></div></div>
-        <div style="text-align:right; font-weight:800; font-family:var(--font-display,inherit);">${Math.round(s.hours * 10) / 10} <span style="font-size:10px; color:var(--muted); font-weight:600;">hrs</span></div>
+        <div title="${pct}% of summer hours logged" style="height:6px; border-radius:3px; background:var(--line); overflow:hidden;"><div style="height:100%; width:${pct}%; background:${squadGoalColor(s.done, s.total)};"></div></div>
+        <div style="text-align:right; font-weight:800; font-family:var(--font-display,inherit);">${doneR} <span style="font-size:10px; color:var(--muted); font-weight:600;">/ ${totalR} hrs</span></div>
       </div>`;
   }).join("");
 
@@ -19343,7 +19356,7 @@ function renderSquadView() {
       </table>
     </div>
     <div class="table-card squad-topbar" style="padding:var(--space-14) var(--space-18);">
-      <div class="table-toolbar" style="padding:0 0 var(--space-10);"><strong style="font-size:14px;">Season hours by person</strong><span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs);">Across all ${hs.length} homestands vs. summed weekly goals</span></div>
+      <div class="table-toolbar" style="padding:0 0 var(--space-10);"><strong style="font-size:14px;">Season hours by person</strong><span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs);">Hours logged to date vs. each person's full-summer schedule</span></div>
       ${seasonRows || `<div class="readonly-note">No staff yet.</div>`}
     </div>`;
 
