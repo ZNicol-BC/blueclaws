@@ -4813,6 +4813,30 @@ function pushSharedData(id, patch, bucket) {
   return flushSharedQueue().then(()=>!hasPendingWrite(id,bucket||"overrides"));
 }
 
+/* ---- Media blob offload --------------------------------------------------------------
+   Every photo/logo upload used to push its full base64 body straight into the "photos"/
+   "logos" bucket's JSON (see data.js) — the same JSON every open browser re-downloads on
+   every poll, and which gets rewritten in FULL on every single upload. That's unbounded:
+   the bigger the library gets, the bigger every poll and every write gets, which is the
+   exact problem that already forced logos and displays onto their own buckets once (see
+   the comments atop data.js) and would eventually force it again as photos keep piling up
+   season after season.
+   media.js stores each image's bytes under its own id instead. Uploads now push a small
+   reference URL (a few dozen bytes) to the metadata bucket rather than the image itself,
+   so bucket size — and every browser's poll payload — stops growing with photo content
+   and only grows with photo count. Other browsers' <img> tags fetch that URL directly and
+   let the browser's own HTTP cache handle it; no JS-managed cache needed for those bytes.
+   Falls back to syncing the full dataUrl (today's behavior) if the media upload fails
+   (offline, or media.js isn't deployed yet), so nothing regresses versus before this. */
+const MEDIA_ENDPOINT = "/.netlify/functions/media";
+function mediaUrlForId(id) { return `${MEDIA_ENDPOINT}?id=${encodeURIComponent(id)}`; }
+function uploadMediaBlob(id, dataUrl) {
+  if (!SHARED_SYNC_ENABLED || typeof dataUrl !== "string" || !dataUrl.startsWith("data:")) return Promise.resolve(null);
+  return fetch(MEDIA_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, dataUrl }) })
+    .then(res => res.ok ? mediaUrlForId(id) : null)
+    .catch(() => null);
+}
+
 
 /* Baked-in default logos — survive localStorage clears, browser switches, and cache wipes.
    These are the permanent fallback; a user-uploaded logo (saved via saveLogo) always overrides this. */
@@ -5147,7 +5171,10 @@ function saveLogo(id, dataUrl) {
   const logos = { ...loadLogos() };
   if (dataUrl) logos[id] = dataUrl; else delete logos[id];
   saveLogos(logos);
-  pushSharedData(id, { logoDataUrl: dataUrl || null }, "logos");
+  // This browser keeps the full local dataUrl (fast, no round-trip) via saveLogos above;
+  // only the copy synced to other browsers becomes a small reference URL once uploaded.
+  if (dataUrl) uploadMediaBlob(id, dataUrl).then(mediaUrl => pushSharedData(id, { logoDataUrl: mediaUrl || dataUrl }, "logos"));
+  else pushSharedData(id, { logoDataUrl: null }, "logos");
   return true;
 }
 function getLogo(id) { return loadLogos()[id] || LOGO_SEED[id] || null; }
@@ -13105,7 +13132,13 @@ function handlePhotoUpload(files, opts = {}) {
     const newPhotos = results.map(r => ({ id: "photo_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7), dataUrl: r.dataUrl, fileName: r.fileName, width: r.width, height: r.height, sponsorId, sponsorName, popAsset, reportTag, addedAt: new Date().toISOString() }));
     newPhotos.forEach(p => lib.push(p));
     savePhotoLibraryLocalOnly(lib);
-    newPhotos.forEach(p => pushSharedData(p.id, { dataUrl: p.dataUrl, fileName: p.fileName, width: p.width, height: p.height, sponsorId, sponsorName, popAsset, reportTag: p.reportTag, addedAt: p.addedAt, deleted: false }, "photos"));
+    // This browser keeps the full local dataUrl (fast, no round-trip) via lib/savePhotoLibraryLocalOnly
+    // above; only the copy synced to other browsers becomes a small reference URL once uploaded.
+    newPhotos.forEach(p => {
+      uploadMediaBlob(p.id, p.dataUrl).then(mediaUrl => {
+        pushSharedData(p.id, { dataUrl: mediaUrl || p.dataUrl, fileName: p.fileName, width: p.width, height: p.height, sponsorId, sponsorName, popAsset, reportTag: p.reportTag, addedAt: p.addedAt, deleted: false }, "photos");
+      });
+    });
     if (!opts.silent) { renderPhotoLibrary(); toast("Added", `${results.length} photo${results.length === 1 ? "" : "s"} added to the library`); }
     return newPhotos;
   });
