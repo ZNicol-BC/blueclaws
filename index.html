@@ -7553,7 +7553,7 @@ function initQuickSearch() {
   });
 }
 const FAVORITE_ACTIONS_KEY = "bciq_favorite_actions";
-const FAVORITE_ACTION_DEFAULTS = ["add_sponsor", "gameday", "assetalloc", "mytasks", "new_request"];
+const FAVORITE_ACTION_DEFAULTS = [];
 const FAVORITE_ACTION_GROUPS = [
   { tab: "Partnership Performance", actions: [
     { key: "overview", label: "Partnership Performance", view: "overview" },
@@ -7635,7 +7635,7 @@ function renderFavoriteActions() {
   list.innerHTML = picked.map(key => {
     const a = flat.find(x => x.key === key);
     return a ? `<button class="favorite-action-btn" type="button" data-favorite-action="${esc(a.key)}">${esc(a.label)}</button>` : "";
-  }).join("") || `<div class="global-search-empty">No favorites yet.</div>`;
+  }).join("");
   list.querySelectorAll("[data-favorite-action]").forEach(btn => btn.onclick = () => runFavoriteAction(btn.dataset.favoriteAction));
   tabSel.innerHTML = FAVORITE_ACTION_GROUPS.map((g, i) => `<option value="${i}">${esc(g.tab)}</option>`).join("");
   function fillActionOptions() {
@@ -10806,7 +10806,10 @@ function renderReqDetail(r) {
     btns.push(`<button class="secondary-button" data-reqact="assign" data-reqid="${esc(r.id)}">Assign to…</button>`);
   }
   if (r.status === "in_progress") {
-    btns.push(`<button class="present-button" data-reqact="ready" data-reqid="${esc(r.id)}" ${canAct ? "" : "disabled"}>Submit for approval</button>`);
+    btns.push(r.type === "asset_prep"
+      ? `<button class="present-button" data-reqact="complete" data-reqid="${esc(r.id)}" ${canAct ? "" : "disabled"}>Mark complete</button>`
+      : `<button class="present-button" data-reqact="ready" data-reqid="${esc(r.id)}" ${canAct ? "" : "disabled"}>Submit for approval</button>`);
+    btns.push(`<button class="secondary-button" data-reqact="unclaim" data-reqid="${esc(r.id)}" ${canAct ? "" : "disabled"}>Unclaim</button>`);
     btns.push(`<button class="secondary-button" data-reqact="assign" data-reqid="${esc(r.id)}">Reassign…</button>`);
   }
   if (r.status === "approved") {
@@ -11007,12 +11010,21 @@ function openPartnerDetailsFromRequest(r) {
 }
 function openRequestWorkTarget(r) {
   if (!r) return;
+  reqState.expanded = r.id;
+  reqState.status = reqIsOpen(r) ? "open" : "complete";
   if (r.type === "confirm_partner_details" || r.type === "sponsor_task") { openPartnerDetailsFromRequest(r); return; }
   if (r.type === "upload_agreement") {
     if (openPartnerDetailsFromRequest(r)) setTimeout(() => { if (typeof promptAddAgreement === "function") promptAddAgreement(r.sponsorId); }, 140);
     return;
   }
-  if (r.type === "asset_prep") { showView("assetprep"); toast("Asset Prep", `${r.sponsorName} is ready for prep email work.`, true); return; }
+  if (r.type === "asset_prep") {
+    const rec = r.sponsorId ? getRecord(r.sponsorId) : null;
+    if (rec && typeof apPrefillFromSponsor === "function") { apState.sponsorId = rec.id; apPrefillFromSponsor(rec); }
+    showView("assetprep");
+    if (typeof renderAssetPrepView === "function") renderAssetPrepView();
+    toast("Asset Prep", `${r.sponsorName} is ready for prep email work.`, true);
+    return;
+  }
   if (r.type === "create_breakdown") {
     const rec = r.sponsorId ? getRecord(r.sponsorId) : null;
     const score = rec && (rec.scoreLink || rec.scoreUrl || rec.score);
@@ -11076,6 +11088,15 @@ function wireReqDetailActions() {
         const claimed = loadRequests().find(x => x.id === id);
         if (claimed && ["custom_presentation", "agreement", "term_sheet"].includes(claimed.type)) notifyClaimedToTeam(claimed, me);   // N23 / N32
         if (claimed) setTimeout(() => openRequestWorkTarget(claimed), 180);
+
+      } else if (act === "unclaim") {
+        withRequest(id, r => {
+          r.owner = "";
+          r.claimedAt = "";
+          r.status = "requested";
+          reqLog(r, "unclaimed the request");
+        });
+        toast("Unclaimed", "This task is available for someone else to claim.", true);
 
       } else if (act === "accountdetails") {
         const src = loadRequests().find(x => x.id === id);
@@ -11417,7 +11438,14 @@ function prepIntroFor(status, timing, sponsorName) {
   const tpl = loadPrepTemplates();
   const st = tpl[status] ? status : "New sponsor";
   const cell = (tpl[st] && (tpl[st][timing] || tpl[st]["In-season"])) || (ASSET_PREP_INTROS[st] ? ASSET_PREP_INTROS[st](sponsorName) : "");
-  return String(cell || "").replace(/\{sponsor\}/g, sponsorName || "your team");
+  let text = String(cell || "").replace(/\{sponsor\}/g, sponsorName || "your team");
+  if (st === "New sponsor") {
+    text = text
+      .replace(/,\s*as well as your 2025 Annual Report for reference/gi, "")
+      .replace(/as well as your 2025 Annual Report for reference\.?\s*/gi, "")
+      .split(/\n/).filter(line => !/annual report link|paste 2025 annual report/i.test(line)).join("\n").trim();
+  }
+  return text;
 }
 /* When an Asset Prep email is generated, fold what was entered back into the sponsor record: the
    recipient becomes a contact, and the covered assets are added to the deal/fulfillment lists if
@@ -11459,10 +11487,10 @@ function buildAssetPrepEmail(r) {
   const f = r.fields || {};
   const tone = f.tone || "New sponsor";
   const timing = f.timing || currentPrepTiming();
-  const firstName = String(f.recipients || "").split(/[,;]/)[0].trim().split(/\s+/)[0] || "there";
+  const greetingName = r.sponsorName || "there";
   const intro = prepIntroFor(tone, timing, r.sponsorName);
   const out = [];
-  out.push(`Hey ${firstName},`);
+  out.push(`Hey ${greetingName},`);
   out.push("");
   out.push(intro);
   out.push("");
@@ -11729,6 +11757,7 @@ function paintReqForm(sponsorsArg) {
     </div>`;
 
   initBcCombobox("reqf_sponsor");
+  document.getElementById("reqf_sponsor").onchange = e => { wrap.dataset.sponsor = e.target.value; paintReqForm(sponsors); };
   if (document.getElementById("reqf_optionsRef")) initBcCombobox("reqf_optionsRef");
   wireAssetListFields();
   wirePaymentFields();
@@ -12231,9 +12260,10 @@ function renderFolderGrid() {
 function showFolderGrid() {
   aState.mode = "folders"; aState.category = null;
   document.getElementById("folderView").style.display = "block";
-  document.getElementById("assetListView").style.display = "none";
+  document.getElementById("assetListView").style.display = "block";
   document.getElementById("assetBackBtn").style.display = "none";
   renderFolderGrid();
+  renderAssetTable();
 }
 // Real-world occupancy for the Assets & Inventory folders, sourced from the bracket
 // tags already embedded in each sponsor's assets field (e.g. "[Home Run Wall]
@@ -15438,6 +15468,7 @@ function drawerTemplate(r) {
               </div>`).join("")}</div>`
           : `<div class="readonly-note" style="margin-bottom:var(--space-8);">No agreements uploaded yet for this sponsor.</div>`; })()}
         <button type="button" class="secondary-button" id="drawerAddAgreementBtn" style="margin-top:var(--space-8);">+ Add agreement</button>
+        <div class="agreement-dropzone" id="drawerAgreementDropzone" style="margin-top:var(--space-8);">Drop agreement PDF here</div>
       </div>
 
       <div class="sdsection drawer-uploads-section">
@@ -15520,6 +15551,18 @@ function openDrawer(id) {
   setDrawerSection("sdsec-account");
   const addAgreementBtn = document.getElementById("drawerAddAgreementBtn");
   if (addAgreementBtn) addAgreementBtn.onclick = () => promptAddAgreement(r.id);
+  const agreementDrop = document.getElementById("drawerAgreementDropzone");
+  if (agreementDrop) {
+    agreementDrop.addEventListener("click", () => promptAddAgreement(r.id));
+    agreementDrop.addEventListener("dragover", e => { e.preventDefault(); agreementDrop.classList.add("is-dragover"); });
+    agreementDrop.addEventListener("dragleave", () => agreementDrop.classList.remove("is-dragover"));
+    agreementDrop.addEventListener("drop", e => {
+      e.preventDefault();
+      agreementDrop.classList.remove("is-dragover");
+      addAgreementFilesFromList(r.id, e.dataTransfer ? e.dataTransfer.files : null);
+      setTimeout(() => openDrawer(r.id), 250);
+    });
+  }
   drawer.querySelectorAll("[data-agr-remove]").forEach(b => b.onclick = () => {
     if (!confirm("Remove this agreement?")) return;
     removeAgreement(r.id, b.dataset.agrRemove); openDrawer(r.id);
@@ -16964,12 +17007,13 @@ function confirmAssignReq() {
   const r = loadRequests().find(x => x.id === id);
   closeAssignModal();
   toast("Assigned", who);
-  if (r) notifyAssignee(r, who);
+  if (r && who !== currentUser()) notifyAssignee(r, who);
 }
 /* Email alert on assignment. A single-file client-side app has no mail transport, so this hands
    off to the assigner's own mail client with the body pre-filled. Swap for a real send when
    there's a backend — the call site does not change. */
 function notifyAssignee(r, who) {
+  if (who && who === currentUser()) return;
   const addr = reqEmailFor(who);
   if (!addr) return;
   const typeLabel = (REQ_TYPES[r.type] || {}).label || "request";
