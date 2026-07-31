@@ -1192,6 +1192,7 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .app-shell.sidebar-collapsed .sidebar-affiliation,
 .app-shell.sidebar-collapsed .onclock,
 .app-shell.sidebar-collapsed .global-search,
+.app-shell.sidebar-collapsed .favorite-actions,
 .app-shell.sidebar-collapsed .sidebar-links,
 .app-shell.sidebar-collapsed .sidebar-watermark,
 .app-shell.sidebar-collapsed .side-chat,
@@ -2597,6 +2598,27 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
 .global-search-result strong{font:800 12px/1.15 var(--font-display);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .global-search-result span{display:block;margin-top:2px;color:#aeb9cc;font-size:11px;line-height:1.25}
 .global-search-empty{padding:10px;color:#aeb9cc;font-size:var(--text-xs)}
+.favorite-actions{padding:0 var(--space-4) var(--space-8)}
+.favorite-actions-list{display:flex;flex-direction:column;gap:4px}
+.favorite-action-btn{width:100%;min-height:30px;border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-sm);background:rgba(255,255,255,.06);color:#dbe5f5;font-size:12px;font-weight:700;text-align:left;padding:6px 8px;cursor:pointer}
+.favorite-action-btn:hover{background:rgba(255,255,255,.11);color:#fff}
+.favorite-action-edit{margin-top:6px;width:100%;border:1px dashed rgba(255,255,255,.18);border-radius:var(--radius-sm);background:transparent;color:#aeb9cc;font-size:11px;font-weight:800;padding:6px;cursor:pointer}
+.favorite-action-panel{display:none;margin-top:6px;padding:8px;border:1px solid rgba(255,255,255,.14);border-radius:var(--radius-md);background:rgba(13,29,65,.88)}
+.favorite-action-panel.show{display:block}
+.favorite-action-panel label{display:block;margin-bottom:6px;color:#aeb9cc;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.favorite-action-panel select{width:100%;min-height:30px;margin-top:3px;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);background:#0d1d41;color:#fff;font-size:12px}
+.favorite-action-panel .favorite-action-panel-actions{display:flex;gap:6px;margin-top:8px}
+.favorite-action-panel button{flex:1;min-height:28px;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);background:rgba(255,255,255,.08);color:#fff;font-size:11px;font-weight:800;cursor:pointer}
+.schedule-main-grid{display:grid;grid-template-columns:minmax(260px,360px) minmax(0,1fr);gap:var(--space-16);align-items:start}
+.schedule-agenda-compact{display:grid;gap:var(--space-8)}
+.schedule-pill{display:grid;grid-template-columns:58px minmax(0,1fr);gap:var(--space-8);align-items:center;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:var(--radius-md);background:var(--card);padding:var(--space-8) var(--space-10);cursor:pointer}
+.schedule-pill.is-overdue{border-left-color:var(--red)}
+.schedule-pill strong{display:block;font-size:12px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.schedule-pill span{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase}
+.schedule-pill small{display:block;color:var(--muted);font-size:11px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-tags{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
+.cal-tag{max-width:100%;border:1px solid var(--line);border-radius:var(--radius-pill);background:var(--blue-soft);color:var(--blue-text);font-size:9px;font-weight:800;padding:1px 5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:980px){.schedule-main-grid{grid-template-columns:1fr}}
 #statusView .status-board{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-8)}
 #statusView .status-column-head{padding:8px 10px}
 #statusView .status-column-head strong{font-size:12px}
@@ -2654,6 +2676,19 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
         <div class="global-search" id="globalSearchWrap">
           <label class="global-search-box" for="globalSearchInput"><span aria-hidden="true">&#8981;</span><input id="globalSearchInput" type="search" autocomplete="off" placeholder="Quick search"></label>
           <div class="global-search-results" id="globalSearchResults" role="listbox" aria-label="Quick search results"></div>
+        </div>
+        <div class="favorite-actions" id="favoriteActionsWrap">
+          <span class="nav-label" style="padding-left:0;">Favorite Actions</span>
+          <div class="favorite-actions-list" id="favoriteActionsList"></div>
+          <button class="favorite-action-edit" id="favoriteActionsEdit" type="button">Customize</button>
+          <div class="favorite-action-panel" id="favoriteActionsPanel">
+            <label>Tab<select id="favoriteActionTab"></select></label>
+            <label>Action<select id="favoriteActionChoice"></select></label>
+            <div class="favorite-action-panel-actions">
+              <button type="button" id="favoriteActionAdd">Add</button>
+              <button type="button" id="favoriteActionReset">Reset</button>
+            </div>
+          </div>
         </div>
         <span class="nav-label">Workspace</span>
 
@@ -2756,11 +2791,11 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <button class="nav-item" data-view="inventory">
               <span class="nav-icon">*</span> Assets &amp; Inventory
             </button>
-            <button class="nav-item" data-view="stadiummap">
-              <span class="nav-icon">&#9678;</span> Stadium Map
-            </button>
             <button class="nav-item" data-view="assetalloc">
               <span class="nav-icon">&#9638;</span> Asset Allocation
+            </button>
+            <button class="nav-item" data-view="stadiummap">
+              <span class="nav-icon">&#9678;</span> Stadium Map
             </button>
           </div>
         </div>
@@ -3643,7 +3678,9 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             </div>
           </div>
           <div class="mini-kpis" id="scheduleKpis"></div>
-          <div class="tracker-list" id="scheduleAgenda" style="margin-bottom:var(--space-16);"></div>
+          <div class="schedule-main-grid">
+            <div class="tracker-list" id="scheduleAgenda"></div>
+            <div>
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--space-14); flex-wrap:wrap; gap:var(--space-10);">
             <div style="display:flex; align-items:center; gap:var(--space-10);">
               <button class="secondary-button" id="calPrevBtn">‹ Prev</button>
@@ -3651,32 +3688,12 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
               <button class="secondary-button" id="calNextBtn">Next ›</button>
               <button class="secondary-button" id="calTodayBtn">Today</button>
             </div>
-            <div style="display:flex; gap:var(--space-10); font-size:var(--text-xs); color:var(--muted); flex-wrap:wrap;">
-              <span><span class="health-dot low" style="margin-right:var(--space-4);"></span>Call</span>
-              <span><span class="health-dot medium" style="margin-right:var(--space-4);"></span>Meeting</span>
-              <span><span class="health-dot high" style="margin-right:var(--space-4);"></span>Follow-up due</span>
-              <span><span class="health-dot" style="background:var(--muted); margin-right:var(--space-4);"></span>Email / Note</span>
+          </div>
+              <div id="calGrid" class="cal-grid"></div>
+              <div id="calDayPanel" style="margin-top:var(--space-16);"></div>
             </div>
           </div>
-          <div id="calGrid" class="cal-grid"></div>
-          <div id="calDayPanel" style="margin-top:var(--space-16);"></div>
 
-          <div class="overview-hero" style="margin-top:var(--space-24);">
-            <div class="overview-hero-brand">
-              <div>
-                <div class="eyebrow">STAFF &amp; INTERN SCHEDULE<span class="season-badge">FINAL 3 HOMESTANDS</span></div>
-                <h1 class="overview-hero-title" style="font-size:20px;">Gameday staffing — 4 full-timers, 7 interns.</h1>
-                <p>Best-effort seed pulled from the uploaded schedule PDF for the season's closing homestands. Every field below is editable — fix a name, hours, or add a brand-new shift as staffing changes.</p>
-              </div>
-            </div>
-          </div>
-          <div class="mini-kpis" id="staffScheduleKpis"></div>
-          <div class="filter-bar">
-            <select id="staffFilterStaff" aria-label="Staff member"></select>
-            <select id="staffFilterWeek" aria-label="Week"></select>
-            <button class="secondary-button" id="staffAddShiftBtn" type="button">+ Add shift</button>
-          </div>
-          <div id="staffScheduleWrap"></div>
         </section>
 
         <!-- ============ SPONSORSHIP HISTORY ============ -->
@@ -6854,6 +6871,18 @@ function gameLabelToIso(label) {
   if (!m || !d) return "";
   return `2026-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 }
+function isoTodayLocal() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function nextGameLabelFromToday() {
+  const todayIso = isoTodayLocal();
+  const next = BLUECLAWS_2026_GAMES
+    .map(g => ({ ...g, iso: gameLabelToIso(g.label) }))
+    .filter(g => g.iso && g.iso >= todayIso)
+    .sort((a, b) => a.iso.localeCompare(b.iso))[0];
+  return (next || BLUECLAWS_2026_GAMES[0] || {}).label || "";
+}
 function fulfillmentAssetsFor(r) {
   const saved = Array.isArray(r.fulfillmentAssets) ? r.fulfillmentAssets : [];
   const savedByAsset = {};
@@ -7331,7 +7360,7 @@ function showView(name) {
     if (typeof renderStadiumMap === "function") renderStadiumMap();
     if (typeof sizeStadiumWrap === "function") requestAnimationFrame(sizeStadiumWrap);
   }
-  if (name === "schedule") { renderScheduleCalendar(); renderStaffSchedule(); }
+  if (name === "schedule") { renderScheduleCalendar(); }
   if (name === "history") renderHistoryView();
   if (name === "prospecting") renderProspectingView();
   if (name === "service") renderServiceView();
@@ -7460,6 +7489,119 @@ function initQuickSearch() {
   document.addEventListener("click", e => {
     if (!e.target.closest("#globalSearchWrap")) box.classList.remove("show");
   });
+}
+const FAVORITE_ACTIONS_KEY = "bciq_favorite_actions";
+const FAVORITE_ACTION_DEFAULTS = ["add_sponsor", "gameday", "assetalloc", "mytasks", "new_request"];
+const FAVORITE_ACTION_GROUPS = [
+  { tab: "Partnership Performance", actions: [
+    { key: "overview", label: "Partnership Performance", view: "overview" },
+    { key: "add_sponsor", label: "Add Sponsor", action: () => { showView("sponsors"); setTimeout(() => document.getElementById("addSponsorBtn")?.click(), 80); } },
+    { key: "review_renewals", label: "Review Renewals", view: "renewals" },
+    { key: "reports", label: "Reports", view: "reports" },
+    { key: "report_recap", label: "Generate Full Sponsor Recap", view: "reports" },
+    { key: "report_risk", label: "Generate Renewal Risk Brief", view: "reports" },
+    { key: "report_category", label: "Generate Category Breakdown", view: "reports" },
+    { key: "report_update", label: "Generate Presentation-Style Sponsorship Update", view: "reports" },
+    { key: "report_pipeline", label: "Generate Pipeline Forecast", view: "reports" },
+    { key: "report_inventory", label: "Generate Inventory Availability", view: "reports" },
+    { key: "report_billing", label: "Generate Billing & Trade", view: "reports" }
+  ] },
+  { tab: "Calendar", actions: [{ key: "schedule", label: "Calendar", view: "schedule" }] },
+  { tab: "Sponsor Ledger", actions: [
+    { key: "sponsors", label: "Sponsor Ledger", view: "sponsors" },
+    { key: "statusview", label: "Renewal Status View", view: "statusview" },
+    { key: "renewals", label: "Renewal Center", view: "renewals" },
+    { key: "prospecting", label: "Prospecting", view: "prospecting" }
+  ] },
+  { tab: "Sponsor Fulfillment", actions: [
+    { key: "fulfillment", label: "Sponsor Fulfillment", view: "fulfillment" },
+    { key: "gameday", label: "Gameday", view: "gameday" },
+    { key: "process", label: "Process Tracker", view: "process" }
+  ] },
+  { tab: "Partner Reports", actions: [
+    { key: "digideck", label: "Report Tracker", view: "digideck" },
+    { key: "midseason_assets", label: "Mid-Season Report Assets", view: "digideck" },
+    { key: "annual_assets", label: "Annual Report Assets", view: "digideck" },
+    { key: "digideck_log", label: "Digideck & Report Log", view: "digideck" },
+    { key: "photolibrary", label: "Photo Library", view: "photolibrary" },
+    { key: "add_photos", label: "Add Photos", action: () => { showView("photolibrary"); setTimeout(() => document.getElementById("addPhotoBtn")?.click(), 80); } }
+  ] },
+  { tab: "Generators", actions: [
+    { key: "options", label: "Options Creator", view: "options" },
+    { key: "agreements", label: "Agreement Generator", view: "agreements" },
+    { key: "assetprep", label: "Asset Prep Hub", view: "assetprep" },
+    { key: "breakdown", label: "Breakdown Generator", view: "breakdown" }
+  ] },
+  { tab: "Assets & Inventory", actions: [
+    { key: "inventory", label: "Assets & Inventory", view: "inventory" },
+    { key: "assetalloc", label: "Asset Allocation", view: "assetalloc" },
+    { key: "stadiummap", label: "Stadium Map", view: "stadiummap" }
+  ] },
+  { tab: "Requests & Tasks", actions: [
+    { key: "requests", label: "Requests & Tasks", view: "requests" },
+    { key: "new_alert", label: "New Alert", action: () => { showView("requests"); setTimeout(() => document.getElementById("reqNewAlertBtn")?.click(), 80); } },
+    { key: "new_request", label: "New Request", action: () => { showView("requests"); setTimeout(() => document.getElementById("reqNewBtn")?.click(), 80); } },
+    { key: "mytasks", label: "My Tasks", view: "mytasks" },
+    { key: "service", label: "Service Squad To-Do", view: "service" },
+    { key: "squad", label: "Sponsorship Squad Schedule", view: "squad" }
+  ] },
+  { tab: "Agreements", actions: [{ key: "agreementhub", label: "Agreements", view: "agreementhub" }] },
+  { tab: "Sponsorship History", actions: [{ key: "history", label: "Sponsorship History", view: "history" }] }
+];
+function favoriteActionFlat() { return FAVORITE_ACTION_GROUPS.flatMap(g => g.actions.map(a => ({ ...a, tab: g.tab }))); }
+function loadFavoriteActions() {
+  try {
+    const parsed = JSON.parse(memStore.getItem(FAVORITE_ACTIONS_KEY) || "null");
+    if (Array.isArray(parsed) && parsed.length) return parsed.filter(Boolean);
+  } catch (e) {}
+  return FAVORITE_ACTION_DEFAULTS.slice();
+}
+function saveFavoriteActions(list) { memStore.setItem(FAVORITE_ACTIONS_KEY, JSON.stringify(list.slice(0, 8))); }
+function runFavoriteAction(key) {
+  const action = favoriteActionFlat().find(a => a.key === key);
+  if (!action) return;
+  if (typeof action.action === "function") action.action();
+  else if (action.view) showView(action.view);
+}
+function renderFavoriteActions() {
+  const list = document.getElementById("favoriteActionsList");
+  const tabSel = document.getElementById("favoriteActionTab");
+  const actionSel = document.getElementById("favoriteActionChoice");
+  if (!list || !tabSel || !actionSel) return;
+  const flat = favoriteActionFlat();
+  const picked = loadFavoriteActions();
+  list.innerHTML = picked.map(key => {
+    const a = flat.find(x => x.key === key);
+    return a ? `<button class="favorite-action-btn" type="button" data-favorite-action="${esc(a.key)}">${esc(a.label)}</button>` : "";
+  }).join("") || `<div class="global-search-empty">No favorites yet.</div>`;
+  list.querySelectorAll("[data-favorite-action]").forEach(btn => btn.onclick = () => runFavoriteAction(btn.dataset.favoriteAction));
+  tabSel.innerHTML = FAVORITE_ACTION_GROUPS.map((g, i) => `<option value="${i}">${esc(g.tab)}</option>`).join("");
+  function fillActionOptions() {
+    const group = FAVORITE_ACTION_GROUPS[Number(tabSel.value)] || FAVORITE_ACTION_GROUPS[0];
+    actionSel.innerHTML = group.actions.map(a => `<option value="${esc(a.key)}">${esc(a.label)}</option>`).join("");
+  }
+  tabSel.onchange = fillActionOptions;
+  fillActionOptions();
+}
+function initFavoriteActions() {
+  const edit = document.getElementById("favoriteActionsEdit");
+  const panel = document.getElementById("favoriteActionsPanel");
+  if (!edit || edit.dataset.wired) return;
+  edit.dataset.wired = "1";
+  edit.onclick = () => panel?.classList.toggle("show");
+  document.getElementById("favoriteActionAdd")?.addEventListener("click", () => {
+    const key = document.getElementById("favoriteActionChoice")?.value;
+    if (!key) return;
+    const list = loadFavoriteActions().filter(x => x !== key);
+    list.unshift(key);
+    saveFavoriteActions(list);
+    renderFavoriteActions();
+  });
+  document.getElementById("favoriteActionReset")?.addEventListener("click", () => {
+    saveFavoriteActions(FAVORITE_ACTION_DEFAULTS);
+    renderFavoriteActions();
+  });
+  renderFavoriteActions();
 }
 
 /* ================= OVERVIEW ================= */
@@ -8743,13 +8885,14 @@ function renderGamedayView() {
   const select = document.getElementById("gamedaySelect");
   if (!select) return;
   const dates = allFulfillmentDateOptions();
-  const existing = select.value || dates[0] || "TBD";
+  const nextGame = nextGameLabelFromToday();
+  const existing = select.value || (dates.includes(nextGame) ? nextGame : "") || dates.find(d => d !== "TBD") || dates[0] || "TBD";
   select.innerHTML = dates.map(d => {
     const g = BLUECLAWS_2026_GAMES.find(x => x.label === d);
     const suffix = g ? ` · ${g.day} ${g.time}${g.opp ? " vs " + (SAL_OPPONENTS[g.opp] || g.opp) : ""}` : "";
     return `<option value="${esc(d)}">${esc(d + suffix)}</option>`;
   }).join("");
-  select.value = dates.includes(existing) ? existing : dates[0];
+  select.value = dates.includes(existing) ? existing : (dates.includes(nextGame) ? nextGame : dates[0]);
   select.onchange = renderGamedayView;
   const picked = select.value;
   const rows = activeSeasonRecords().flatMap(r => fulfillmentAssetsFor(r)
@@ -9094,33 +9237,36 @@ function gatherCalendarEvents() {
   return events;
 }
 function renderScheduleSummary(events) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = isoTodayLocal();
   const overdue = events.filter(e => e.date < today && e.type === "Follow-up").sort((a, b) => a.date.localeCompare(b.date));
-  const upcoming = events.filter(e => e.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 12);
+  const upcoming = events.filter(e => e.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 14);
   const future = events.filter(e => e.date >= today).length;
   document.getElementById("scheduleKpis").innerHTML = `
     <div class="mini-kpi"><span>Scheduled items</span><strong>${events.length}</strong></div>
     <div class="mini-kpi"><span>Overdue follow-ups</span><strong>${overdue.length}</strong></div>
     <div class="mini-kpi"><span>Upcoming items</span><strong>${future}</strong></div>
     <div class="mini-kpi"><span>Source</span><strong style="font-size:12px;">Games + Activity + Reports</strong></div>`;
+  const quickRows = [
+    ...overdue.slice(0, 6).map(e => scheduleAgendaRow(e, true)),
+    ...upcoming.map(e => scheduleAgendaRow(e, false))
+  ].join("");
   document.getElementById("scheduleAgenda").innerHTML = `
-    <article class="table-card" style="margin-bottom:var(--space-12);">
-      <div class="table-toolbar"><strong style="font-size:12px;">Overdue sponsorship work</strong></div>
-      ${overdue.length ? overdue.slice(0, 8).map(e => scheduleAgendaRow(e, true)).join("") : `<div style="padding:var(--space-18); color:var(--muted); font-size:var(--text-xs);">No overdue follow-ups found.</div>`}
-    </article>
-    <article class="table-card">
-      <div class="table-toolbar"><strong style="font-size:12px;">Upcoming sponsorship schedule</strong></div>
-      ${upcoming.length ? upcoming.map(e => scheduleAgendaRow(e, false)).join("") : `<div style="padding:var(--space-18); color:var(--muted); font-size:var(--text-xs);">No upcoming items found.</div>`}
+    <article class="table-card" style="padding:var(--space-12);">
+      <div class="table-toolbar" style="padding:0 0 var(--space-8);"><strong style="font-size:12px;">Upcoming Sponsorship Schedule</strong></div>
+      <div class="schedule-agenda-compact">${quickRows || `<div style="padding:var(--space-18); color:var(--muted); font-size:var(--text-xs);">No upcoming items found.</div>`}</div>
     </article>`;
   document.querySelectorAll("#scheduleAgenda [data-open]").forEach(row => row.addEventListener("click", () => openDrawer(row.dataset.open)));
 }
+function scheduleShortNote(e) {
+  const raw = String(e.note || e.type || "").replace(/\s+/g, " ").trim() || e.type || "Item";
+  return raw.length > 15 ? raw.slice(0, 15).trim() + "..." : raw;
+}
 function scheduleAgendaRow(e, overdue) {
-  return `<div class="renewal-row" style="grid-template-columns: .75fr 1.1fr 1.4fr .8fr auto; cursor:${e.sponsorId ? "pointer" : "default"};" ${e.sponsorId ? `data-open="${esc(e.sponsorId)}"` : ""}>
-    <div><small>Date</small><strong style="font-size:var(--text-xs);">${esc(e.date)}</strong></div>
-    <div><strong>${esc(e.sponsorName)}</strong><small>${esc(e.type)}</small></div>
-    <div><small>Details</small><strong style="font-size:var(--text-xs);">${esc(e.note || "No details")}</strong></div>
-    <div><small>Assigned</small><strong style="font-size:var(--text-xs);">${esc(e.assigned || "Unassigned")}</strong></div>
-    <span class="risk-badge ${overdue ? "high" : "medium"}">${overdue ? "Overdue" : "Scheduled"}</span>
+  const date = new Date(e.date + "T12:00:00");
+  const label = isNaN(date) ? e.date : date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `<div class="schedule-pill ${overdue ? "is-overdue" : ""}" style="cursor:${e.sponsorId ? "pointer" : "default"};" ${e.sponsorId ? `data-open="${esc(e.sponsorId)}"` : ""}>
+    <span>${esc(label)}</span>
+    <div><strong>${esc(e.sponsorName)}</strong><small>${esc(scheduleShortNote(e))}</small></div>
   </div>`;
 }
 function renderScheduleCalendar() {
@@ -9137,7 +9283,7 @@ function renderScheduleCalendar() {
   const startOffset = firstDay.getDay();
   const daysInMonth = new Date(y, mo + 1, 0).getDate();
   const daysInPrevMonth = new Date(y, mo, 0).getDate();
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = isoTodayLocal();
 
   const cells = [];
   for (let i = startOffset - 1; i >= 0; i--) cells.push({ day: daysInPrevMonth - i, dateStr: null, otherMonth: true });
@@ -9155,12 +9301,12 @@ function renderScheduleCalendar() {
     if (c.otherMonth) classes.push("other-month");
     if (c.dateStr === todayStr) classes.push("today");
     if (c.dateStr && c.dateStr === csState.selected) classes.push("selected");
-    const shown = dayEvents.slice(0, 4);
-    const dotsHtml = shown.map(e => `<span class="health-dot ${CAL_TYPE_DOT[e.type] || ""}" style="${CAL_TYPE_DOT[e.type] ? "" : "background:var(--muted);"}" title="${esc(e.sponsorName)}"></span>`).join("");
+    const shown = dayEvents.slice(0, 3);
+    const tagsHtml = shown.map(e => `<span class="cal-tag" title="${esc(e.sponsorName + " - " + (e.note || e.type || ""))}">${esc(scheduleShortNote(e))}</span>`).join("");
     return `<div class="${classes.join(" ")}" data-date="${c.dateStr || ""}">
       <span class="cal-daynum">${c.day}</span>
-      <div class="cal-dots">${dotsHtml}</div>
-      ${dayEvents.length > 4 ? `<span class="cal-more">+${dayEvents.length - 4} more</span>` : ""}
+      <div class="cal-tags">${tagsHtml}</div>
+      ${dayEvents.length > 3 ? `<span class="cal-more">+${dayEvents.length - 3} more</span>` : ""}
     </div>`;
   }).join("");
 
@@ -9844,6 +9990,8 @@ const REQ_TYPES = {
     revisable: false,
     fields: [
       { key: "dateSigned", label: "Date signed", type: "date", required: true },
+      { key: "contractUpload", label: "Upload signed agreement (optional)", type: "file" },
+      { key: "contractLink", label: "Signed agreement link (optional)", type: "text" },
       { key: "notes", label: "Other notes", type: "textarea" }
     ],
     wantsLink: "Signed agreement file or link"
@@ -9870,8 +10018,8 @@ const REQ_TYPES = {
     wantsLink: "Uploaded agreement link"
   },
   create_breakdown: {
-    label: "Create Breakdown & Update Score",
-    short: "Breakdown / Score",
+    label: "Update Score and Create Breakdown",
+    short: "Score / Breakdown",
     blurb: "Create the breakdown, get Rob Vota approval, and confirm Score has been updated.",
     revisable: false,
     fields: [
@@ -10024,6 +10172,41 @@ function saveApprovalConfig(cfg) {
 
 function loadRequests() { try { const v = JSON.parse(memStore.getItem(REQUESTS_KEY)); return Array.isArray(v) ? v : []; } catch { return []; } }
 function saveRequests(arr) { memStore.setItem(REQUESTS_KEY, JSON.stringify(arr)); pushSharedData("requests", { value: JSON.stringify(arr) }); }
+let requestLivePulling = false;
+function requestTaskViewIsActive() {
+  const id = document.querySelector(".view.active")?.id || "";
+  return ["requestsView", "mytasksView", "serviceView"].includes(id);
+}
+async function pullSharedRequestsData(opts = {}) {
+  if (!SHARED_SYNC_ENABLED || requestLivePulling) return false;
+  requestLivePulling = true;
+  try {
+    await flushSharedQueue();
+    const res = await fetch(SHARED_DATA_ENDPOINT + "?bucket=overrides", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const shared = await res.json();
+    const incoming = shared.requests;
+    if (!incoming || incoming.value === undefined || hasPendingWrite("requests", "overrides") || recentlyPushed("requests", "overrides")) return false;
+    const serverValue = incoming.value == null ? null : String(incoming.value);
+    const current = memStore.getItem(REQUESTS_KEY);
+    if (serverValue !== null && serverValue !== current) {
+      memStore.setItem(REQUESTS_KEY, serverValue);
+      if (!opts.silent) refreshRequestViews();
+      return true;
+    }
+  } catch (e) {
+    if (!opts.silent) console.warn("BlueClaws IQ request live pull failed", e);
+  } finally {
+    requestLivePulling = false;
+  }
+  return false;
+}
+function refreshRequestViews() {
+  if (document.getElementById("requestsView")?.classList.contains("active")) renderRequestsView();
+  if (document.getElementById("mytasksView")?.classList.contains("active")) renderMyTasksView();
+  if (document.getElementById("serviceView")?.classList.contains("active")) renderServiceView();
+  updateRequestsCount();
+}
 function currentUser() { try { return memStore.getItem(IDENTITY_KEY) || ""; } catch { return ""; } }
 function setCurrentUser(name) { try { memStore.setItem(IDENTITY_KEY, name || ""); } catch {} }
 
@@ -10499,6 +10682,23 @@ function deadlockNote(r, me) {
   return `<p style="margin:var(--space-10) 0 0; color:var(--red); font-size:var(--text-xs); font-weight:700;">
     The only approver left built this request, so they can't sign it off. Delegate it or skip with a reason &mdash; both are logged.</p>`;
 }
+function reqBreakdownKey(reqId) { return `request-breakdown::${reqId}`; }
+function renderBreakdownTaskPanel(r) {
+  if (r.type !== "create_breakdown") return "";
+  const scoreDone = (r.fields || {}).scoreUpdated === "complete";
+  const accountDone = (r.fields || {}).accountDetailsUpdated === "complete";
+  return `<div class="table-card" style="grid-column:1 / -1; padding:var(--space-12);">
+    <div class="section-heading" style="margin-bottom:var(--space-8);">Breakdown &amp; Score</div>
+    <div style="display:flex; flex-wrap:wrap; gap:var(--space-8); align-items:center;">
+      <label class="secondary-button" style="margin:0; cursor:pointer;">Upload breakdown<input type="file" data-breakdown-upload="${esc(r.id)}" accept="application/pdf,.doc,.docx,.xlsx,.xls,image/*" style="display:none;"></label>
+      ${(r.fields || {}).breakdownFileName ? `<button class="secondary-button" data-reqact="viewbreakdown" data-reqid="${esc(r.id)}" type="button">View breakdown</button>` : ""}
+      <button class="secondary-button" data-reqact="accountdetails" data-reqid="${esc(r.id)}" type="button">Account Details</button>
+      <button class="${accountDone ? "present-button" : "secondary-button"}" data-reqact="toggleaccountdetails" data-reqid="${esc(r.id)}" type="button">Account details: ${accountDone ? "Complete" : "Incomplete"}</button>
+      <button class="${scoreDone ? "present-button" : "secondary-button"}" data-reqact="togglescore" data-reqid="${esc(r.id)}" type="button">Score update: ${scoreDone ? "Complete" : "Incomplete"}</button>
+    </div>
+    ${(r.fields || {}).breakdownFileName ? `<p style="margin:var(--space-8) 0 0; color:var(--muted); font-size:var(--text-xs);">Uploaded: ${esc(r.fields.breakdownFileName)}</p>` : `<p style="margin:var(--space-8) 0 0; color:var(--muted); font-size:var(--text-xs);">Upload the breakdown here before submitting for approval.</p>`}
+  </div>`;
+}
 
 function renderReqDetail(r) {
   const t = REQ_TYPES[r.type] || { fields: [] };
@@ -10589,6 +10789,7 @@ function renderReqDetail(r) {
       <div><small>Deliverable link</small><strong>${r.link ? `<a href="${esc(r.link)}" target="_blank" rel="noopener">Open link</a>` : "Not added yet"}</strong></div>
       ${r.revisionOf ? `<div><small>Revision of</small><strong>Rev ${(r.revNumber || 2) - 1} &middot; <a href="#" data-reqjump="${esc(r.revisionOf)}">open previous</a></strong></div>` : ""}
       ${fieldHtml}
+      ${renderBreakdownTaskPanel(r)}
     </div>
     ${renderApprovalBlock(r)}
     ${canAct ? "" : `<p style="margin:var(--space-12) 0 0; color:var(--red); font-size:var(--text-xs); font-weight:700;">Pick your name at the top of this page before claiming, approving, or advancing work.</p>`}
@@ -10734,9 +10935,29 @@ function wireReqDetailActions() {
     if (!loadRequests().some(r => r.id === a.dataset.reqjump && reqIsOpen(r))) reqState.status = "complete";
     renderReqChips(); renderReqRows();
   });
+  document.querySelectorAll("[data-breakdown-upload]").forEach(input => {
+    input.onchange = e => {
+      const id = input.dataset.breakdownUpload;
+      const file = (e.target.files || [])[0];
+      if (!id || !file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        saveContractFile(reqBreakdownKey(id), { name: file.name, dataUrl: reader.result, size: file.size, uploadedAt: new Date().toISOString() });
+        withRequest(id, r => {
+          r.link = reqDeepLink(r);
+          r.fields = r.fields || {};
+          r.fields.breakdownFileName = file.name;
+          r.fields.breakdownUploadedAt = nowStamp();
+          reqLog(r, "uploaded breakdown", file.name);
+        });
+        toast("Breakdown uploaded", file.name, true);
+      };
+      reader.readAsDataURL(file);
+    };
+  });
 
   document.querySelectorAll("[data-reqact]").forEach(btn => {
-    btn.onclick = e => {
+    btn.onclick = async e => {
       e.stopPropagation();
       const id = btn.dataset.reqid;
       const act = btn.dataset.reqact;
@@ -10744,10 +10965,44 @@ function wireReqDetailActions() {
       const me = currentUser();
 
       if (act === "claim") {
+        await pullSharedRequestsData({ silent: true });
+        const latest = loadRequests().find(x => x.id === id);
+        if (latest && (latest.owner || latest.status !== "requested")) {
+          toast("Already claimed", latest.owner ? `${latest.owner} claimed this task.` : "This task is no longer unclaimed.");
+          refreshRequestViews();
+          return;
+        }
         withRequest(id, r => { r.owner = me; r.claimedAt = nowStamp(); r.status = "in_progress"; reqLog(r, "claimed the request"); });
         toast("Claimed", "You own this request now.");
         const claimed = loadRequests().find(x => x.id === id);
         if (claimed && ["custom_presentation", "agreement", "term_sheet"].includes(claimed.type)) notifyClaimedToTeam(claimed, me);   // N23 / N32
+
+      } else if (act === "accountdetails") {
+        const src = loadRequests().find(x => x.id === id);
+        if (src && src.sponsorId && !src.prospectiveSponsor) openDrawer(src.sponsorId);
+        else toast("No account yet", "This partner has not been added to the Sponsor Ledger yet.");
+        return;
+
+      } else if (act === "viewbreakdown") {
+        const src = loadRequests().find(x => x.id === id);
+        if (src) viewContract(reqBreakdownKey(id), (src.fields || {}).breakdownFileName || "Breakdown");
+        return;
+
+      } else if (act === "togglescore") {
+        withRequest(id, r => {
+          r.fields = r.fields || {};
+          r.fields.scoreUpdated = r.fields.scoreUpdated === "complete" ? "incomplete" : "complete";
+          reqLog(r, `marked Score update ${r.fields.scoreUpdated === "complete" ? "complete" : "incomplete"}`);
+        });
+        toast("Score update", (loadRequests().find(x => x.id === id)?.fields || {}).scoreUpdated === "complete" ? "Complete" : "Incomplete", true);
+
+      } else if (act === "toggleaccountdetails") {
+        withRequest(id, r => {
+          r.fields = r.fields || {};
+          r.fields.accountDetailsUpdated = r.fields.accountDetailsUpdated === "complete" ? "incomplete" : "complete";
+          reqLog(r, `marked Account Details update ${r.fields.accountDetailsUpdated === "complete" ? "complete" : "incomplete"}`);
+        });
+        toast("Account Details", (loadRequests().find(x => x.id === id)?.fields || {}).accountDetailsUpdated === "complete" ? "Complete" : "Incomplete", true);
 
       } else if (act === "assign") {
         openAssignModal(id);
@@ -11330,6 +11585,9 @@ function paintReqForm(sponsorsArg) {
     if (f.type === "money") {
       return `<div class="sfield"><label for="${id}">${esc(f.label)}${f.required ? " *" : ""}</label><span class="money-wrap">$<input id="${id}" class="money-input" type="text" inputmode="numeric" placeholder="0"></span></div>`;
     }
+    if (f.type === "file") {
+      return `<div class="sfield"><label for="${id}">${esc(f.label)}${f.required ? " *" : ""}</label><input id="${id}" type="file" accept="application/pdf,.doc,.docx,image/*"></div>`;
+    }
     if (f.type === "meetingdate") {
       return `<div class="sfield">
         <label for="${id}_mode">${esc(f.label)}</label>
@@ -11399,6 +11657,7 @@ function submitReqForm(t, typeKey) {
   const fields = {};
   let missing = "";
   (t.fields || []).forEach(f => {
+    if (f.type === "file") return;
     const v = readRichValue("reqf_" + f.key);
     if (f.required && !v && !missing) missing = f.label;
     if (v) fields[f.key] = v;
@@ -11435,7 +11694,11 @@ function submitReqForm(t, typeKey) {
     log: []
   };
   req.rootId = req.id;
-  reqLog(req, "created the request");
+  if (typeKey === "contract_signed") {
+    req.status = "complete";
+    req.completedAt = nowStamp();
+  }
+  reqLog(req, typeKey === "contract_signed" ? "submitted the Contract Signed alert" : "created the request");
   let children = [];
   if (typeKey === "contract_signed") {
     children = spawnContractSignedTasks(req);
@@ -11452,6 +11715,8 @@ function submitReqForm(t, typeKey) {
     const activity = Array.isArray(rec.activityLog) ? [...rec.activityLog] : [];
     activity.unshift({ date: fields.dateSigned || today(), type: "Workflow", summary: `Contract Signed alert submitted by ${me}${fields.notes ? ": " + richToPlain(fields.notes) : ""}` });
     updateOverride(rec.id, { dateSigned: fields.dateSigned || null, dealStage: "signed", active: true, activityLog: activity });
+    const contractFiles = document.getElementById("reqf_contractUpload")?.files;
+    if (contractFiles && contractFiles.length && typeof addAgreementFilesFromList === "function") addAgreementFilesFromList(rec.id, contractFiles, "Signed Agreement");
     setTimeout(() => notifyContractSignedAlert(req, children), 0);
   }
 
@@ -11459,7 +11724,7 @@ function submitReqForm(t, typeKey) {
   wrap.style.display = "none";
   wrap.innerHTML = "";
   reqState.status = "open";
-  reqState.expanded = req.id;
+  reqState.expanded = children[0]?.id || req.id;
   renderRequestsView();
   toast(typeKey === "contract_signed" ? "Alert submitted" : "Request submitted", typeKey === "contract_signed" ? `${sponsorName} \u2014 post-signing tasks created.` : `${sponsorName} \u2014 ${t.short}. It's unclaimed until someone picks it up.`);
 }
@@ -12469,28 +12734,27 @@ function spawnContractSignedTasks(parent) {
     reqLog(child, `created automatically from Contract Signed alert${parent.fields?.dateSigned ? " dated " + parent.fields.dateSigned : ""}`);
     return child;
   });
-  children.forEach(child => pushInAppNotice(`${(REQ_TYPES[child.type] || {}).short || child.type} needed â€” ${child.sponsorName}`, `Created from Contract Signed alert. Needs claiming.`, child.id));
+  children.forEach(child => pushInAppNotice(`${(REQ_TYPES[child.type] || {}).short || child.type} needed - ${child.sponsorName}`, `Created from Contract Signed alert. Needs claiming.`, child.id));
   return children;
 }
 function notifyContractSignedAlert(parent, children) {
   const team = serviceTeamNames();
   const addrs = team.map(reqEmailFor).filter(Boolean);
-  const date = parent.fields?.dateSigned || "date not entered";
-  const notes = parent.fields?.notes ? `\nOther notes: ${richToPlain(parent.fields.notes)}\n` : "";
-  pushInAppNotice(`Contract signed â€” ${parent.sponsorName}`, `${parent.requestedBy || "A rep"} alerted the team. Post-signing tasks are ready to claim.`, parent.id);
+  const rawDate = parent.fields?.dateSigned || "";
+  const signedLabel = rawDate ? new Date(rawDate + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "date not entered";
+  pushInAppNotice(`Contract signed - ${parent.sponsorName}`, `${parent.requestedBy || "A rep"} marked it signed. Assignments are ready to claim.`, (children || [])[0]?.id || parent.id);
   if (!addrs.length) return;
   const taskLines = (children || []).map(c => `- ${(REQ_TYPES[c.type] || {}).label || c.type}: ${reqDeepLink(c)}`);
   const body = [
-    "Service Team,", "",
-    `${parent.requestedBy || "A sales rep"} marked the contract signed for ${parent.sponsorName}.`,
-    `Date signed: ${date}`,
-    notes,
-    "The following assignments are ready for the Service Team to claim:",
-    ...taskLines,
+    "Service Squad,", "",
+    `${parent.requestedBy || "A sales rep"} marked the contract as "SIGNED" for ${parent.sponsorName} (Signed on ${signedLabel})`,
     "",
-    `Contract Signed alert: ${reqDeepLink(parent)}`
-  ].filter(Boolean).join("\n");
-  openMailDraft(addrs.join(","), `[BlueClaws IQ] Contract signed â€” ${parent.sponsorName}`, body);
+    "The following assignments are ready for the Service Team to claim:",
+    ...taskLines
+  ];
+  if (parent.fields?.notes) body.push("", `Other notes: ${richToPlain(parent.fields.notes)}`);
+  if (parent.fields?.contractLink) body.push("", `Signed agreement: ${parent.fields.contractLink}`);
+  openMailDraft(addrs.join(","), `[BlueClaws IQ] ${parent.sponsorName} Contract Signed! - Claim Assignments`, body.join("\n"));
 }
 function openOptionsCreatorForRequest(reqId) {
   const req = loadRequests().find(r => r.id === reqId);
@@ -15598,7 +15862,7 @@ function refreshCurrentView() {
     if (typeof renderStadiumMap === "function") renderStadiumMap();
     if (typeof sizeStadiumWrap === "function") requestAnimationFrame(sizeStadiumWrap);
   }
-  if (name === "schedule") { renderScheduleCalendar(); renderStaffSchedule(); }
+  if (name === "schedule") { renderScheduleCalendar(); }
   if (name === "history") renderHistoryView();
   if (name === "requests") renderRequestsView();
   if (name === "mytasks") renderMyTasksView();
@@ -16645,16 +16909,33 @@ function notifyChangesRequested(r, noteHtml) {
 function notifyApproversNeeded(r) {
   const typeLabel = (REQ_TYPES[r.type] || {}).label || "request";
   const pending = (r.approvals || []).filter(a => a.status === "pending").map(a => a.name);
-  pending.forEach(name => pushInAppNotice(`Approval needed — ${r.sponsorName}`, `${typeLabel} · from ${r.requestedBy || "—"}`, r.id));
+  pending.forEach(name => pushInAppNotice(`Approval needed - ${r.sponsorName}`, `${typeLabel} from ${r.requestedBy || "-"}`, r.id));
   const addrs = pending.map(reqEmailFor).filter(Boolean);
   if (!addrs.length) return;
+  const extra = approvalEmailExtra(r);
   const body = [
     `${pending.join(", ")},`, "",
     `Your approval is needed for the ${r.sponsorName} ${typeLabel} via ${r.requestedBy || "the requesting rep"}. See below.`,
-    "", optionsPlainSummary(r.sponsorName), "",
+    ...(extra ? ["", extra] : []),
+    "",
     `Click here to Approve or Request Changes: ${reqDeepLink(r)}`
   ].join("\n");
-  openMailDraft(addrs.join(","), `[BlueClaws IQ] Approval needed — ${r.sponsorName} ${typeLabel}`, body);
+  openMailDraft(addrs.join(","), `[BlueClaws IQ] Approval needed - ${r.sponsorName} ${typeLabel}`, body);
+}
+function approvalEmailExtra(r) {
+  if (r.type === "create_breakdown") {
+    const f = r.fields || {};
+    const lines = [];
+    if (f.breakdownFileName) {
+      lines.push(`Breakdown uploaded: ${f.breakdownFileName}`);
+      lines.push(`Review it in BlueClaws IQ: ${reqDeepLink(r)}`);
+    }
+    lines.push(`Account details update: ${f.accountDetailsUpdated === "complete" ? "Complete" : "Incomplete"}`);
+    lines.push(`Score update: ${f.scoreUpdated === "complete" ? "Complete" : "Incomplete"}`);
+    return lines.join("\n");
+  }
+  if (["custom_options", "custom_presentation", "agreement", "term_sheet"].includes(r.type)) return optionsPlainSummary(r.sponsorName);
+  return "";
 }
 
 /* The options as text, so they survive an email body. A picture of them is also available —
@@ -16712,7 +16993,7 @@ function downloadBlob(blob, name) {
 }
 function optionsPlainSummary(sponsorName) {
   const p = loadOptions().find(x => String(x.sponsorName || "").trim().toLowerCase() === String(sponsorName || "").trim().toLowerCase());
-  if (!p || !(p.options || []).length) return "(No saved options found for this sponsor.)";
+  if (!p || !(p.options || []).length) return "";
   return (p.options || []).map((o, i) => {
     const lines = sortByCategoryThenRate((o.items || []), optLineTotal)
       .map(it => `    - ${it.asset}${it.qty > 1 ? ` x${it.qty}` : ""} — ${fmtMoney(optLineTotal(it))}${it.startMonth ? ` (from ${it.startMonth})` : ""}${it.notes ? ` [${it.notes}]` : ""}`);
@@ -17187,11 +17468,11 @@ document.getElementById("calNextBtn").addEventListener("click", () => {
 });
 document.getElementById("calTodayBtn").addEventListener("click", () => {
   const now = new Date(); csState.year = now.getFullYear(); csState.month = now.getMonth();
-  csState.selected = now.toISOString().slice(0, 10); renderScheduleCalendar();
+  csState.selected = isoTodayLocal(); renderScheduleCalendar();
 });
-document.getElementById("staffFilterStaff").addEventListener("change", e => { stfState.staff = e.target.value; renderStaffSchedule(); });
-document.getElementById("staffFilterWeek").addEventListener("change", e => { stfState.week = e.target.value; renderStaffSchedule(); });
-document.getElementById("staffAddShiftBtn").addEventListener("click", addStaffShift);
+document.getElementById("staffFilterStaff")?.addEventListener("change", e => { stfState.staff = e.target.value; renderStaffSchedule(); });
+document.getElementById("staffFilterWeek")?.addEventListener("change", e => { stfState.week = e.target.value; renderStaffSchedule(); });
+document.getElementById("staffAddShiftBtn")?.addEventListener("click", addStaffShift);
 document.getElementById("hiddenSponsorsBtn").addEventListener("click", () => {
   renderHiddenSponsorsModal();
   document.getElementById("hiddenSponsorsBackdrop").classList.add("show");
@@ -17681,6 +17962,7 @@ document.getElementById("reportCopyBtn").addEventListener("click", () => {
 
 /* init */
 initQuickSearch();
+initFavoriteActions();
 renderOverview();
 updateOptionsNavCount();
 updateDeckNavCount();
@@ -17853,6 +18135,7 @@ setInterval(updateSyncStatus, 15000);
 /* The queue used to only drain when something happened to call it. Now it drains on its own,
    which is the whole point: a stuck badge has to clear itself without anyone refreshing. */
 setInterval(() => { if (loadSyncQueue().length) flushSharedQueue(); }, 20000);
+setInterval(() => { if (requestTaskViewIsActive()) runWhenIdle(() => pullSharedRequestsData(), 150); }, 3000);
 setInterval(() => { pulseOnRemoteChange(); applyWaveTempo(); }, 25000);
 runWhenIdle(() => { checkPerformanceHealth(); pullSharedData(); }, 600);
 setInterval(() => runWhenIdle(pullSharedData), SHARED_SYNC_INTERVAL_MS);
@@ -18877,7 +19160,7 @@ function squadLoad() {
   return { v: 1, homestands: squadSeed() };
 }
 function squadSave(d) { try { nt_save(SQUAD_KEY, "squadSchedule", d); } catch (e) { console.error("squad save failed", e); } }
-const squadState = { hs: 0, data: null };
+const squadState = { hs: 0, data: null, autoPicked: false };
 function squadNum(x) { const n = parseFloat(String(x == null ? "" : x).replace(/[^0-9.\-]/g, "")); return isNaN(n) ? 0 : n; }
 function squadWeekTotal(p) { return (p.days || []).reduce((s, d) => s + squadNum(d.hours), 0); }
 function squadShortDate(iso) {
@@ -18899,12 +19182,24 @@ function squadGoalColor(total, goal) {
   if (pct >= 0.75) return "#b8860b";   // gold-ish, readable on paper
   return "var(--red)";
 }
+function defaultSquadHomestandIndex(hs) {
+  const todayIso = isoTodayLocal();
+  const normalized = hs.map((h, i) => ({
+    i,
+    dates: (h.games || []).map(g => g.date).filter(Boolean).sort()
+  })).filter(h => h.dates.length);
+  const current = normalized.find(h => h.dates[0] <= todayIso && h.dates[h.dates.length - 1] >= todayIso);
+  if (current) return current.i;
+  const upcoming = normalized.find(h => h.dates[h.dates.length - 1] >= todayIso);
+  return upcoming ? upcoming.i : 0;
+}
 function renderSquadView() {
   const body = document.getElementById("squadBody");
   if (!body) return;
   squadState.data = squadLoad();
   const hs = squadState.data.homestands;
   if (!hs.length) { body.innerHTML = `<div class="table-card" style="padding:var(--space-18);">No homestands loaded.</div>`; return; }
+  if (!squadState.autoPicked) { squadState.hs = defaultSquadHomestandIndex(hs); squadState.autoPicked = true; }
   if (squadState.hs >= hs.length) squadState.hs = 0;
   const stand = hs[squadState.hs];
   const games = stand.games || [];
