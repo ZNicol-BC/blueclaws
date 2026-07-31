@@ -1191,6 +1191,7 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .app-shell.sidebar-collapsed .sidebar .brand > div,
 .app-shell.sidebar-collapsed .sidebar-affiliation,
 .app-shell.sidebar-collapsed .onclock,
+.app-shell.sidebar-collapsed .global-search,
 .app-shell.sidebar-collapsed .sidebar-links,
 .app-shell.sidebar-collapsed .sidebar-watermark,
 .app-shell.sidebar-collapsed .side-chat,
@@ -1327,6 +1328,8 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .agreement-item-title { font-size:var(--text-xs); font-weight:800; }
 .agreement-item-date { color:var(--muted); font-size:10px; }
 .agreement-item-actions { display:flex; gap:var(--space-8); flex:0 0 auto; font-size:var(--text-xs); }
+.agreement-dropzone { border:1px dashed var(--blue); border-radius:var(--radius-md); background:var(--blue-soft); color:var(--blue-text); padding:var(--space-8) var(--space-10); font-size:var(--text-xs); font-weight:800; text-align:center; cursor:pointer; transition:background .15s ease,border-color .15s ease,transform .15s ease; }
+.agreement-dropzone.is-dragover { background:#dff0ff; border-color:var(--gold); transform:translateY(-1px); }
 /* ---- Left/Right Asset Dropper shared layout (Marquee + Asset Allocation categories) ---- */
 .aa-lr { display:grid; grid-template-columns:minmax(240px, 340px) 1fr; gap:var(--space-16); align-items:start; }
 @media (max-width: 1000px) { .aa-lr { grid-template-columns:1fr; } }
@@ -2582,6 +2585,18 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
 .asset-category-row:hover{border-color:var(--blue);background:var(--blue-soft)}
 .asset-category-row strong{font:800 12px var(--font-display);color:var(--ink)}
 .asset-category-row span{font-size:11px;color:var(--muted);white-space:nowrap}
+.global-search{position:relative;padding:var(--space-8) var(--space-4) var(--space-6)}
+.global-search-box{height:34px;display:flex;align-items:center;gap:7px;padding:0 var(--space-9);border:1px solid rgba(255,255,255,.18);border-bottom:2px solid var(--gold);border-radius:var(--radius-md);background:rgba(255,255,255,.08);color:#cfd7e6}
+.global-search-box input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:var(--text-xs)}
+.global-search-box input::placeholder{color:#aeb9cc}
+.global-search-results{position:absolute;left:var(--space-4);right:var(--space-4);top:44px;z-index:30;display:none;max-height:340px;overflow:auto;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-md);background:#0d1d41;box-shadow:var(--shadow-lg);padding:4px}
+.global-search-results.show{display:block}
+.global-search-result{width:100%;display:grid;grid-template-columns:58px minmax(0,1fr);gap:8px;align-items:start;border:0;border-radius:var(--radius-sm);background:transparent;color:#fff;text-align:left;padding:8px;cursor:pointer}
+.global-search-result:hover,.global-search-result.is-active{background:rgba(255,255,255,.1)}
+.global-search-result small{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:800}
+.global-search-result strong{font:800 12px/1.15 var(--font-display);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.global-search-result span{display:block;margin-top:2px;color:#aeb9cc;font-size:11px;line-height:1.25}
+.global-search-empty{padding:10px;color:#aeb9cc;font-size:var(--text-xs)}
 #statusView .status-board{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-8)}
 #statusView .status-column-head{padding:8px 10px}
 #statusView .status-column-head strong{font-size:12px}
@@ -2636,6 +2651,10 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
       </div>
 
       <nav class="nav" aria-label="Primary navigation">
+        <div class="global-search" id="globalSearchWrap">
+          <label class="global-search-box" for="globalSearchInput"><span aria-hidden="true">&#8981;</span><input id="globalSearchInput" type="search" autocomplete="off" placeholder="Quick search"></label>
+          <div class="global-search-results" id="globalSearchResults" role="listbox" aria-label="Quick search results"></div>
+        </div>
         <span class="nav-label">Workspace</span>
 
         <div class="nav-chapter" data-chapter="overview-hub" data-open="true">
@@ -5393,6 +5412,27 @@ function renameAgreement(sponsorId, aid, title) {
   const arr = (Array.isArray(rec.agreements) ? rec.agreements : []).map(a => a.aid === aid ? { ...a, title: title || "Agreement" } : a);
   updateOverride(sponsorId, { agreements: arr });
 }
+function agreementTitleFromFileName(name) {
+  return String(name || "Agreement").replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim() || "Agreement";
+}
+function addAgreementFilesFromList(sponsorId, files, title) {
+  const rec = getRecord(sponsorId);
+  const list = Array.from(files || []).filter(Boolean);
+  if (!rec || !list.length) return;
+  list.forEach(f => {
+    if (f.size > 40 * 1024 * 1024) { toast("File too large", "Keep agreement uploads under 40MB"); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const label = title || agreementTitleFromFileName(f.name);
+      addAgreementFile(sponsorId, label, { name: f.name, dataUrl: reader.result, size: f.size, uploadedAt: new Date().toISOString() });
+      toast("Agreement added", `${rec.sponsor || "Sponsor"} - ${f.name}`, true);
+      if (typeof refreshCurrentView === "function") refreshCurrentView();
+      if (document.getElementById("sdrawer")?.classList.contains("open") && currentDrawerId === sponsorId && typeof openDrawer === "function") openDrawer(sponsorId);
+    };
+    reader.onerror = () => toast("Couldn't read that file", "Try a different file");
+    reader.readAsDataURL(f);
+  });
+}
 /* Shared hidden file input + pending Quick Title for adding agreements from the drawer. */
 let _pendingAgreement = { sponsorId: null, title: "" };
 function promptAddAgreement(sponsorId) {
@@ -7309,6 +7349,117 @@ function showView(name) {
   if (name === "embed-score") { renderEmbedView("score"); collapseSidebar(); }
 
   runCountUps(name);
+}
+function quickSearchItems() {
+  const items = [];
+  try {
+    getAllRecords().forEach(r => items.push({
+      kind: "Sponsor",
+      title: r.sponsor || "Unnamed sponsor",
+      sub: [r.rep, r.type, r.department, (Array.isArray(r.seasons) ? r.seasons.join(", ") : "")].filter(Boolean).join(" - "),
+      hay: [r.sponsor, r.rep, r.type, r.department, r.primary, r.email, r.assets, r.notes].filter(Boolean).join(" "),
+      action: () => openDrawer(r.id)
+    }));
+  } catch (e) {}
+  try {
+    getFullCatalog().forEach(a => items.push({
+      kind: "Asset",
+      title: assetDisplayName(a.asset),
+      sub: [a.category, a.frequency, a.formerName].filter(Boolean).join(" - "),
+      hay: [a.asset, assetDisplayName(a.asset), a.category, a.frequency, a.notes, a.formerName].filter(Boolean).join(" "),
+      action: () => {
+        showView("inventory");
+        setTimeout(() => {
+          try {
+            openFolder(a.category);
+            aState.search = a.asset || "";
+            const search = document.getElementById("assetSearch");
+            if (search) search.value = a.asset || "";
+            renderAssetTable();
+          } catch (e) {}
+        }, 80);
+      }
+    }));
+  } catch (e) {}
+  Object.entries(VIEW_TITLES).forEach(([key, title]) => {
+    if (!document.getElementById(key + "View")) return;
+    items.push({
+      kind: "Page",
+      title,
+      sub: "Open app section",
+      hay: [key, title, VIEW_CHAPTER[key]].filter(Boolean).join(" "),
+      action: () => showView(key)
+    });
+  });
+  return items;
+}
+function quickSearchScore(item, q) {
+  const title = String(item.title || "").toLowerCase();
+  const hay = String(item.hay || "").toLowerCase();
+  if (title === q) return 0;
+  if (title.startsWith(q)) return 1;
+  if (title.includes(q)) return 2;
+  if (hay.includes(q)) return 3;
+  return 99;
+}
+function renderQuickSearchResults() {
+  const input = document.getElementById("globalSearchInput");
+  const box = document.getElementById("globalSearchResults");
+  if (!input || !box) return;
+  const q = input.value.trim().toLowerCase();
+  if (!q) { box.classList.remove("show"); box.innerHTML = ""; return; }
+  const list = quickSearchItems()
+    .map(item => ({ item, score: quickSearchScore(item, q) }))
+    .filter(x => x.score < 99)
+    .sort((a, b) => a.score - b.score || (a.item.kind === "Sponsor" ? -1 : b.item.kind === "Sponsor" ? 1 : 0) || a.item.title.localeCompare(b.item.title))
+    .slice(0, 12)
+    .map(x => x.item);
+  box.innerHTML = list.length ? list.map((item, i) => `
+    <button type="button" class="global-search-result ${i === 0 ? "is-active" : ""}" data-qidx="${i}" role="option">
+      <small>${esc(item.kind)}</small>
+      <div><strong>${esc(item.title)}</strong><span>${esc(item.sub || "")}</span></div>
+    </button>`).join("") : `<div class="global-search-empty">No matches yet.</div>`;
+  box.classList.add("show");
+  box.querySelectorAll("[data-qidx]").forEach(btn => btn.onclick = () => runQuickSearchAction(list[+btn.dataset.qidx]));
+  box._quickItems = list;
+}
+function runQuickSearchAction(item) {
+  if (!item) return;
+  document.getElementById("globalSearchResults")?.classList.remove("show");
+  const input = document.getElementById("globalSearchInput");
+  if (input) input.value = "";
+  item.action();
+}
+function initQuickSearch() {
+  const input = document.getElementById("globalSearchInput");
+  const box = document.getElementById("globalSearchResults");
+  if (!input || !box || input.dataset.wired) return;
+  input.dataset.wired = "1";
+  input.addEventListener("input", renderQuickSearchResults);
+  input.addEventListener("focus", renderQuickSearchResults);
+  input.addEventListener("keydown", e => {
+    const items = box._quickItems || [];
+    const buttons = [...box.querySelectorAll("[data-qidx]")];
+    let active = buttons.findIndex(b => b.classList.contains("is-active"));
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      active = Math.min(buttons.length - 1, active + 1);
+      buttons.forEach((b, i) => b.classList.toggle("is-active", i === active));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      active = Math.max(0, active - 1);
+      buttons.forEach((b, i) => b.classList.toggle("is-active", i === active));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      runQuickSearchAction(items[Math.max(0, active)]);
+    } else if (e.key === "Escape") {
+      box.classList.remove("show");
+      input.blur();
+    }
+  });
+  document.addEventListener("click", e => {
+    if (!e.target.closest("#globalSearchWrap")) box.classList.remove("show");
+  });
 }
 
 /* ================= OVERVIEW ================= */
@@ -17529,6 +17680,7 @@ document.getElementById("reportCopyBtn").addEventListener("click", () => {
 });
 
 /* init */
+initQuickSearch();
 renderOverview();
 updateOptionsNavCount();
 updateDeckNavCount();
@@ -18387,11 +18539,22 @@ function agrHubRenderList(){
       <div class="agr-row-spacer"></div>
       ${(() => { const ags = sponsorAgreements(r); const first = ags[0];
         return has
-        ? `<button class="agr-btn-view" data-agrview="${esc(first.key)}" data-agrname="${esc(first.name||'Agreement')}">View${ags.length>1?` (${ags.length})`:''}</button><button class="agr-btn-add" data-agrmanage="${esc(r.id)}">Manage</button>`
-        : `<button class="agr-btn-missing" data-agrmanage="${esc(r.id)}">No Agreement Found — Add</button>`; })()}
+        ? `<button class="agr-btn-view" data-agrview="${esc(first.key)}" data-agrname="${esc(first.name||'Agreement')}">View${ags.length>1?` (${ags.length})`:''}</button><button class="agr-btn-add" data-agradd="${esc(r.id)}">Add Agreement</button><button class="agr-btn-add" data-agrmanage="${esc(r.id)}">Account Details</button><div class="agreement-dropzone" data-agrdrop="${esc(r.id)}">Drop agreement here</div>`
+        : `<button class="agr-btn-missing" data-agradd="${esc(r.id)}">Add Agreement</button><button class="agr-btn-add" data-agrmanage="${esc(r.id)}">Account Details</button><div class="agreement-dropzone" data-agrdrop="${esc(r.id)}">Drop agreement here</div>`; })()}
     </div>`;
   }).join("") : `<div class="nt-empty">No partners whose term covers ${year}. Try another year.</div>`;
   list.querySelectorAll("[data-agrview]").forEach(b => b.addEventListener("click", () => { if (typeof viewContract === "function") viewContract(b.dataset.agrview, b.dataset.agrname); }));
+  list.querySelectorAll("[data-agradd]").forEach(b => b.addEventListener("click", () => promptAddAgreement(b.dataset.agradd)));
+  list.querySelectorAll("[data-agrdrop]").forEach(zone => {
+    zone.addEventListener("click", () => promptAddAgreement(zone.dataset.agrdrop));
+    zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("is-dragover"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("is-dragover"));
+    zone.addEventListener("drop", e => {
+      e.preventDefault();
+      zone.classList.remove("is-dragover");
+      addAgreementFilesFromList(zone.dataset.agrdrop, e.dataTransfer ? e.dataTransfer.files : null);
+    });
+  });
   list.querySelectorAll("[data-agrmanage]").forEach(b => b.addEventListener("click", () => { if (typeof openDrawer === "function") { openDrawer(b.dataset.agrmanage); setTimeout(() => { if (typeof setDrawerSection === "function") try { setDrawerSection("all"); } catch(e){} }, 40); } else if (typeof openContractModal === "function") openContractModal(b.dataset.agrmanage); }));
 }
 
@@ -19031,7 +19194,7 @@ function renderSquadView() {
 .agr-hub-kpi small{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
 .agr-hub-kpi strong{font:800 22px var(--font-display);}
 .agr-hub-list{display:flex;flex-direction:column;gap:var(--space-8);}
-.agr-row{display:flex;align-items:center;gap:var(--space-12);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:var(--radius-md);background:var(--card);padding:var(--space-10) var(--space-14);}
+.agr-row{display:flex;align-items:center;gap:var(--space-12);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:var(--radius-md);background:var(--card);padding:var(--space-10) var(--space-14);flex-wrap:wrap;}
 .agr-row.missing{border-left-color:var(--red);}
 .agr-row-name{font-weight:700;font-size:13px;}
 .agr-row-meta{color:var(--muted);font-size:var(--text-xs);}
