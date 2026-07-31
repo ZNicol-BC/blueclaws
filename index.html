@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 29 -->
+<!-- BUILD_VERSION: 31 -->
 <!-- BUILD_VERSION: 163 -->
 <!-- BUILD_VERSION: 14 -->
 <!-- BUILD_VERSION: 17 -->
@@ -2762,10 +2762,6 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <button class="nav-item" data-view="digideck">
               <span class="nav-icon">&#9636;</span> Partner Reports
               <span class="nav-count" id="digideckCount">0</span>
-            </button>
-            <button class="nav-item" data-view="photolibrary">
-              <span class="nav-icon">&#9637;</span> Photo Library
-              <span class="nav-count" id="photoLibraryCount">0</span>
             </button>
             <span class="nav-subhead">Generators</span>
             <button class="nav-item" data-view="options">
@@ -7343,15 +7339,13 @@ function evictLegacyMediaFromLocalStorage() {
   });
   return reclaimed;
 }
-let _perfWarnedThisSession = false;
 function checkPerformanceHealth() {
-  evictLegacyMediaFromLocalStorage();          // clear media residue first — this is the usual culprit
+  // Silently reclaim any leftover media cache from localStorage. The user-facing "storage is
+  // getting heavy" toast was removed on request — heavy media now lives in IndexedDB, the
+  // embedded photo seeds are gone, so this cleanup runs quietly and the warning never shows.
+  evictLegacyMediaFromLocalStorage();
   const used = localStorageUsageBytes();
-  if (!used || used < 4.8 * 1024 * 1024) return;   // healthy after cleanup; stay quiet
-  if (_perfWarnedThisSession) return;              // warn at most once, don't nag
-  _perfWarnedThisSession = true;
-  console.warn("BlueClaws IQ storage is large; this browser may become sluggish.", Math.round(used / 1024) + "KB");
-  toast("Storage is getting heavy", "Cached media was cleared automatically. If it still feels slow, use Backup then Reset in Settings.", true);
+  if (used && used >= 4.8 * 1024 * 1024) console.warn("BlueClaws IQ localStorage is large:", Math.round(used / 1024) + "KB (no user warning shown)");
 }
 
 /* ================= VIEW SWITCHING ================= */
@@ -18320,6 +18314,53 @@ window.addEventListener("online",()=>{updateSyncStatus();flushSharedQueue().then
 window.addEventListener("beforeunload",()=>{if(loadSyncQueue().length)flushSharedQueue();});
 migrateMediaKeyToIndexedDb(LOGO_KEY, v => { logosMemCache = v; });
 migrateMediaKeyToIndexedDb(PHOTO_LIBRARY_KEY, v => { photoLibraryMemCache = v; });
+/* ================= AUTO-PURGE: erase all photo-library photos on every browser =================
+   The Photo Library was retired (nav tab removed) and the mass reference photos are being wiped
+   for good. This runs once per browser: it clears this browser's local copy immediately, then
+   fetches the shared photos bucket and marks every record deleted so the server bucket empties
+   and NO browser (this one or a teammate's) re-pulls them. Logos, graphics, and all non-photo
+   data are untouched — this only touches the "photos" bucket. The flag is only set after the
+   server clear succeeds, so an offline browser retries on its next load instead of giving up. */
+(function autoPurgeAllPhotos() {
+  var FLAG = "bciq_photo_masspurge_v1";
+  try { if (memStore.getItem(FLAG)) return; } catch (e) { return; }
+  function clearLocal() {
+    try { photoLibraryMemCache = []; } catch (e) {}
+    try { if (typeof savePhotoLibraryLocalOnly === "function") savePhotoLibraryLocalOnly([]); } catch (e) {}
+    try { if (typeof mediaDbPut === "function") mediaDbPut(PHOTO_LIBRARY_KEY, []).catch(function(){}); } catch (e) {}
+    try { memStore.removeItem(PHOTO_LIBRARY_KEY); } catch (e) {}
+    try { if (typeof updatePhotoLibraryCount === "function") updatePhotoLibraryCount(); } catch (e) {}
+  }
+  try { if (typeof markPhotoSeedsConsumed === "function") markPhotoSeedsConsumed(); } catch (e) {}
+  clearLocal();
+  if (typeof SHARED_SYNC_ENABLED !== "undefined" && SHARED_SYNC_ENABLED && typeof SHARED_DATA_ENDPOINT !== "undefined") {
+    fetch(SHARED_DATA_ENDPOINT + "?bucket=photos", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (shared) {
+        if (shared) {
+          Object.keys(shared).forEach(function (id) {
+            if (shared[id] && !shared[id].deleted) { try { pushSharedData(id, { deleted: true }, "photos"); } catch (e) {} }
+          });
+        }
+        clearLocal();
+        try { memStore.setItem(FLAG, "1"); } catch (e) {}
+      })
+      .catch(function () { /* offline / blocked — leave flag unset so it retries next load */ });
+  } else {
+    try { memStore.setItem(FLAG, "1"); } catch (e) {}
+  }
+  // Belt-and-suspenders: for a few seconds after load, keep this browser's local photo list empty
+  // so a poll that lands before the server clear finishes can't briefly repopulate the library.
+  var guardUntil = 0;
+  try { guardUntil = (typeof performance !== "undefined" ? performance.now() : 0) + 8000; } catch (e) {}
+  var guard = setInterval(function () {
+    try {
+      if (typeof loadPhotoLibrary === "function" && loadPhotoLibrary().length) clearLocal();
+      var now = (typeof performance !== "undefined" ? performance.now() : guardUntil + 1);
+      if (now >= guardUntil) clearInterval(guard);
+    } catch (e) { clearInterval(guard); }
+  }, 1000);
+})();
 runWhenIdle(pullSharedLogos, 1200);
 setInterval(() => runWhenIdle(pullSharedLogos), LOGO_SYNC_INTERVAL_MS);
 runWhenIdle(pullSharedContracts, 1800);
