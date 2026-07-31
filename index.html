@@ -4457,43 +4457,68 @@ const memStore = (function () {
   }
 })();
 
-/* ---- One-time local logo reset for this file version ----
-   Earlier versions of this app let logos pile up in this browser's local storage
-   before cross-browser sync existed, which is what caused "storage full" errors and
-   logos silently failing to sync. Rather than ask everyone to manually click "Reset
-   logos to default," this clears local logo storage ONE time the first time a browser
-   opens this version, then lets the normal automatic pull (below) repopulate logos
-   fresh from the network. Bump LOGO_RESET_VERSION if this ever needs to run again. */
-const LOGO_RESET_VERSION = "2026-07-15-1";
-const LOGO_RESET_FLAG_KEY = "bciq_logo_reset_version";
-(function autoResetLogosOnce() {
-  try {
-    if (memStore.getItem(LOGO_RESET_FLAG_KEY) !== LOGO_RESET_VERSION) {
-      memStore.removeItem(LOGO_KEY);
-      memStore.setItem(LOGO_RESET_FLAG_KEY, LOGO_RESET_VERSION);
-    }
-  } catch (e) { /* if this fails, worst case old local logos stick around until the next reset bump */ }
-})();
-
-/* ---- One-time local photo-library reset for this file version ----
-   Same problem as the logo reset above, worse: photo dataUrls are large, and a
-   browser that's been open on this app for months can have enough other cached
-   data that this single key alone tips it over the storage quota, causing the
-   local photo cache to silently fail to save (the whole point of the in-memory
-   cache added alongside this — see photoLibraryMemCache below — is that photos
-   still render correctly even when that happens). This one-time clear reclaims
-   that space so the local cache has a real chance to hold the full library again;
-   the next automatic pull below repopulates it fresh from Netlify Blobs either way. */
-const PHOTO_LIBRARY_RESET_VERSION = "2026-07-23-1";
-const PHOTO_LIBRARY_RESET_FLAG_KEY = "bciq_photo_library_reset_version";
-(function autoResetPhotoLibraryCacheOnce() {
-  try {
-    if (memStore.getItem(PHOTO_LIBRARY_RESET_FLAG_KEY) !== PHOTO_LIBRARY_RESET_VERSION) {
-      memStore.removeItem("bciq_photo_library");
-      memStore.setItem(PHOTO_LIBRARY_RESET_FLAG_KEY, PHOTO_LIBRARY_RESET_VERSION);
-    }
-  } catch (e) { /* if this fails, worst case the old local photo cache sticks around until the next reset bump */ }
-})();
+/* ---- Logo & photo storage (IndexedDB, not localStorage) ----------------------------------
+   Logos and the photo library were the two things that kept blowing the ~5MB per-origin
+   localStorage quota — base64 images are large, this cache held every one as a JSON string,
+   and it only gets worse every season as more photos and sponsors are added. The two
+   one-time resets this replaces were a stopgap (wipe the local copy so it has room to hold
+   the full library again); they didn't fix the ceiling, they just deferred hitting it.
+   IndexedDB has no comparable ceiling in practice (hundreds of MB+), so both now persist
+   there instead — the same fix already used for contract files below. localStorage is no
+   longer written for either; migrateMediaKeyToIndexedDb reads it ONE time per key, on a
+   user's first load after this change, to move whatever's already there into IndexedDB
+   instead of throwing it away, then clears the localStorage copy to reclaim that space
+   immediately rather than waiting on the browser to evict it. */
+const MEDIA_DB = "blueclaws-iq-media";
+const MEDIA_STORE = "kv";
+let _mediaDbPromise = null;
+function mediaDb() {
+  if (_mediaDbPromise) return _mediaDbPromise;
+  _mediaDbPromise = new Promise((resolve, reject) => {
+    if (!window.indexedDB) return reject(new Error("no indexedDB"));
+    const req = indexedDB.open(MEDIA_DB, 1);
+    req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains(MEDIA_STORE)) req.result.createObjectStore(MEDIA_STORE); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+  return _mediaDbPromise;
+}
+function mediaDbPut(key, value) {
+  return mediaDb().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(MEDIA_STORE, "readwrite");
+    const store = tx.objectStore(MEDIA_STORE);
+    value === null ? store.delete(key) : store.put(value, key);
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+function mediaDbGet(key) {
+  return mediaDb().then(db => new Promise((resolve, reject) => {
+    const req = db.transaction(MEDIA_STORE, "readonly").objectStore(MEDIA_STORE).get(key);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  }));
+}
+/* memCacheSetter populates the in-memory cache (logosMemCache / photoLibraryMemCache) that
+   the rest of the app reads synchronously, since an IndexedDB read is always async. If this
+   browser already had a localStorage copy (pre-migration), that's the fastest, freshest
+   thing to seed from and it's moved into IndexedDB. Otherwise fall back to whatever
+   IndexedDB already holds (a returning browser on a later load). Either way, the normal
+   network pull (pullSharedLogos / pullSharedPhotos) reconciles shortly after and is the
+   real source of truth — this only fixes what renders before that pull completes. */
+function migrateMediaKeyToIndexedDb(key, memCacheSetter) {
+  let existing = null;
+  try { existing = JSON.parse(memStore.getItem(key)); } catch (e) {}
+  if (existing && typeof existing === "object") {
+    memCacheSetter(existing);
+    mediaDbPut(key, existing)
+      .then(() => { try { memStore.removeItem(key); } catch (e) {} })
+      .catch(e => console.error(`BlueClaws IQ: ${key} migration to IndexedDB failed, keeping localStorage copy for now`, e));
+  } else {
+    mediaDbGet(key).then(v => { if (v) { memCacheSetter(v); refreshCurrentView(); } })
+      .catch(e => console.error(`BlueClaws IQ: ${key} IndexedDB read failed`, e));
+  }
+}
 
 /* ---- Shared editing across computers ----
    Talks to a small Netlify Function (netlify/functions/data.js) which stores everyone's
@@ -4740,7 +4765,7 @@ async function pullSharedLogos() {
     Object.keys(current).forEach(id=>{if(hasPendingWrite(id,"logos")||recentlyPushed(id,"logos"))logos[id]=current[id];});
     let changed = JSON.stringify(current)!==JSON.stringify(logos);
     if (changed) {
-      memStore.setItem(LOGO_KEY, JSON.stringify(logos));
+      saveLogos(logos);
       refreshCurrentView();
     }
   } catch (e) { /* offline, or the function isn't deployed — logos just stay local-only for now */ }
@@ -4786,6 +4811,30 @@ function pushSharedData(id, patch, bucket) {
   queueSharedWrite(id, patch, bucket || "overrides");
   updateSyncStatus();
   return flushSharedQueue().then(()=>!hasPendingWrite(id,bucket||"overrides"));
+}
+
+/* ---- Media blob offload --------------------------------------------------------------
+   Every photo/logo upload used to push its full base64 body straight into the "photos"/
+   "logos" bucket's JSON (see data.js) — the same JSON every open browser re-downloads on
+   every poll, and which gets rewritten in FULL on every single upload. That's unbounded:
+   the bigger the library gets, the bigger every poll and every write gets, which is the
+   exact problem that already forced logos and displays onto their own buckets once (see
+   the comments atop data.js) and would eventually force it again as photos keep piling up
+   season after season.
+   media.js stores each image's bytes under its own id instead. Uploads now push a small
+   reference URL (a few dozen bytes) to the metadata bucket rather than the image itself,
+   so bucket size — and every browser's poll payload — stops growing with photo content
+   and only grows with photo count. Other browsers' <img> tags fetch that URL directly and
+   let the browser's own HTTP cache handle it; no JS-managed cache needed for those bytes.
+   Falls back to syncing the full dataUrl (today's behavior) if the media upload fails
+   (offline, or media.js isn't deployed yet), so nothing regresses versus before this. */
+const MEDIA_ENDPOINT = "/.netlify/functions/media";
+function mediaUrlForId(id) { return `${MEDIA_ENDPOINT}?id=${encodeURIComponent(id)}`; }
+function uploadMediaBlob(id, dataUrl) {
+  if (!SHARED_SYNC_ENABLED || typeof dataUrl !== "string" || !dataUrl.startsWith("data:")) return Promise.resolve(null);
+  return fetch(MEDIA_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, dataUrl }) })
+    .then(res => res.ok ? mediaUrlForId(id) : null)
+    .catch(() => null);
 }
 
 
@@ -5108,16 +5157,25 @@ function toggleSidebar() {
 function collapseSidebar() {
   document.getElementById("appShell").classList.add("sidebar-collapsed");
 }
-function loadLogos() { try { return JSON.parse(memStore.getItem(LOGO_KEY)) || {}; } catch { return {}; } }
+let logosMemCache = null;
+function loadLogos() { return logosMemCache || {}; }
+function saveLogos(logos) {
+  logosMemCache = logos;
+  mediaDbPut(LOGO_KEY, logos).catch(e => {
+    console.error("BlueClaws IQ: logo storage write failed, falling back to this browser's local storage", e);
+    try { memStore.setItem(LOGO_KEY, JSON.stringify(logos)); }
+    catch (e2) { toast("Storage full", "Logo may be too large for browser storage"); }
+  });
+}
 function saveLogo(id, dataUrl) {
-  const logos = loadLogos();
+  const logos = { ...loadLogos() };
   if (dataUrl) logos[id] = dataUrl; else delete logos[id];
-  try {
-    memStore.setItem(LOGO_KEY, JSON.stringify(logos));
-    pushSharedData(id, { logoDataUrl: dataUrl || null }, "logos");
-    return true;
-  }
-  catch(e) { toast("Storage full", "Logo may be too large for browser storage"); return false; }
+  saveLogos(logos);
+  // This browser keeps the full local dataUrl (fast, no round-trip) via saveLogos above;
+  // only the copy synced to other browsers becomes a small reference URL once uploaded.
+  if (dataUrl) uploadMediaBlob(id, dataUrl).then(mediaUrl => pushSharedData(id, { logoDataUrl: mediaUrl || dataUrl }, "logos"));
+  else pushSharedData(id, { logoDataUrl: null }, "logos");
+  return true;
 }
 function getLogo(id) { return loadLogos()[id] || LOGO_SEED[id] || null; }
 
@@ -7080,9 +7138,12 @@ function localStorageUsageBytes() {
 }
 function clearHeavyMediaCache() {
   try {
+    mediaDbPut(PHOTO_LIBRARY_KEY, null).catch(() => {});
+    mediaDbPut(LOGO_KEY, null).catch(() => {});
     memStore.removeItem(PHOTO_LIBRARY_KEY);
     memStore.removeItem(LOGO_KEY);
     photoLibraryMemCache = null;
+    logosMemCache = null;
     toast("Heavy cache cleared", "Photos and logos will reload from shared storage; sponsor edits were kept.", true);
     refreshCurrentView();
   } catch (e) {
@@ -12647,19 +12708,21 @@ const PHOTO_LIBRARY_KEY = "bciq_photo_library";
 // instead of depending on a persistence step that isn't guaranteed to succeed.
 let photoLibraryMemCache = null;
 function loadPhotoLibrary() {
-  if (photoLibraryMemCache) return photoLibraryMemCache;
-  try { return JSON.parse(memStore.getItem(PHOTO_LIBRARY_KEY)) || []; } catch { return []; }
+  return photoLibraryMemCache || [];
 }
 function savePhotoLibraryLocalOnly(arr) {
   photoLibraryMemCache = arr;
-  // JSON.stringify-ing the whole library (base64 images and all) is what was freezing the
-  // tab right after confirming a delete/tag change — with hundreds of photos this can be a
-  // multi-MB synchronous stringify + localStorage write on the main thread. The in-memory
-  // cache above is already the authoritative read path (see comment above), so this write
-  // can safely happen a tick later, after the click handler's re-render has already painted.
+  // Structured-cloning the whole library (base64 images and all) into IndexedDB is what
+  // could still stall the tab right after confirming a delete/tag change — with hundreds of
+  // photos this can be a multi-MB clone on the main thread. The in-memory cache above is
+  // already the authoritative read path (see comment above), so this write can safely happen
+  // a tick later, after the click handler's re-render has already painted.
   setTimeout(() => {
-    try { memStore.setItem(PHOTO_LIBRARY_KEY, JSON.stringify(arr)); }
-    catch (e) { console.error("BlueClaws IQ: local photo cache write failed (likely storage quota) — continuing in-memory only for this tab; Netlify Blobs remains the source of truth and photos will still render correctly", e); }
+    mediaDbPut(PHOTO_LIBRARY_KEY, arr).catch(e => {
+      console.error("BlueClaws IQ: local photo cache write failed, falling back to this browser's local storage", e);
+      try { memStore.setItem(PHOTO_LIBRARY_KEY, JSON.stringify(arr)); }
+      catch (e2) { console.error("BlueClaws IQ: local photo cache fallback write also failed (likely storage quota) — continuing in-memory only for this tab; Netlify Blobs remains the source of truth and photos will still render correctly", e2); }
+    });
   }, 0);
 }
 // One-time migration: every photo already in the library predates the reportTag field, so it
@@ -13069,7 +13132,13 @@ function handlePhotoUpload(files, opts = {}) {
     const newPhotos = results.map(r => ({ id: "photo_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7), dataUrl: r.dataUrl, fileName: r.fileName, width: r.width, height: r.height, sponsorId, sponsorName, popAsset, reportTag, addedAt: new Date().toISOString() }));
     newPhotos.forEach(p => lib.push(p));
     savePhotoLibraryLocalOnly(lib);
-    newPhotos.forEach(p => pushSharedData(p.id, { dataUrl: p.dataUrl, fileName: p.fileName, width: p.width, height: p.height, sponsorId, sponsorName, popAsset, reportTag: p.reportTag, addedAt: p.addedAt, deleted: false }, "photos"));
+    // This browser keeps the full local dataUrl (fast, no round-trip) via lib/savePhotoLibraryLocalOnly
+    // above; only the copy synced to other browsers becomes a small reference URL once uploaded.
+    newPhotos.forEach(p => {
+      uploadMediaBlob(p.id, p.dataUrl).then(mediaUrl => {
+        pushSharedData(p.id, { dataUrl: mediaUrl || p.dataUrl, fileName: p.fileName, width: p.width, height: p.height, sponsorId, sponsorName, popAsset, reportTag: p.reportTag, addedAt: p.addedAt, deleted: false }, "photos");
+      });
+    });
     if (!opts.silent) { renderPhotoLibrary(); toast("Added", `${results.length} photo${results.length === 1 ? "" : "s"} added to the library`); }
     return newPhotos;
   });
@@ -15733,7 +15802,7 @@ function importBackup(rawOverride) {
     if (!payload.overrides && !payload.custom) throw new Error("bad shape");
     saveOverrides(payload.overrides || {});
     saveCustom(payload.custom || []);
-    if (payload.logos) memStore.setItem(LOGO_KEY, JSON.stringify(payload.logos));
+    if (payload.logos) saveLogos(payload.logos);
     if (payload.customAssets) { saveCustomAssets(payload.customAssets); CUSTOM_ASSETS = payload.customAssets; }
     if (payload.rates) saveRates(payload.rates);
     if (payload.ballparkDisplays) saveBallparkDisplays(payload.ballparkDisplays);
@@ -15752,7 +15821,8 @@ function resetAllEdits() {
 }
 function resetAllLogos() {
   if (confirm("Reset ALL logos on THIS browser back to the built-in defaults Any logo you uploaded yourself on this machine will be removed and replaced with whatever is baked into the app (currently correct for 3rd Base Real Estate and All County Exteriors; sponsors without a baked-in logo will show no logo until one is added to the app itself).")) {
-    memStore.removeItem(LOGO_KEY);
+    saveLogos({});
+    try { memStore.removeItem(LOGO_KEY); } catch (e) {}
     toast("Logos reset", "This browser now shows only the built-in default logos");
     refreshCurrentView();
     document.getElementById("backupBackdrop").classList.remove("show");
@@ -17344,6 +17414,8 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") toggleSyncDe
 window.addEventListener("offline", updateSyncStatus);
 window.addEventListener("online",()=>{updateSyncStatus();flushSharedQueue().then(pullSharedData);runWhenIdle(pullSharedLogos);runWhenIdle(pullSharedPhotos, 900);runWhenIdle(pullSharedDisplays, 400);});
 window.addEventListener("beforeunload",()=>{if(loadSyncQueue().length)flushSharedQueue();});
+migrateMediaKeyToIndexedDb(LOGO_KEY, v => { logosMemCache = v; });
+migrateMediaKeyToIndexedDb(PHOTO_LIBRARY_KEY, v => { photoLibraryMemCache = v; });
 runWhenIdle(pullSharedLogos, 1200);
 setInterval(() => runWhenIdle(pullSharedLogos), LOGO_SYNC_INTERVAL_MS);
 runWhenIdle(pullSharedDisplays, 1600);
