@@ -2743,9 +2743,6 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <button class="nav-item" data-view="assetalloc">
               <span class="nav-icon">&#9638;</span> Asset Allocation
             </button>
-            <button class="nav-item" data-view="displays">
-              <span class="nav-icon">&#9637;</span> Signage Boards (Ballpark)
-            </button>
           </div>
         </div>
 
@@ -3779,6 +3776,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             </div>
             <div style="display:flex; gap:var(--space-8);">
               <button class="secondary-button" id="reqSettingsBtn" type="button">Approval settings</button>
+              <button class="secondary-button" id="reqNewAlertBtn" type="button">+ New Alert</button>
               <button class="present-button" id="reqNewBtn" type="button">+ New request</button>
             </div>
           </div>
@@ -9687,6 +9685,49 @@ function renderApSpecs(body) {
 const APPROVAL_STALE_DAYS = 3;
 
 const REQ_TYPES = {
+  contract_signed: {
+    label: "Contract Signed",
+    short: "Contract Signed",
+    blurb: "Alert the Sponsorship Team that a contract has been signed and create the post-signing service tasks.",
+    isAlert: true,
+    revisable: false,
+    fields: [
+      { key: "dateSigned", label: "Date signed", type: "date", required: true },
+      { key: "notes", label: "Other notes", type: "textarea" }
+    ],
+    wantsLink: "Signed agreement file or link"
+  },
+  confirm_partner_details: {
+    label: "Confirm / Update Partner Details",
+    short: "Partner Details",
+    blurb: "Confirm Account, Deal, Assets, and Contacts sections after a contract is signed.",
+    revisable: false,
+    fields: [
+      { key: "sections", label: "Sections to confirm", type: "textarea" },
+      { key: "notes", label: "Notes", type: "textarea" }
+    ],
+    wantsLink: "Completion note"
+  },
+  upload_agreement: {
+    label: "Upload Agreement",
+    short: "Upload Agreement",
+    blurb: "Upload the signed agreement to the sponsor account.",
+    revisable: false,
+    fields: [
+      { key: "notes", label: "Notes", type: "textarea" }
+    ],
+    wantsLink: "Uploaded agreement link"
+  },
+  create_breakdown: {
+    label: "Create Breakdown & Update Score",
+    short: "Breakdown / Score",
+    blurb: "Create the breakdown, get Rob Vota approval, and confirm Score has been updated.",
+    revisable: false,
+    fields: [
+      { key: "notes", label: "Notes", type: "textarea" }
+    ],
+    wantsLink: "Breakdown link or Score confirmation"
+  },
   first_meeting: {
     label: "First Meeting Presentation",
     short: "First Meeting",
@@ -9806,6 +9847,10 @@ const REQ_STATUSES = {
 const APPROVAL_CONFIG_KEY = "bciq_approval_config";
 const DEFAULT_APPROVAL_CONFIG = {
   serviceTeam: ["Greg Millaway", "Tommy Shara", "Zack Nicol"],
+  contract_signed: ["__requester"],
+  confirm_partner_details: ["__requester"],
+  upload_agreement: ["__requester"],
+  create_breakdown: ["Rob Vota"],
   first_meeting: ["__requester"],
   sponsor_task: ["__requester"],
   custom_options: ["__requester", "Rob Vota", "Bob McLane"],
@@ -10070,6 +10115,8 @@ function renderRequestsView() {
 
   const newBtn = document.getElementById("reqNewBtn");
   if (newBtn) newBtn.onclick = () => openReqForm();
+  const alertBtn = document.getElementById("reqNewAlertBtn");
+  if (alertBtn) alertBtn.onclick = () => openReqAlertForm();
   const setBtn = document.getElementById("reqSettingsBtn");
   if (setBtn) setBtn.onclick = () => { reqState.settingsOpen = !reqState.settingsOpen; renderApprovalSettings(); };
 
@@ -11004,9 +11051,22 @@ function openReqForm(prefillSponsorId, preferredType) {
   const wrap = document.getElementById("reqFormWrap");
   if (!wrap) return;
   const sponsors = getAllRecords().slice().sort((a, b) => a.sponsor.localeCompare(b.sponsor));
-  const typeKey = preferredType && REQ_TYPES[preferredType] ? preferredType : Object.keys(REQ_TYPES)[0];
+  const firstRequestType = Object.keys(REQ_TYPES).find(k => !REQ_TYPES[k].isAlert) || Object.keys(REQ_TYPES)[0];
+  const typeKey = preferredType && REQ_TYPES[preferredType] ? preferredType : firstRequestType;
   wrap.style.display = "";
+  wrap.dataset.mode = "request";
   wrap.dataset.type = typeKey;
+  wrap.dataset.sponsor = prefillSponsorId || "";
+  paintReqForm(sponsors);
+  wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+function openReqAlertForm(prefillSponsorId) {
+  const wrap = document.getElementById("reqFormWrap");
+  if (!wrap) return;
+  const sponsors = getAllRecords().slice().sort((a, b) => a.sponsor.localeCompare(b.sponsor));
+  wrap.style.display = "";
+  wrap.dataset.mode = "alert";
+  wrap.dataset.type = "contract_signed";
   wrap.dataset.sponsor = prefillSponsorId || "";
   paintReqForm(sponsors);
   wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -11018,6 +11078,7 @@ function paintReqForm(sponsorsArg) {
   const sponsors = sponsorsArg || getAllRecords().slice().sort((a, b) => a.sponsor.localeCompare(b.sponsor));
   const typeKey = wrap.dataset.type || Object.keys(REQ_TYPES)[0];
   const t = REQ_TYPES[typeKey];
+  const isAlertMode = wrap.dataset.mode === "alert";
   const sel = wrap.dataset.sponsor || "";
   const cfg = loadApprovalConfig();
   const chain = (cfg[typeKey] || []).map(n => n === "__requester" ? "you (requesting rep)" : n);
@@ -11140,7 +11201,7 @@ function paintReqForm(sponsorsArg) {
   }).join("");
 
   wrap.innerHTML = `
-    <div class="section-heading">New request</div>
+    <div class="section-heading">${isAlertMode ? "New alert" : "New request"}</div>
     <p style="margin:var(--space-4) 0 var(--space-6); color:var(--muted); font-size:var(--text-xs);">${esc(t.blurb || "")}</p>
     <p style="margin:0 0 var(--space-14); color:var(--muted); font-size:var(--text-xs);">
       Approval chain: <strong>${chain.length ? esc(chain.join(" → ")) : "none configured"}</strong>${t.stageOnCreate ? ` &middot; submitting moves the deal stage to <strong>${esc(DEAL_STAGES[t.stageOnCreate].label)}</strong>` : ""}
@@ -11149,14 +11210,14 @@ function paintReqForm(sponsorsArg) {
       <div class="sfield">${bcComboboxMarkup("reqf_sponsor", "Existing sponsor", "Search sponsors...", `<option value="">Search existing sponsors...</option>` + sponsors.map(s => `<option value="${esc(s.id)}"${s.id === sel ? " selected" : ""}>${esc(s.sponsor)}</option>`).join(""))}
         <label style="margin-top:var(--space-8);"><span>Or new partner name</span><input id="reqf_newSponsor" type="text" placeholder="Type a partner that is not in the ledger yet"></label>
       </div>
-      <div class="sfield"><label for="reqf_type">Request type *</label><select id="reqf_type" aria-label="reqf type">${Object.entries(REQ_TYPES).map(([k, v]) => `<option value="${k}"${k === typeKey ? " selected" : ""}>${esc(v.label)}</option>`).join("")}</select></div>
+      <div class="sfield"><label for="reqf_type">${isAlertMode ? "Alert type" : "Request type"} *</label><select id="reqf_type" aria-label="reqf type">${Object.entries(REQ_TYPES).filter(([k, v]) => isAlertMode ? v.isAlert : !v.isAlert).map(([k, v]) => `<option value="${k}"${k === typeKey ? " selected" : ""}>${esc(v.label)}</option>`).join("")}</select></div>
       <div class="sfield"><label for="reqf_priority">Priority</label><select id="reqf_priority" aria-label="reqf priority"><option value="normal">Normal</option><option value="high">High</option></select></div>
       <div class="sfield"><label for="reqf_due">Due date</label><input id="reqf_due" type="date" min="${esc(reqEarliestDue())}"><span style="font-size:var(--text-xs); color:var(--muted); font-weight:400; text-transform:none; letter-spacing:0;">Two clear working days minimum — earliest is ${esc(reqEarliestDue())}</span></div>
       ${fieldInputs}
     </div>
     <div class="req-form-actions">
       <button class="secondary-button" id="reqf_cancel" type="button">Cancel</button>
-      <button class="present-button" id="reqf_submit" type="button">Submit request</button>
+      <button class="present-button" id="reqf_submit" type="button">${isAlertMode ? "Submit alert" : "Submit request"}</button>
     </div>`;
 
   initBcCombobox("reqf_sponsor");
@@ -11224,13 +11285,24 @@ function submitReqForm(t, typeKey) {
   };
   req.rootId = req.id;
   reqLog(req, "created the request");
-  setTimeout(() => notifyServiceTeamForRequest(req), 0);
+  let children = [];
+  if (typeKey === "contract_signed") {
+    children = spawnContractSignedTasks(req);
+  } else {
+    setTimeout(() => notifyServiceTeamForRequest(req), 0);
+  }
 
   const all = loadRequests();
-  all.unshift(req);
+  all.unshift(req, ...children);
   saveRequests(all);
 
   if (rec && t.stageOnCreate) advanceDealStage(rec.id, t.stageOnCreate, `${t.short} requested`);
+  if (rec && typeKey === "contract_signed") {
+    const activity = Array.isArray(rec.activityLog) ? [...rec.activityLog] : [];
+    activity.unshift({ date: fields.dateSigned || today(), type: "Workflow", summary: `Contract Signed alert submitted by ${me}${fields.notes ? ": " + richToPlain(fields.notes) : ""}` });
+    updateOverride(rec.id, { dateSigned: fields.dateSigned || null, dealStage: "signed", active: true, activityLog: activity });
+    setTimeout(() => notifyContractSignedAlert(req, children), 0);
+  }
 
   const wrap = document.getElementById("reqFormWrap");
   wrap.style.display = "none";
@@ -11238,7 +11310,7 @@ function submitReqForm(t, typeKey) {
   reqState.status = "open";
   reqState.expanded = req.id;
   renderRequestsView();
-  toast("Request submitted", `${sponsorName} \u2014 ${t.short}. It's unclaimed until someone picks it up.`);
+  toast(typeKey === "contract_signed" ? "Alert submitted" : "Request submitted", typeKey === "contract_signed" ? `${sponsorName} \u2014 post-signing tasks created.` : `${sponsorName} \u2014 ${t.short}. It's unclaimed until someone picks it up.`);
 }
 
 /* Opened from the sponsor drawer: jump to Requests with the sponsor prefilled. */
@@ -12199,6 +12271,76 @@ function notifyServiceTeamForRequest(r) {
 }
 /* N32: submitting an Agreement or Term Sheet request tells the service team to claim it. */
 function notifyServiceTeamForAgreement(r) { notifyServiceTeamForRequest(r); }
+const CONTRACT_SIGNED_CHILD_TYPES = ["confirm_partner_details", "upload_agreement", "create_breakdown", "asset_prep"];
+function contractSignedChildFields(type, parent) {
+  const f = parent.fields || {};
+  if (type === "confirm_partner_details") return {
+    sections: "Account section\nDeal section\nAssets section\nContacts section",
+    notes: f.notes || ""
+  };
+  if (type === "upload_agreement") return { notes: f.notes || "" };
+  if (type === "create_breakdown") return {
+    notes: "Create breakdown and update Score.\nBreakdown must be approved by Rob Vota only once complete.\nConfirm that Score has been updated." + (f.notes ? "\n\n" + f.notes : "")
+  };
+  if (type === "asset_prep") return {
+    recipients: "",
+    tone: "Returning sponsor",
+    assets: (() => { try { return apDealAssetLines(getRecord(parent.sponsorId) || {}).join("\n"); } catch (e) { return ""; } })(),
+    notes: f.notes || ""
+  };
+  return {};
+}
+function spawnContractSignedTasks(parent) {
+  const me = parent.requestedBy || currentUser() || "";
+  const children = CONTRACT_SIGNED_CHILD_TYPES.map(type => {
+    const child = {
+      id: "req_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      rootId: parent.rootId || parent.id,
+      parentId: parent.id,
+      sponsorId: parent.sponsorId,
+      sponsorName: parent.sponsorName,
+      prospectiveSponsor: !!parent.prospectiveSponsor,
+      type,
+      status: "requested",
+      priority: parent.priority || "normal",
+      requestedBy: me,
+      requestedAt: nowStamp(),
+      owner: "",
+      claimedAt: "",
+      dueDate: parent.dueDate || "",
+      fields: contractSignedChildFields(type, parent),
+      link: "",
+      approvals: [],
+      versions: [],
+      revNumber: 1,
+      log: []
+    };
+    reqLog(child, `created automatically from Contract Signed alert${parent.fields?.dateSigned ? " dated " + parent.fields.dateSigned : ""}`);
+    return child;
+  });
+  children.forEach(child => pushInAppNotice(`${(REQ_TYPES[child.type] || {}).short || child.type} needed â€” ${child.sponsorName}`, `Created from Contract Signed alert. Needs claiming.`, child.id));
+  return children;
+}
+function notifyContractSignedAlert(parent, children) {
+  const team = serviceTeamNames();
+  const addrs = team.map(reqEmailFor).filter(Boolean);
+  const date = parent.fields?.dateSigned || "date not entered";
+  const notes = parent.fields?.notes ? `\nOther notes: ${richToPlain(parent.fields.notes)}\n` : "";
+  pushInAppNotice(`Contract signed â€” ${parent.sponsorName}`, `${parent.requestedBy || "A rep"} alerted the team. Post-signing tasks are ready to claim.`, parent.id);
+  if (!addrs.length) return;
+  const taskLines = (children || []).map(c => `- ${(REQ_TYPES[c.type] || {}).label || c.type}: ${reqDeepLink(c)}`);
+  const body = [
+    "Service Team,", "",
+    `${parent.requestedBy || "A sales rep"} marked the contract signed for ${parent.sponsorName}.`,
+    `Date signed: ${date}`,
+    notes,
+    "The following assignments are ready for the Service Team to claim:",
+    ...taskLines,
+    "",
+    `Contract Signed alert: ${reqDeepLink(parent)}`
+  ].filter(Boolean).join("\n");
+  openMailDraft(addrs.join(","), `[BlueClaws IQ] Contract signed â€” ${parent.sponsorName}`, body);
+}
 function openOptionsCreatorForRequest(reqId) {
   const req = loadRequests().find(r => r.id === reqId);
   if (!req) return;
@@ -14582,6 +14724,7 @@ function drawerTemplate(r) {
         </div>
         <div class="readonly-note">Where this account sits in the current sales process — separate from renewal outlook below, which is about whether they'll come back next season.</div>
         <div class="sfield-grid" style="margin-top:var(--space-12);">
+          <div class="sfield"><label for="f_dateSigned">Date Signed</label><input id="f_dateSigned" type="date" value="${esc(r.dateSigned || r.signedAt || "")}"></div>
           <div class="sfield"><label for="f_cashAmount">Cash Amount ($)</label><input id="f_cashAmount" inputmode="numeric" value="${esc(r.cashAmount || defaultCashAmountFor(r) || "")}" placeholder="$0"></div>
           <div class="sfield"><label for="f_tradeAmount">Trade Amount ($)</label><input id="f_tradeAmount" inputmode="numeric" value="${esc(r.tradeAmount || defaultTradeAmountFor(r) || "")}" placeholder="$0"></div>
           <div class="sfield"><label for="f_tradeNotes">Trade Notes</label><input id="f_tradeNotes" value="${esc(r.tradeNotes || "")}" placeholder="What we receive"></div>
@@ -15180,6 +15323,7 @@ function openDrawer(id) {
       involved: document.getElementById("f_involved") ? Number(document.getElementById("f_involved").value) : (r.involved ?? 2),
       renewalOddsOverride: document.getElementById("f_renewalOddsOverride").value.trim() === "" ? null : Number(document.getElementById("f_renewalOddsOverride").value),
       dealStage: pendingDealStage,
+      dateSigned: document.getElementById("f_dateSigned").value || null,
       cashAmount: document.getElementById("f_cashAmount").value.trim() || null,
       tradeAmount: document.getElementById("f_tradeAmount").value.trim() || null,
       tradeNotes: document.getElementById("f_tradeNotes").value.trim() || null,
