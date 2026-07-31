@@ -2546,6 +2546,50 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
 .utg-mini-block span{font-size:9px;font-weight:800}
 .utg-mini-empty{background:var(--paper);border:1px dashed #cdd6e4;border-radius:2px}
 .utg-mini-note{color:var(--muted);font-size:var(--text-xs);margin-top:var(--space-8)}
+#assetallocView .aa-lr-left{position:sticky;top:70px;align-self:start;max-height:calc(100vh - 90px);overflow:auto}
+#assetallocView .upper-tier-layout .utg-controls{position:sticky;top:58px;z-index:8;background:var(--paper);padding:var(--space-8) 0}
+#assetallocView .upper-tier-layout .utg-signed-strip{position:sticky;top:112px;z-index:7;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-height:210px;overflow:auto}
+#assetallocView .utg-drag{min-width:0;white-space:normal;padding:6px 8px}
+#assetallocView .utg-drag span:first-of-type{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.utg-cell-add{display:grid;place-items:center;gap:2px;width:100%;height:100%;border:0;background:transparent;color:inherit;cursor:pointer;font:800 10px var(--font-body)}
+.utg-cell-add strong{font-size:17px;line-height:1}
+#assetallocView .aa-hr-shell{min-width:0}
+#assetallocView .aa-hr-top{position:sticky;top:58px;z-index:8;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-8);max-height:255px;overflow:auto}
+#assetallocView .aa-hr-top .aa-partner-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:var(--space-6);max-height:170px;overflow:auto}
+#assetallocView .aa-hr-top .sched-card{padding:6px 8px;min-width:0}
+#assetallocView .aa-hr-top .sched-card-top{gap:6px;align-items:center}
+#assetallocView .aa-hr-top .nt-card-name{font-size:11px;line-height:1.15;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#assetallocView .aa-hr-top .utg-size-tag,#assetallocView .aa-hr-top .aa-place-state{font-size:8px;padding:1px 5px;white-space:nowrap}
+#assetallocView .aa-hr-wall{overflow-x:auto;min-width:0}
+#assetallocView .aa-hr-wall #aaSlots{min-width:1680px}
+#assetallocView .aa-hr-set-row{overflow:visible}
+#fulfillmentKpis,#processKpis{display:none!important}
+#fulfillmentRows .fulfillment-row{padding:var(--space-8);border:1px solid var(--line);border-radius:var(--radius-sm);margin-bottom:var(--space-8);background:var(--card);gap:var(--space-7)!important}
+#fulfillmentRows .sfield label,#fulfillmentRows label{font-size:10px;margin-bottom:3px}
+#fulfillmentRows .fulfillment-statuses{display:flex;flex-wrap:wrap;gap:4px}
+#fulfillmentRows .fulfillment-status{padding:4px 7px;font-size:10px;min-height:0}
+#fulfillmentRows .ff-dates-band,#fulfillmentRows .ff-notes-band,#fulfillmentRows .asset-tasks{padding-top:4px}
+#fulfillmentRows .fulfillment-note{min-height:42px}
+.proc-stage.is-passed{opacity:.56;background:#f6f8fb}
+.proc-phase-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-10);flex:1 1 auto}
+.proc-phase{display:grid;gap:var(--space-5)}
+.proc-phase label{font:800 10px var(--font-body);color:var(--muted);text-transform:uppercase}
+.proc-phase strong{font:800 13px var(--font-display);color:var(--ink)}
+.asset-category-picker{display:grid;grid-template-columns:minmax(160px,260px);gap:var(--space-5);margin-bottom:var(--space-10)}
+.asset-category-picker label{font:800 10px var(--font-body);color:var(--muted);text-transform:uppercase}
+.asset-category-list{display:grid;gap:var(--space-5)}
+.asset-category-row{display:flex;align-items:center;justify-content:space-between;gap:var(--space-10);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card);padding:8px 10px;text-align:left;cursor:pointer}
+.asset-category-row:hover{border-color:var(--blue);background:var(--blue-soft)}
+.asset-category-row strong{font:800 12px var(--font-display);color:var(--ink)}
+.asset-category-row span{font-size:11px;color:var(--muted);white-space:nowrap}
+#statusView .status-board{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-8)}
+#statusView .status-column-head{padding:8px 10px}
+#statusView .status-column-head strong{font-size:12px}
+#statusView .status-column-head small{font-size:11px}
+#statusView .status-partner-pill{display:grid;grid-template-columns:46px minmax(0,1fr);gap:7px;padding:7px 8px;align-items:center}
+#statusView .status-partner-pill strong{font-size:12px;line-height:1.15;white-space:normal}
+#statusView .status-partner-pill small{font-size:10px}
+#statusView .renewal-pct{font-size:10px;padding:3px 5px;min-width:38px}
 </style>
 </head>
 <body>
@@ -2701,15 +2745,6 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             </button>
             <button class="nav-item" data-view="displays">
               <span class="nav-icon">&#9637;</span> Signage Boards (Ballpark)
-            </button>
-            <button class="nav-item" data-view="scoreboard">
-              <span class="nav-icon">&#9632;</span> Scoreboard Layout
-            </button>
-            <button class="nav-item" data-view="marquee">
-              <span class="nav-icon">&#9644;</span> Digital Marquee Slots &amp; Schedule
-            </button>
-            <button class="nav-item" data-view="enews">
-              <span class="nav-icon">&#9993;</span> E-Newsletter Slots &amp; Schedule
             </button>
           </div>
         </div>
@@ -3907,6 +3942,10 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
       <button class="modal-close" id="assetContractClose" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <span class="eyebrow">ASSET DETAILS</span>
       <h2 id="assetContractTitle">Asset</h2>
+      <div class="sfield" id="assetContractDisplayNameField">
+        <label>Asset Name</label>
+        <input id="assetContractDisplayName" placeholder="Asset name shown in the asset list">
+      </div>
       <div class="sfield" id="assetContractNameField" hidden>
         <label>Which asset is this language for?</label>
         <input id="assetContractName" list="assetContractChoices" placeholder="Start typing an asset name" autocomplete="off">
@@ -3934,7 +3973,16 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
       <div class="sdsection-title" style="margin-top:var(--space-12);">Contract Details</div>
       <div class="sfield">
         <label>Section heading (where it lands in the contract, e.g. "Gameday")</label>
-        <input id="assetContractSection" placeholder="Signage">
+        <select id="assetContractSection">
+          <option value="">Choose section</option>
+          <option>Entitlement Areas</option>
+          <option>Ballpark Branding</option>
+          <option>Gameday</option>
+          <option>Marketing &amp; Events</option>
+          <option>Fan &amp; Ticket Promotions</option>
+          <option>Tickets &amp; Experiences</option>
+          <option>Other</option>
+        </select>
       </div>
       <div class="sfield">
         <label>Headline line — becomes the lettered bullet</label>
@@ -5558,6 +5606,20 @@ function saveAssetDetail(name, detail) {
   const all = loadAssetDetails();
   all[key] = { ...(all[key] || {}), ...detail, asset: name };
   saveAssetDetails(all);
+}
+function assetDisplayName(name) {
+  const detail = assetDetailsFor(name);
+  return (detail.displayName || name || "").trim();
+}
+function defaultCashAmountFor(r) {
+  const t = String(r?.type || "").toLowerCase();
+  if (!r || /cash\s*&\s*trade|milb/.test(t) || !/\bcash\b/.test(t)) return "";
+  return r.cashAmount || fmtMoney(selectedSeasonTotal(r) || parseTotal(r.total || 0));
+}
+function defaultTradeAmountFor(r) {
+  const t = String(r?.type || "").toLowerCase();
+  if (!r || /cash\s*&\s*trade|milb/.test(t) || !/\btrade\b/.test(t)) return "";
+  return r.tradeAmount || fmtMoney(selectedSeasonTotal(r) || parseTotal(r.total || 0));
 }
 function getRate(assetId) { const r = loadRates()[assetId]; return r === undefined ? null : r; }
 function setRate(assetId, value) {
@@ -7881,7 +7943,33 @@ function processStepDone(r, stage, i) { return !!(getProcess(r).steps || {})[pro
 function stageAllDone(r, stage) { return stageCheckables(stage).length > 0 && stage.sub.every((s, i) => !isCheckableStep(s) || processStepDone(r, stage, i)); }
 function stageAnyDone(r, stage) { return stage.sub.some((s, i) => isCheckableStep(s) && processStepDone(r, stage, i)); }
 function processCheckedCount(r) { let n = 0; PROCESS_STAGES.forEach(st => st.sub.forEach((s, i) => { if (isCheckableStep(s) && processStepDone(r, st, i)) n++; })); return n; }
-function processPct(r) { const t = processTotalSteps(); return t ? Math.round((processCheckedCount(r) / t) * 100) : 0; }
+const PROCESS_STAGE_WEIGHTS = [25, 10, 40, 5, 20, 20, 20, 20, 20, 20];
+function processSignedAutoSkip(r, sIdx) {
+  if (!r || sIdx > 4) return false;
+  try { if (typeof isSignedRecord === "function" && isSignedRecord(r)) return true; } catch (e) {}
+  try { if (typeof dealStageOf === "function" && dealStageOf(r) === "signed") return true; } catch (e) {}
+  return !!r.active;
+}
+function processStageProgress(r, stage, sIdx) {
+  const weight = PROCESS_STAGE_WEIGHTS[sIdx] || 0;
+  if (!r || !weight) return 0;
+  if (processSignedAutoSkip(r, sIdx) || stageDone(r, stage)) return weight;
+  const steps = stageCheckables(stage);
+  if (!steps.length) return stageReqComplete(r, stage) ? weight : 0;
+  const done = stage.sub.reduce((n, s, i) => n + (isCheckableStep(s) && processStepDone(r, stage, i) ? 1 : 0), 0);
+  return (done / steps.length) * weight;
+}
+function processPhasePct(r, startIdx, endIdx) {
+  const weights = PROCESS_STAGE_WEIGHTS.slice(startIdx, endIdx + 1);
+  const total = weights.reduce((a, b) => a + b, 0);
+  const got = PROCESS_STAGES.slice(startIdx, endIdx + 1).reduce((sum, stage, i) => sum + processStageProgress(r, stage, startIdx + i), 0);
+  return total ? Math.round((got / total) * 100) : 0;
+}
+function processPct(r) {
+  const total = PROCESS_STAGE_WEIGHTS.reduce((a, b) => a + b, 0);
+  const got = PROCESS_STAGES.reduce((sum, stage, i) => sum + processStageProgress(r, stage, i), 0);
+  return total ? Math.round((got / total) * 100) : 0;
+}
 /* Each process stage that has a real counterpart in Requests & Tasks is mapped here, so the
    tracker can start the actual request and mirror its live status instead of only manual ticks. */
 const PROC_REQ_TYPE = { "first-meeting": "first_meeting", "options": "custom_options", "partnership-presentation": "custom_presentation", "term-sheet": "term_sheet", "partnership-agreement": "agreement", "asset-prep": "asset_prep" };
@@ -7899,7 +7987,7 @@ function stageDone(r, stage) { return stageAllDone(r, stage) || stageReqComplete
 function currentStageIndex(r) {
   const stored = getProcess(r).stage;
   if (stored) { const i = PROCESS_STAGES.findIndex(s => s.key === stored); if (i >= 0) return i; }
-  const firstIncomplete = PROCESS_STAGES.findIndex(s => !s.nonLinear && !stageDone(r, s));
+  const firstIncomplete = PROCESS_STAGES.findIndex((s, i) => !s.nonLinear && !processSignedAutoSkip(r, i) && !stageDone(r, s));
   return firstIncomplete < 0 ? PROCESS_STAGES.length - 1 : firstIncomplete;
 }
 function setProcessStage(id, key) {
@@ -7925,8 +8013,9 @@ function dealFlowSponsorList(q) {
 function processStageCardHTML(stage, sIdx, r, curIdx) {
   const editable = !!r;
   let stateCls = "", badge = "";
+  const passed = editable && (processSignedAutoSkip(r, sIdx) || stageDone(r, stage) || (!stage.nonLinear && sIdx < curIdx));
   if (stage.nonLinear) { stateCls = "st-renewal"; badge = `<span class="proc-badge anytime">Anytime</span>`; }
-  else if (editable && stageDone(r, stage)) { stateCls = "st-done"; badge = `<span class="proc-badge done">Done</span>`; }
+  else if (editable && (processSignedAutoSkip(r, sIdx) || stageDone(r, stage))) { stateCls = "st-done"; badge = `<span class="proc-badge done">${processSignedAutoSkip(r, sIdx) ? "Skipped" : "Done"}</span>`; }
   else if (editable && sIdx === curIdx) { stateCls = "st-current"; badge = `<span class="proc-badge current">In progress</span>`; }
   const title = editable
     ? `<button type="button" class="proc-stage-title" data-proc-setstage="${stage.key}" title="Set as current stage">${esc(stage.label)}</button>`
@@ -7955,7 +8044,7 @@ function processStageCardHTML(stage, sIdx, r, curIdx) {
       reqAction = `<div class="proc-req"><button type="button" class="proc-open" data-proc-newreq="${reqType}">＋ Start in Requests &amp; Tasks</button></div>`;
     }
   }
-  return `<div class="proc-stage ${stateCls}">
+  return `<div class="proc-stage ${stateCls} ${passed ? "is-passed" : ""}">
     <div class="proc-stage-head"><span class="proc-stage-num">${sIdx + 1}</span>${title}${badge}</div>
     <ul class="proc-sub">${subs}</ul>
     ${reqAction}
@@ -7999,6 +8088,8 @@ function renderProcessView() {
   } else {
     const curIdx = currentStageIndex(r);
     const pct = processPct(r);
+    const prePct = processPhasePct(r, 0, 4);
+    const signedPct = processPhasePct(r, 5, 9);
     const stageLabel = PROCESS_STAGES[curIdx] ? PROCESS_STAGES[curIdx].label : "—";
     kpis.innerHTML = `
       <div class="mini-kpi"><span>Current stage</span><strong style="font-size:14px;">${esc(stageLabel)}</strong></div>
@@ -8007,7 +8098,10 @@ function renderProcessView() {
     body.innerHTML = `
       <div class="proc-partner-bar">
         <div style="min-width:0;"><strong style="font-size:14px;">${esc(r.sponsor)}</strong><small style="display:block; color:var(--muted); font-size:var(--text-xs);">${esc(r.rep || "No rep")} · ${esc(r.type || "—")} · ${esc(sState.season)} season</small></div>
-        <div class="proc-progress"><i style="width:${pct}%;"></i></div>
+        <div class="proc-phase-grid">
+          <div class="proc-phase"><label>Pre-Signed</label><div class="proc-progress"><i style="width:${prePct}%;"></i></div><strong>${prePct}%</strong></div>
+          <div class="proc-phase"><label>Signed</label><div class="proc-progress"><i style="width:${signedPct}%;"></i></div><strong>${signedPct}%</strong></div>
+        </div>
         <strong style="flex:0 0 auto; font:800 15px/1 var(--font-display);">${pct}%</strong>
       </div>
       <div class="proc-legend">
@@ -8265,15 +8359,16 @@ function renderFulfillmentView() {
             const pct = fulfillmentPercent(row);
             const tone = fulfillmentTone(pct);
             return `<div class="fulfillment-row" data-fulfill-overview-row="${esc(row.id)}" style="grid-template-columns:1fr 120px; cursor:pointer; padding:var(--space-8) 0; border-top:1px solid #eee;">
-              <div>${esc(row.sponsor)}</div>
+              <div><button type="button" class="link-button" data-fulfill-open-sponsor="${esc(row.id)}">${esc(row.sponsor)}</button></div>
               <div class="${tone}">${pct === null ? "—" : pct + "%"}</div>
             </div>`;
           }).join("")}
         </div>
       </article>`;
     editor.querySelectorAll("[data-fulfill-overview-row]").forEach(el => {
-      el.addEventListener("click", () => { fState.sponsorId = el.dataset.fulfillOverviewRow; renderFulfillmentView(); });
+      el.addEventListener("click", e => { if (e.target.closest("[data-fulfill-open-sponsor]")) return; fState.sponsorId = el.dataset.fulfillOverviewRow; renderFulfillmentView(); });
     });
+    editor.querySelectorAll("[data-fulfill-open-sponsor]").forEach(btn => btn.addEventListener("click", e => { e.stopPropagation(); openDrawer(btn.dataset.fulfillOpenSponsor); }));
     return;
   }
   const r = getRecord(fState.sponsorId);
@@ -8303,10 +8398,14 @@ function renderFulfillmentView() {
       </div>
       <div style="padding:var(--space-14) var(--space-18) var(--space-18);">
         <div id="fulfillmentRows"></div>
-        <button class="secondary-button" id="fulfillmentAddAsset" type="button" style="margin-top:var(--space-12);">+ Add asset</button>
+        <div style="display:flex; gap:var(--space-8); flex-wrap:wrap; margin-top:var(--space-12);">
+          <button class="secondary-button" id="fulfillmentAddAsset" type="button">+ Add asset</button>
+          <button class="secondary-button" id="fulfillmentOpenSponsorDetails" type="button">Open Sponsor Details</button>
+        </div>
       </div>
     </article>`;
   renderFulfillmentEditorRows(r, rows);
+  document.getElementById("fulfillmentOpenSponsorDetails")?.addEventListener("click", () => openDrawer(r.id));
 }
 /* T8 — Task templates. Every fulfilled asset carries the same typed subtask chain
    SponsorCX auto-generates. Stored per-asset in r.assetTasks (a parallel checklist),
@@ -8336,7 +8435,7 @@ function renderFulfillmentEditorRows(r, rows) {
   if (!wrap) return;
   const catalog = [...new Set([...getFullCatalog().map(a => a.asset), ...rows.map(a => a.asset)].filter(Boolean))].sort();
   const dateChoices = ["TBD", ...BLUECLAWS_2026_GAMES.map(g => g.label)];
-  wrap.innerHTML = `<datalist id="fulfillmentAssetChoices">${catalog.map(a => `<option value="${esc(a)}"></option>`).join("")}</datalist>` +
+  wrap.innerHTML =
     `<datalist id="fulfillmentDateChoices">${dateChoices.map(d => `<option value="${esc(d)}"></option>`).join("")}</datalist>` +
     (rows.length ? rows.map((row, idx) => {
       const meta = statusMeta(row.status);
@@ -8354,8 +8453,8 @@ function renderFulfillmentEditorRows(r, rows) {
           `<input class="ff-date-box" data-fulfill-date="${idx}" data-date-i="${j}" list="fulfillmentDateChoices" value="${esc(savedDates[j] || "")}" placeholder="${cadence === "multi" ? "Date " + (j + 1) : "TBD"}" aria-label="Date ${j + 1} for asset ${idx + 1}">`
         ).join("");
       }
-      return `<div class="fulfillment-row" data-fulfill-row="${idx}" style="grid-template-columns:minmax(160px,1fr) 240px 156px 78px 28px;">
-        <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Asset" : ""}</label><input data-fulfill-asset="${idx}" list="fulfillmentAssetChoices" value="${esc(row.asset || "")}" placeholder="Asset name"></div>
+      return `<div class="fulfillment-row" data-fulfill-row="${idx}" style="grid-template-columns:minmax(190px,1.1fr) minmax(210px,1.4fr) 132px 66px 28px;">
+        <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Asset" : ""}</label><select data-fulfill-asset="${idx}"><option value="">Select asset</option>${catalog.map(a => `<option value="${esc(a)}" ${String(row.asset || "") === a ? "selected" : ""}>${esc(assetDisplayName(a))}</option>`).join("")}</select></div>
         <div><label style="display:block; color:var(--muted); font-size: var(--text-xs); font-weight:800; margin-bottom:var(--space-6);">${idx === 0 ? "Status" : ""}</label><div class="fulfillment-statuses">${statuses}</div></div>
         <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Schedule" : ""}</label><select data-fulfill-cadence="${idx}">${FULFILLMENT_CADENCES.map(c => `<option value="${c.key}" ${cadence === c.key ? "selected" : ""}>${esc(c.label)}</option>`).join("")}</select></div>
         <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Quantity" : ""}</label><input data-fulfill-qty="${idx}" type="number" min="1" step="1" value="${esc(row.qty || "1")}" placeholder="Qty"></div>
@@ -11463,12 +11562,7 @@ function wireSponsorQuickActions(wrap, rec) {
   }));
   const qa = wrap.querySelector('[data-qa="add-asset"]');
   if (qa) qa.addEventListener("click", () => {
-    const text = prompt(`Add an asset line for ${rec.sponsor} (e.g. "Concourse Sign - staying the same"):`);
-    if (!text || !text.trim()) return;
-    const updated = ((rec.assets || "").trim() ? rec.assets.trim() + "\n" : "") + text.trim();
-    updateOverride(rec.id, { assets: updated });
-    toast("Added", `Asset added to ${rec.sponsor}`);
-    renderSponsorAssets(rec.sponsor);
+    openSponsorAssetPicker(rec);
   });
   const qaOpt = wrap.querySelector('[data-qa="add-option"]');
   if (qaOpt) qaOpt.addEventListener("click", () => {
@@ -11489,21 +11583,60 @@ function wireSponsorEditButton(wrap) {
   const btn = wrap.querySelector("[data-edit-sponsor]");
   if (btn) btn.addEventListener("click", () => openDrawer(btn.dataset.editSponsor));
 }
+function openSponsorAssetPicker(rec) {
+  if (!rec) return;
+  const catalog = [...new Set(getFullCatalog().map(a => a.asset).filter(Boolean))].sort();
+  const modal = document.getElementById("notesModalBackdrop");
+  document.getElementById("notesModalTitle").textContent = "Add asset";
+  document.getElementById("notesModalContext").textContent = rec.sponsor;
+  document.getElementById("notesModalField").innerHTML = `
+    <div class="sfield"><label>Asset</label><select id="sponsorAssetPick"><option value="">Select asset</option>${catalog.map(a => `<option value="${esc(a)}">${esc(assetDisplayName(a))}</option>`).join("")}</select></div>
+    <div class="sfield"><label>Quantity</label><input id="sponsorAssetPickQty" value="1"></div>
+    <div class="sfield"><label>Asset Notes</label><input id="sponsorAssetPickNotes" placeholder="Status, delivery, who pays, dates"></div>`;
+  const save = document.getElementById("notesModalSave");
+  const close = () => modal.classList.remove("show");
+  document.getElementById("notesModalClose").onclick = close;
+  save.onclick = () => {
+    const asset = document.getElementById("sponsorAssetPick").value;
+    if (!asset) { toast("Choose an asset", "Select an asset before saving", true); return; }
+    const qty = document.getElementById("sponsorAssetPickQty").value.trim() || "1";
+    const notes = document.getElementById("sponsorAssetPickNotes").value.trim();
+    const deal = cleanDealAssets([...(dealAssetsFor(rec) || []), { asset, qty, notes, breakdownValue: "" }]);
+    updateOverride(rec.id, {
+      dealAssets: deal,
+      fulfillmentAssets: cleanFulfillmentAssets(fulfillmentAssetsFor({ ...rec, dealAssets: deal }))
+    });
+    close();
+    toast("Asset added", `${assetDisplayName(asset)} added to ${rec.sponsor}`);
+    renderSponsorAssets(rec.sponsor);
+    refreshCurrentView();
+  };
+  modal.classList.add("show");
+}
 function renderFolderGrid() {
   const cats = assetCategories();
-  document.getElementById("folderGrid").innerHTML = cats.map(([cat, count]) => {
+  document.getElementById("folderGrid").innerHTML = `
+    <div class="asset-category-picker">
+      <label for="assetCategoryPicker">View category</label>
+      <select id="assetCategoryPicker">
+        <option value="">Choose a category</option>
+        ${cats.map(([cat, count]) => `<option value="${esc(cat)}">${esc(cat)} (${count})</option>`).join("")}
+      </select>
+    </div>
+    <div class="asset-category-list">
+      ${cats.map(([cat, count]) => {
     const rated = ratedCountInCategory(cat);
     const assigned = folderTagCount(cat);
     return `
-    <button class="folder-card" data-cat="${esc(cat)}">
-      <div class="folder-icon">${folderIcon(cat)}</div>
+    <button class="asset-category-row" data-cat="${esc(cat)}">
       <strong>${esc(cat)}</strong>
       <span>${count} asset${count === 1 ? "" : "s"}</span>
-      ${rated ? `<span class="folder-rated">${rated} rated</span>` : ""}
-      ${assigned ? `<span class="folder-rated" style="color:var(--red);">${assigned} assigned</span>` : ""}
     </button>`;
-  }).join("");
-  document.querySelectorAll(".folder-card").forEach(c => c.addEventListener("click", () => openFolder(c.dataset.cat)));
+  }).join("")}
+    </div>`;
+  const picker = document.getElementById("assetCategoryPicker");
+  if (picker) picker.onchange = () => { if (picker.value) openFolder(picker.value); };
+  document.querySelectorAll(".asset-category-row").forEach(c => c.addEventListener("click", () => openFolder(c.dataset.cat)));
 }
 function showFolderGrid() {
   aState.mode = "folders"; aState.category = null;
@@ -11602,13 +11735,15 @@ function renderAssetTable() {
   const wrap = document.getElementById("assetFileList");
   wrap.innerHTML = list.length ? list.map(a => {
     const detail = assetDetailsFor(a.asset);
+    const shownName = assetDisplayName(a.asset);
     const rate = detail.rateCard !== undefined && detail.rateCard !== "" && detail.rateCard !== null ? Number(detail.rateCard) : lookupRate(a);
     const isFromCard = rate !== "" && rates[a.id] === undefined && RATE_CARD[a.asset] !== undefined;
     return `
     <div class="file-row" data-id="${esc(a.id)}">
       <span class="file-icon">▤</span>
       <div class="file-info">
-        <strong>${esc(a.asset)}</strong>
+        <strong>${esc(shownName)}</strong>
+        ${shownName !== a.asset ? `<span class="micro-tag muted" title="Original catalog name">${esc(a.asset)}</span>` : ""}
         ${a.formerName ? `<span class="micro-tag muted" title="Renamed from &quot;${esc(a.formerName)}&quot; in the 2026 rate card update">was: ${esc(a.formerName)}</span>` : ""}
         ${aState.mode === "folders" || q ? `<span class="micro-tag muted">${esc(a.category)}</span>` : ""}
         ${a.frequency ? `<span class="micro-tag">${esc(a.frequency)}</span>` : ""}
@@ -14447,8 +14582,8 @@ function drawerTemplate(r) {
         </div>
         <div class="readonly-note">Where this account sits in the current sales process — separate from renewal outlook below, which is about whether they'll come back next season.</div>
         <div class="sfield-grid" style="margin-top:var(--space-12);">
-          <div class="sfield"><label for="f_cashAmount">Cash Amount ($)</label><input id="f_cashAmount" inputmode="numeric" value="${esc(r.cashAmount || "")}" placeholder="$0"></div>
-          <div class="sfield"><label for="f_tradeAmount">Trade Amount ($)</label><input id="f_tradeAmount" inputmode="numeric" value="${esc(r.tradeAmount || "")}" placeholder="$0"></div>
+          <div class="sfield"><label for="f_cashAmount">Cash Amount ($)</label><input id="f_cashAmount" inputmode="numeric" value="${esc(r.cashAmount || defaultCashAmountFor(r) || "")}" placeholder="$0"></div>
+          <div class="sfield"><label for="f_tradeAmount">Trade Amount ($)</label><input id="f_tradeAmount" inputmode="numeric" value="${esc(r.tradeAmount || defaultTradeAmountFor(r) || "")}" placeholder="$0"></div>
           <div class="sfield"><label for="f_tradeNotes">Trade Notes</label><input id="f_tradeNotes" value="${esc(r.tradeNotes || "")}" placeholder="What we receive"></div>
           <div class="sfield"><label for="f_tradeCollected">Trade received?</label><select id="f_tradeCollected" aria-label="Trade received status">${["Not yet","Partially","Received","N/A"].map(o => `<option ${(r.tradeCollected || "Not yet") === o ? "selected" : ""}>${o}</option>`).join("")}</select></div>
           ${(r.tradeAmount && !["Received","N/A"].includes(r.tradeCollected || "Not yet")) ? `<div class="readonly-note is-off" style="grid-column:1 / -1;">⚠ Trade outstanding — ${esc(String(r.tradeAmount))} promised${(r.tradeCollected === "Partially") ? ", partially received" : ", not yet received"}. ${esc(r.tradeNotes || "")}</div>` : ""}
@@ -14843,10 +14978,10 @@ function openDrawer(id) {
     const wrap = document.getElementById("dealAssetRows");
     if (!wrap) return;
     const catalog = [...new Set([...getFullCatalog().map(a => a.asset), ...pendingDealAssets.map(a => a.asset)].filter(Boolean))].sort();
-    wrap.innerHTML = `<datalist id="dealAssetChoices">${catalog.map(a => `<option value="${esc(a)}"></option>`).join("")}</datalist>` +
+    wrap.innerHTML =
       (pendingDealAssets.length ? pendingDealAssets.map((row, idx) => `
         <div class="asset-deal-row" data-dealasset-row="${idx}">
-          <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Asset" : ""}</label><input data-dealasset="asset" list="dealAssetChoices" value="${esc(row.asset || "")}" placeholder="Asset name"></div>
+          <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Asset" : ""}</label><select data-dealasset="asset"><option value="">Select asset</option>${catalog.map(a => `<option value="${esc(a)}" ${String(row.asset || "") === a ? "selected" : ""}>${esc(assetDisplayName(a))}</option>`).join("")}</select></div>
           <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Quantity" : ""}</label><input data-dealasset="qty" value="${esc(row.qty || "1")}" placeholder="1"></div>
           <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Breakdown Value" : ""}</label><input data-dealasset="breakdownValue" value="${esc(row.breakdownValue || "")}" placeholder="$0"></div>
           <div class="sfield" style="margin:0;"><label>${idx === 0 ? "Asset Notes" : ""}</label><input data-dealasset="notes" value="${esc(row.notes || "")}" placeholder="Status, delivery, redo, who pays…"></div>
@@ -14856,6 +14991,7 @@ function openDrawer(id) {
     wrap.querySelectorAll("[data-dealasset-row]").forEach(rowEl => {
       const idx = +rowEl.dataset.dealassetRow;
       rowEl.querySelectorAll("[data-dealasset]").forEach(inp => {
+        if (inp.tagName === "SELECT") inp.addEventListener("change", () => inp.dispatchEvent(new Event("input", { bubbles: true })));
         inp.addEventListener("input", e => {
           pendingDealAssets[idx][e.target.dataset.dealasset] = e.target.value;
           renderDrawerFulfillmentPreview();
@@ -15685,17 +15821,18 @@ function utgFlipDouble(tier,blockId){const st=loadBallparkDisplays();const block
 function utgSetBlockArtwork(tier,blockId,dataUrl,name){const st=loadBallparkDisplays();const b=utgBoardBlocks(st,tier).find(x=>x.id===blockId);if(!b)return;b.artwork=dataUrl||null;b.artworkName=dataUrl?(name||"Artwork"):null;if(dataUrl){st.designs=st.designs||[];if(!st.designs.some(d=>d.dataUrl===dataUrl))st.designs.push({id:"design-"+Date.now(),name:b.artworkName,dataUrl});}utgSave(st);}
 function utgSetBoardPhoto(tier,dataUrl){const st=loadBallparkDisplays();st.upperPhotos=st.upperPhotos||{};if(dataUrl)st.upperPhotos[String(tier)]=dataUrl;else delete st.upperPhotos[String(tier)];utgSave(st);}
 function utgBlockHtml(b,tier){const rec=(typeof displayRecord==="function")?displayRecord(b.sponsorId):null;const status=rec?utgStatusOf(rec):"signed";const s=UTG_SHAPES[b.shape]||UTG_SHAPES.single;const r=utgRow(b.anchor),c=utgCol(b.anchor);const style=`grid-column:${c+1}/span ${s.w};grid-row:${r+1}/span ${s.h};`;const nm=rec?rec.sponsor:"Unknown";const isDouble=(b.shape==="dh"||b.shape==="dv");let inner;if(utgViewMode==="artwork"){inner=b.artwork?`<img class="utg-art" src="${esc(b.artwork)}" alt="${escDisplay(nm)} artwork" loading="lazy" decoding="async">`:`<div class="utg-noart">No artwork yet<small>Drag artwork here</small></div>`;}else{inner=(rec&&rec.logoDataUrl)?`<img class="utg-logo" src="${esc(rec.logoDataUrl)}" alt="${escDisplay(nm)} logo" loading="lazy" decoding="async">`:`<strong style="font-size:var(--text-xs)">${escDisplay(nm)}</strong>`;}return `<div class="utg-block status-${status} shape-${b.shape}" data-utg-block="${b.id}" data-utg-tier="${tier}" data-utg-shape="${b.shape}" style="${style}" title="${escDisplay(nm+" — "+s.label+(isDouble?" (right-click to flip)":""))}">${inner}<div class="utg-block-bar"><span class="utg-name">${escDisplay(nm)}</span><span class="utg-shape-tag">${escDisplay(s.label)}</span></div><div class="utg-block-actions"><button type="button" data-utg-cycle="${b.id}" data-utg-tier="${tier}" title="Change size: Single → Double → Triple → 4-Panel → 6-Panel">⤢</button>${isDouble?`<button type="button" data-utg-flip="${b.id}" data-utg-tier="${tier}" title="Flip orientation">⟳</button>`:""}<button type="button" data-utg-remove="${b.id}" data-utg-tier="${tier}" title="Remove partner">✕</button></div></div>`;}
-function utgEmptyCellHtml(i,tier){const r=utgRow(i),c=utgCol(i);return `<div class="utg-cell utg-empty" data-utg-cell="${i}" data-utg-tier="${tier}" style="grid-column:${c+1}/span 1;grid-row:${r+1}/span 1;" title="Open 2:1 single panel"><span>+</span><small>Single 2:1</small></div>`;}
+function utgEmptyCellHtml(i,tier){const r=utgRow(i),c=utgCol(i);return `<div class="utg-cell utg-empty" data-utg-cell="${i}" data-utg-tier="${tier}" style="grid-column:${c+1}/span 1;grid-row:${r+1}/span 1;" title="Open 2:1 single panel"><button type="button" class="utg-cell-add" data-utg-add="${i}" data-utg-tier="${tier}"><strong>+</strong><span>Add</span><small>Single 2:1</small></button></div>`;}
 function utgRenderBoardGrid(st,tier){const blocks=(st.upperGrid&&st.upperGrid[String(tier)])||[];const anchorMap={};blocks.forEach(b=>{anchorMap[b.anchor]=b;});const covered=new Set();blocks.forEach(b=>{const cs=utgCells(b.shape,b.anchor);if(cs)cs.forEach(c=>covered.add(c));});let html="";for(let i=0;i<UTG_CELLS;i++){if(anchorMap[i])html+=utgBlockHtml(anchorMap[i],tier);else if(!covered.has(i))html+=utgEmptyCellHtml(i,tier);}return `<div class="utg-grid" data-utg-board="${tier}">${html}</div>`;}
 function utgSignedStripHtml(){const list=utgUpperTierSponsors();const placed=aaPlacedSponsorIds(aaCatDef("uppertier"));const filtered=list.filter(r=>utgStatusOf(r)==="signed").sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||""));const chips=`<span class="utg-chip status-signed on">Signed / Active only</span>`;const toggle=`<div class="utg-viewtoggle"><button type="button" data-utg-view="placement" class="${utgViewMode==="placement"?"on":""}">Placement</button><button type="button" data-utg-view="artwork" class="${utgViewMode==="artwork"?"on":""}">Artwork</button></div>`;const items=filtered.map(r=>{const ok=placed.has(r.id),sz=utgSponsorSize(r);return `<div class="utg-drag status-${utgStatusOf(r)} ${ok?"is-placed":"is-missing"}" draggable="true" data-utg-drag="${r.id}" data-utg-shape="${esc(sz.shape)}">${r.logoDataUrl?`<img src="${esc(r.logoDataUrl)}" alt="" loading="lazy" decoding="async">`:""}<span>${escDisplay(r.sponsor)}</span><span class="utg-size-tag">${esc(sz.label)}</span><span class="aa-place-state ${ok?"good":"need"}">${ok?"Placed":"Move"}</span></div>`;}).join("")||`<span class="utg-strip-empty">No signed Upper Tier partners found.</span>`;return `<div class="utg-controls"><div class="utg-status-chips">${chips}</div>${toggle}</div><div class="utg-signed-strip">${items}</div>`;}
 function utgRenderUpperTier(st){try{st.upperGrid=st.upperGrid||{};st.upperPhotos=st.upperPhotos||{};const tiers=[1,2,3,4,5,6,7,8,9,10];const boards=tiers.map(tier=>{const boardArt=(st.upperPhotos[String(tier)])||BOARD_ART_SEED[String(tier)]||"";return `<section class="upper-billboard"><div class="upper-billboard-head"><span>⋮⋮ &nbsp; Upper Tier ${tier}</span><span class="bp-occ-count">Board ${tier}/10</span></div>${utgRenderBoardGrid(st,tier)}<div class="upper-board-photo" data-utg-photo-drop="${tier}">${boardArt?`<img src="${esc(boardArt)}" alt="Upper Tier ${tier} display" loading="lazy" decoding="async">`:`<div class="upper-board-photo-empty">Drop a ballpark photo or saved artwork here</div>`}</div><div class="upper-board-actions"><button data-utg-photo-upload="${tier}">+ ${boardArt?"Replace":"Add"} photo</button>${st.upperPhotos[String(tier)]?`<button data-utg-photo-clear="${tier}">Remove photo</button>`:""}</div></section>`;}).join("");return `<section class="display-layout upper-tier-layout"><h3>Upper Tier Board Gallery</h3><p class="display-location-tabs-note">Ten physical boards, six 2:1 panels each. Drag a signed Upper Tier partner from the strip onto an open panel, then use ⤢ to make a Double, Triple, 4-Panel or 6-Panel. Doubles default horizontal — right-click a double (or press ⟳) to flip it vertical. Toggle Placement / Artwork to switch between logos and submitted art.</p>${utgSignedStripHtml()}<div class="upper-20-grid">${boards}</div></section>`;}catch(err){console.error("Upper Tier grid render failed",err);return `<section class="display-layout"><h3>Upper Tier Board Gallery</h3><p class="upper-board-overflow">The Upper Tier board view hit an error and was skipped so the rest of the app keeps working. (${escDisplay(err&&err.message||"")})</p></section>`;}}
 let utgPhotoInput=null;
 function utgEnsurePhotoInput(){if(utgPhotoInput)return utgPhotoInput;utgPhotoInput=document.createElement("input");utgPhotoInput.type="file";utgPhotoInput.accept="image/*";utgPhotoInput.capture="environment";utgPhotoInput.style.display="none";document.body.appendChild(utgPhotoInput);utgPhotoInput.onchange=()=>{const f=utgPhotoInput.files&&utgPhotoInput.files[0];const tier=utgPhotoInput.dataset.tier;utgPhotoInput.value="";if(!f||!tier)return;compressForBoard(f).then(u=>{if(!u)return toast("Couldn't read that image","Try a different file",true);utgSetBoardPhoto(tier,u);});};return utgPhotoInput;}
 function wireUpperGrid(){
-  document.querySelectorAll("[data-utg-view]").forEach(b=>b.onclick=()=>{utgViewMode=b.dataset.utgView;renderBallparkDisplays();});
+  document.querySelectorAll("[data-utg-view]").forEach(b=>b.onclick=()=>{utgViewMode=b.dataset.utgView;document.getElementById("assetallocView")?.classList.contains("active")?renderAssetAllocView():renderBallparkDisplays();});
   document.querySelectorAll("[data-utg-status]").forEach(b=>b.onclick=()=>{const k=b.dataset.utgStatus;if(utgStatusFilter.has(k)){if(utgStatusFilter.size>1)utgStatusFilter.delete(k);}else utgStatusFilter.add(k);renderBallparkDisplays();});
   document.querySelectorAll("[data-utg-drag]").forEach(el=>el.ondragstart=e=>e.dataTransfer.setData("application/json",JSON.stringify({type:"utg-sponsor",id:el.dataset.utgDrag})));
   document.querySelectorAll("[data-utg-cell]").forEach(el=>{el.ondragover=e=>{e.preventDefault();el.classList.add("drag-over");};el.ondragleave=()=>el.classList.remove("drag-over");el.ondrop=e=>{e.preventDefault();el.classList.remove("drag-over");try{const d=JSON.parse(e.dataTransfer.getData("application/json"));if(d.type==="utg-sponsor"||d.type==="sponsor")utgPlaceSponsor(el.dataset.utgTier,parseInt(el.dataset.utgCell,10),d.id);}catch(_){}};});
+  document.querySelectorAll("[data-utg-add]").forEach(b=>b.onclick=e=>{e.stopPropagation();const list=utgUpperTierSponsors().filter(r=>utgStatusOf(r)==="signed").sort((a,b)=>(a.sponsor||"").localeCompare(b.sponsor||""));nt_pickSponsor(b,list,r=>{if(r)utgPlaceSponsor(b.dataset.utgTier,parseInt(b.dataset.utgAdd,10),r.id);});});
   document.querySelectorAll("[data-utg-cycle]").forEach(b=>b.onclick=e=>{e.stopPropagation();utgCycleShape(b.dataset.utgTier,b.dataset.utgCycle);});
   document.querySelectorAll("[data-utg-flip]").forEach(b=>b.onclick=e=>{e.stopPropagation();utgFlipDouble(b.dataset.utgTier,b.dataset.utgFlip);});
   document.querySelectorAll("[data-utg-remove]").forEach(b=>b.onclick=e=>{e.stopPropagation();utgRemove(b.dataset.utgTier,b.dataset.utgRemove);});
@@ -16511,6 +16648,18 @@ function renderHiddenSponsorsModal() {
    agUpsertTemplate), so there is one library of clause text, editable from
    whichever screen you happen to be on. */
 let assetContractEditing = null;
+function normalizeAssetSectionOption(section) {
+  const raw = String(section || "").trim();
+  const low = raw.toLowerCase();
+  if (!raw) return "";
+  if (/entitlement|naming/.test(low)) return "Entitlement Areas";
+  if (/signage|display|brand|ballpark|scoreboard|marquee|wall|tier/.test(low)) return "Ballpark Branding";
+  if (/gameday|game day|promotion|pa read|table|plaza/.test(low)) return "Gameday";
+  if (/marketing|digital|broadcast|social|newsletter|print|event/.test(low)) return "Marketing & Events";
+  if (/fan|ticket promotion|program|slugger|club/.test(low)) return "Fan & Ticket Promotions";
+  if (/ticket|hospitality|suite|picnic|deck|experience/.test(low)) return "Tickets & Experiences";
+  return ["Entitlement Areas","Ballpark Branding","Gameday","Marketing & Events","Fan & Ticket Promotions","Tickets & Experiences","Other"].includes(raw) ? raw : "Other";
+}
 function openAssetContractModal(assetName) {
   // assetName === null means "adding language for an asset I'll name myself" —
   // used by the library card, so custom line items that never appear in the fixed
@@ -16520,6 +16669,11 @@ function openAssetContractModal(assetName) {
   const tpl = assetName ? (agFindTemplate(assetName) || {}) : {};
   const detail = assetName ? assetDetailsFor(assetName) : {};
   document.getElementById("assetContractTitle").textContent = naming ? "New asset details" : assetName;
+  const displayNameInput = document.getElementById("assetContractDisplayName");
+  if (displayNameInput) {
+    displayNameInput.value = assetName ? (detail.displayName || assetName || "") : "";
+    document.getElementById("assetContractDisplayNameField").hidden = naming;
+  }
   const nameField = document.getElementById("assetContractNameField");
   nameField.hidden = !naming;
   const nameInput = document.getElementById("assetContractName");
@@ -16528,7 +16682,7 @@ function openAssetContractModal(assetName) {
     const names = [...new Set(getFullCatalog().map(a => a.asset).filter(Boolean))].sort();
     document.getElementById("assetContractChoices").innerHTML = names.map(n => `<option value="${esc(n)}"></option>`).join("");
   }
-  document.getElementById("assetContractSection").value = tpl.section || (assetName ? agAssetCategory(assetName) : "") || "";
+  document.getElementById("assetContractSection").value = normalizeAssetSectionOption(tpl.section || (assetName ? agAssetCategory(assetName) : "") || "");
   document.getElementById("assetContractHeadline").value = tpl.headline || "";
   document.getElementById("assetContractPurpose").value = tpl.purpose || "";
   document.getElementById("assetContractDetails").value = tpl.details || "";
@@ -16562,6 +16716,7 @@ document.getElementById("assetContractSave").addEventListener("click", () => {
   const hardCost = parseFloat(document.getElementById("assetContractHardCost").value.replace(/[^\d.]/g, ""));
   const totalQtyRaw = document.getElementById("assetContractInventoryQty").value.trim();
   saveAssetDetail(assetContractEditing, {
+    displayName: document.getElementById("assetContractDisplayName")?.value.trim() || assetContractEditing,
     rateCard: Number.isFinite(rateCard) ? rateCard : "",
     hardCost: Number.isFinite(hardCost) ? hardCost : "",
     totalQty: totalQtyRaw === "" ? "" : Number(totalQtyRaw)
