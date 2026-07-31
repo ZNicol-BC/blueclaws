@@ -3250,6 +3250,9 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <select id="invSponsorPicker" aria-label="Sponsor" style="border:1px solid var(--line); border-radius:var(--radius-md); padding:var(--space-8) var(--space-10); font-size:var(--text-xs); background:var(--card); min-width:200px;">
               <option value="">All folders</option>
             </select>
+            <select id="invCategoryPicker" aria-label="Asset category" style="border:1px solid var(--line); border-radius:var(--radius-md); padding:var(--space-8) var(--space-10); font-size:var(--text-xs); background:var(--card); min-width:220px;">
+              <option value="">All categories</option>
+            </select>
             <div class="search-box">⌕ <input id="folderSearch" type="search" placeholder="Search all folders and assets"></div>
           </div>
 
@@ -10707,6 +10710,9 @@ function renderApprovalBlock(r) {
       : "";
   }
   const me = currentUser();
+  const reviewDetailsButton = r.type === "confirm_partner_details" && r.status === "ready_for_review"
+    ? `<div style="margin:0 0 var(--space-8);"><button class="secondary-button" data-reqact="accountdetails" data-reqid="${esc(r.id)}" type="button">Review Partner Details</button></div>`
+    : "";
   const rows = r.approvals.map((a, i) => {
     const stale = approvalIsStale(a);
     const isMe = a.name === me && a.status === "pending" && r.status === "ready_for_review";
@@ -10729,7 +10735,7 @@ function renderApprovalBlock(r) {
         </div>
       </div>`;
   }).join("");
-  return `<div class="req-appr-block"><div class="section-heading" style="margin-bottom:var(--space-6);">Approvals</div>${rows}${deadlockNote(r, me)}</div>`;
+  return `<div class="req-appr-block"><div class="section-heading" style="margin-bottom:var(--space-6);">Approvals</div>${reviewDetailsButton}${rows}${deadlockNote(r, me)}</div>`;
 }
 
 /* Edge case worth naming out loud: if the only person left to approve is also the
@@ -11925,6 +11931,12 @@ function renderAssetLibrary() {
   const picker = document.getElementById("invSponsorPicker");
   picker.innerHTML = `<option value="">All folders</option>` + names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join("");
   picker.value = "";
+  const catPicker = document.getElementById("invCategoryPicker");
+  if (catPicker) {
+    const cats = assetCategories();
+    catPicker.innerHTML = `<option value="">All categories</option>` + cats.map(([cat, count]) => `<option value="${esc(cat)}">${esc(cat)} (${count})</option>`).join("");
+    catPicker.value = "";
+  }
   document.getElementById("sponsorAssetsPane").style.display = "none";
   document.getElementById("folderGrid").classList.remove("condensed");
   document.getElementById("folderView").classList.remove("condensed");
@@ -11966,6 +11978,8 @@ function renderInventoryAvailability() {
 })();
 function pickInventorySponsor(name) {
   aState.pickedSponsor = name || "";
+  const catPicker = document.getElementById("invCategoryPicker");
+  if (catPicker) catPicker.value = "";
   document.getElementById("assetListView").style.display = "none";
   document.getElementById("assetBackBtn").style.display = "none";
   if (name) {
@@ -12233,37 +12247,25 @@ function openSponsorAssetPicker(rec) {
   modal.classList.add("show");
 }
 function renderFolderGrid() {
-  const cats = assetCategories();
-  document.getElementById("folderGrid").innerHTML = `
-    <div class="asset-category-picker">
-      <label for="assetCategoryPicker">View category</label>
-      <select id="assetCategoryPicker">
-        <option value="">Choose a category</option>
-        ${cats.map(([cat, count]) => `<option value="${esc(cat)}">${esc(cat)} (${count})</option>`).join("")}
-      </select>
-    </div>
-    <div class="asset-category-list">
-      ${cats.map(([cat, count]) => {
-    const rated = ratedCountInCategory(cat);
-    const assigned = folderTagCount(cat);
-    return `
-    <button class="asset-category-row" data-cat="${esc(cat)}">
-      <strong>${esc(cat)}</strong>
-      <span>${count} asset${count === 1 ? "" : "s"}</span>
-    </button>`;
-  }).join("")}
-    </div>`;
-  const picker = document.getElementById("assetCategoryPicker");
-  if (picker) picker.onchange = () => { if (picker.value) openFolder(picker.value); };
-  document.querySelectorAll(".asset-category-row").forEach(c => c.addEventListener("click", () => openFolder(c.dataset.cat)));
+  const grid = document.getElementById("folderGrid");
+  if (grid) grid.innerHTML = "";
 }
 function showFolderGrid() {
   aState.mode = "folders"; aState.category = null;
-  document.getElementById("folderView").style.display = "block";
+  document.getElementById("folderView").style.display = "none";
   document.getElementById("assetListView").style.display = "block";
   document.getElementById("assetBackBtn").style.display = "none";
   renderFolderGrid();
   renderAssetTable();
+}
+function pickInventoryCategory(cat) {
+  aState.search = "";
+  const folderSearch = document.getElementById("folderSearch");
+  const assetSearch = document.getElementById("assetSearch");
+  if (folderSearch) folderSearch.value = "";
+  if (assetSearch) assetSearch.value = "";
+  if (cat) openFolder(cat);
+  else showFolderGrid();
 }
 // Real-world occupancy for the Assets & Inventory folders, sourced from the bracket
 // tags already embedded in each sponsor's assets field (e.g. "[Home Run Wall]
@@ -12332,7 +12334,7 @@ function openFolder(cat) {
   document.getElementById("assetSearch").value = "";
   document.getElementById("folderView").style.display = "none";
   document.getElementById("assetListView").style.display = "block";
-  document.getElementById("assetBackBtn").style.display = "inline-block";
+  document.getElementById("assetBackBtn").style.display = "none";
   renderFolderAssignments(cat);
   renderAssetTable();
 }
@@ -12398,9 +12400,11 @@ function handleFolderSearch(val) {
   aState.search = val;
   if (val.trim()) {
     aState.mode = "search"; aState.category = null;
+    const catPicker = document.getElementById("invCategoryPicker");
+    if (catPicker) catPicker.value = "";
     document.getElementById("folderView").style.display = "none";
     document.getElementById("assetListView").style.display = "block";
-    document.getElementById("assetBackBtn").style.display = "inline-block";
+    document.getElementById("assetBackBtn").style.display = "none";
     document.getElementById("assetSearch").value = "";
     renderAssetTable();
   } else {
@@ -17665,6 +17669,7 @@ document.getElementById("folderSearch").addEventListener("input", e => handleFol
 document.getElementById("assetSearch").addEventListener("input", e => { aState.search = e.target.value; renderAssetTable(); });
 document.getElementById("assetBackBtn").addEventListener("click", showFolderGrid);
 document.getElementById("invSponsorPicker").addEventListener("change", e => pickInventorySponsor(e.target.value));
+document.getElementById("invCategoryPicker").addEventListener("change", e => pickInventoryCategory(e.target.value));
 document.getElementById("fulfillmentSearch").addEventListener("input", e => { fState.search = e.target.value; renderFulfillmentView(); });
 document.getElementById("fulfillmentSponsorPicker").addEventListener("change", e => { fState.sponsorId = e.target.value; renderFulfillmentView(); });
 const notifBtn = document.getElementById("notifBtn");
