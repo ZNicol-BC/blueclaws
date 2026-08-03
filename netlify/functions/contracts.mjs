@@ -4,8 +4,19 @@
 // Large PDFs arrive in <=3MB chunks (Netlify functions cap request bodies at ~6MB), and the
 // final chunk assembles them into one blob. GET streams the file back; DELETE removes it.
 //
-// Deploy: drop this file at netlify/functions/contracts.mjs in the repo and push. @netlify/blobs
-// is provided by the Netlify runtime automatically — no install or config needed.
+// Deploy: drop this file at netlify/functions/contracts.mjs in the repo and push.
+//
+// FIX (matches netlify/functions/data.js, which already works): the store is now created with
+// EXPLICIT credentials + strong consistency, instead of the bare getStore("bciq-contracts").
+// Two bugs that caused "Server upload failed / PDFs don't save between browsers":
+//   1) On this site the automatic Blobs context isn't always injected, so the bare getStore()
+//      threw a config error -> the POST 500'd -> the client showed "upload failed". data.js only
+//      works because it passes siteID/token from env; contracts must do the same.
+//   2) Default Blobs consistency is "eventual". The chunked-upload path writes each part then
+//      immediately reads all parts back to assemble them — under eventual consistency a
+//      just-written part can read as missing, so assembly failed with "missing part N". Strong
+//      consistency makes the read-after-write reliable.
+// The env vars BLOBS_SITE_ID and BLOBS_TOKEN are already set for data.js, so no new config needed.
 import { getStore } from "@netlify/blobs";
 
 const CORS = {
@@ -14,15 +25,27 @@ const CORS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
+function contractStore() {
+  return getStore({
+    name: "bciq-contracts",
+    consistency: "strong",
+    siteID: process.env.BLOBS_SITE_ID,
+    token: process.env.BLOBS_TOKEN,
+  });
+}
+
 export default async (req) => {
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
-  const store = getStore("bciq-contracts");
 
   if (req.method === "OPTIONS") return new Response("", { status: 204, headers: CORS });
   if (!id) return json({ error: "missing id" }, 400);
 
   try {
+    // Created inside the try so any Blobs-config problem returns a clean JSON 500 with the real
+    // message (visible to the client) instead of crashing the function opaquely.
+    const store = contractStore();
+
     if (req.method === "POST") {
       const parts = parseInt(url.searchParams.get("parts") || "1", 10);
       const part = parseInt(url.searchParams.get("part") || "0", 10);
