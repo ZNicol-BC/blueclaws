@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 35 -->
+<!-- BUILD_VERSION: 37 -->
 <!-- BUILD_VERSION: 32 -->
 <!-- BUILD_VERSION: 163 -->
 <!-- BUILD_VERSION: 14 -->
@@ -16099,7 +16099,16 @@ function normalizeBallparkDisplays(v){
   const base=v&&Array.isArray(v.placements)?v:defaultBallparkDisplays();
   return {...base,version:Number(base.version)||1,placements:Array.isArray(base.placements)?base.placements:[],designs:Array.isArray(base.designs)?base.designs:[],upperGrid:(base.upperGrid&&typeof base.upperGrid==="object"&&!Array.isArray(base.upperGrid))?base.upperGrid:{},upperPhotos:(base.upperPhotos&&typeof base.upperPhotos==="object"&&!Array.isArray(base.upperPhotos))?base.upperPhotos:{}};
 }
-function loadBallparkDisplays(){try{return normalizeBallparkDisplays(JSON.parse(memStore.getItem(BALLPARK_KEY)||"null"));}catch(e){console.warn("Invalid shared Ballpark Displays data; using sourced layout",e);return normalizeBallparkDisplays(null);}}
+/* Ballpark Displays carry base64 board artwork (designs, per-slot artwork, upper-tier photos).
+   That blob was living in localStorage, which quietly filled the ~5MB cap on any browser that
+   uploaded a few boards. It now lives in IndexedDB (large quota) with a synchronous mem cache,
+   exactly like logos and contracts. The boot migration below moves any existing localStorage copy
+   into IndexedDB and deletes the localStorage copy, so every browser self-cleans on next load. */
+let ballparkMemCache = null;
+function loadBallparkDisplays(){
+  if(ballparkMemCache){ try{ return normalizeBallparkDisplays(ballparkMemCache); }catch(e){ return normalizeBallparkDisplays(null); } }
+  try{return normalizeBallparkDisplays(JSON.parse(memStore.getItem(BALLPARK_KEY)||"null"));}catch(e){console.warn("Invalid shared Ballpark Displays data; using sourced layout",e);return normalizeBallparkDisplays(null);}
+}
 // Photo Library tags use the sponsor's [Bracket Tag] asset names; Ballpark Displays board
 // sections use their own (sometimes differently-worded) section names. This maps the two
 // together so a tagged Photo Library photo can find its matching physical board.
@@ -16139,7 +16148,12 @@ function syncPhotoLibraryToDisplayBoards(st){
 }
 function completeBallparkState(raw){const st=normalizeBallparkDisplays(raw);ensureUpperLayoutSlots(st);Object.keys(BALLPARK_SECTION_DATA).forEach(section=>ensureSectionSlots(st,section));if(syncPhotoLibraryToDisplayBoards(st))saveBallparkDisplays(st);return st;}
 function resetBallparkView(){const st=completeBallparkState(defaultBallparkDisplays());saveBallparkDisplays(st);renderBallparkDisplays();}
-function saveBallparkDisplays(v){v=normalizeBallparkDisplays(v);memStore.setItem(BALLPARK_KEY,JSON.stringify(v));pushSharedData("state",{value:JSON.stringify(v)},"displays");}
+function saveBallparkDisplays(v){
+  v=normalizeBallparkDisplays(v);
+  ballparkMemCache=v;
+  mediaDbPut(BALLPARK_KEY,v).catch(e=>{ console.error("BlueClaws IQ: displays storage write failed, falling back to localStorage",e); try{memStore.setItem(BALLPARK_KEY,JSON.stringify(v));}catch(e2){toast("Storage full","Board artwork may be too large for this browser");} });
+  pushSharedData("state",{value:JSON.stringify(v)},"displays");
+}
 async function pullSharedDisplays(){
   if(!SHARED_SYNC_ENABLED)return;
   try{
@@ -16148,8 +16162,11 @@ async function pullSharedDisplays(){
     const shared=await res.json();
     if(hasPendingWrite("state","displays")||recentlyPushed("state","displays"))return;
     const incoming=shared.state&&shared.state.value;
-    if(incoming&&memStore.getItem(BALLPARK_KEY)!==incoming){
-      memStore.setItem(BALLPARK_KEY,incoming);
+    const cur=ballparkMemCache?JSON.stringify(ballparkMemCache):memStore.getItem(BALLPARK_KEY);
+    if(incoming&&cur!==incoming){
+      try{ballparkMemCache=JSON.parse(incoming);}catch(e){ballparkMemCache=null;}
+      mediaDbPut(BALLPARK_KEY,ballparkMemCache).catch(()=>{});
+      try{memStore.removeItem(BALLPARK_KEY);}catch(e){}
       if(typeof renderBallparkDisplays==="function")renderBallparkDisplays();
     }
   }catch(e){ /* offline, or the function isn't deployed — board photos just stay local-only for now */ }
@@ -16632,11 +16649,42 @@ function bciqFmtBytes(n) {
   if (n >= 1024) return (n / 1024).toFixed(0) + " KB";
   return n + " B";
 }
+function bciqLocalStorageBytes() {
+  let n = 0;
+  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); n += ((k || "").length + (localStorage.getItem(k) || "").length) * 2; } } catch (e) {}
+  return n;
+}
+function bciqTopLocalStorageKeys(count) {
+  const rows = [];
+  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); rows.push([k, ((k || "").length + (localStorage.getItem(k) || "").length) * 2]); } } catch (e) {}
+  return rows.sort((a, b) => b[1] - a[1]).slice(0, count || 5);
+}
+/* On-demand version of the boot migration: move the heavy base64 media blobs out of the ~5MB
+   localStorage into IndexedDB right now, without waiting for a reload. Safe & non-destructive —
+   data is relocated, not deleted. This is what the "Free up space now" button runs. */
+async function bciqFreeUpSpace() {
+  const before = bciqLocalStorageBytes();
+  const keys = [
+    [(typeof BALLPARK_KEY !== "undefined" ? BALLPARK_KEY : "bciq_ballpark_displays"), v => { ballparkMemCache = v; }],
+    [(typeof LOGO_KEY !== "undefined" ? LOGO_KEY : "bciq_logos"), v => { logosMemCache = v; }],
+    [(typeof PHOTO_LIBRARY_KEY !== "undefined" ? PHOTO_LIBRARY_KEY : "bciq_photo_library"), () => {}]
+  ];
+  for (const [key, setter] of keys) {
+    let raw = null; try { raw = localStorage.getItem(key); } catch (e) {}
+    if (!raw) continue;
+    try {
+      const val = JSON.parse(raw);
+      await mediaDbPut(key, val);
+      try { localStorage.removeItem(key); } catch (e) {}
+      try { setter(val); } catch (e) {}
+    } catch (e) { /* leave anything that won't parse/move */ }
+  }
+  return { before, after: bciqLocalStorageBytes() };
+}
 async function renderStoragePanel() {
   const el = document.getElementById("storagePanel");
   if (!el) return;
-  let lsBytes = 0;
-  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); lsBytes += ((k || "").length + (localStorage.getItem(k) || "").length) * 2; } } catch (e) {}
+  const lsBytes = bciqLocalStorageBytes();
   let usage = null, quota = null;
   try { if (navigator.storage && navigator.storage.estimate) { const est = await navigator.storage.estimate(); usage = est.usage; quota = est.quota; } } catch (e) {}
   const originPct = (usage != null && quota) ? Math.min(100, Math.round(usage / quota * 100)) : null;
@@ -16644,6 +16692,13 @@ async function renderStoragePanel() {
   const worst = Math.max(originPct || 0, lsPct);
   const barColor = worst >= 80 ? "var(--red)" : worst >= 60 ? "var(--gold)" : "var(--blue)";
   const barPct = originPct != null ? originPct : lsPct;
+  const top = bciqTopLocalStorageKeys(5).filter(r => r[1] > 1024);
+  const nameOf = k => String(k || "").replace(/^bciq_/, "").replace(/_/g, " ");
+  const topHtml = top.length ? `
+    <details style="margin-top:var(--space-8);">
+      <summary style="cursor:pointer;font-size:10px;color:var(--muted);font-weight:700;">What's using localStorage</summary>
+      <div style="margin-top:6px;">${top.map(r => `<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);padding:2px 0;"><span>${esc(nameOf(r[0]))}</span><span>${bciqFmtBytes(r[1])}</span></div>`).join("")}</div>
+    </details>` : "";
   el.innerHTML = `
     <div class="eyebrow" style="margin-top:var(--space-8);">STORAGE USED</div>
     <div style="display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--muted);margin:var(--space-6) 0 3px;">
@@ -16655,11 +16710,24 @@ async function renderStoragePanel() {
       <span>Quick edits (localStorage): ${bciqFmtBytes(lsBytes)} of ~5 MB · ${lsPct}%</span>
       <span>Logos &amp; files sit in IndexedDB (large quota)</span>
     </div>
-    ${worst >= 80 ? `<div style="margin-top:var(--space-8);padding:var(--space-8) var(--space-10);border:1px solid var(--red);background:var(--red-soft);color:var(--red);border-radius:var(--radius-sm);font-size:var(--text-xs);">Storage is over 80% full. Export a backup below, then clear some space.</div>` : ""}
+    ${worst >= 80 ? `<div style="margin-top:var(--space-8);padding:var(--space-8) var(--space-10);border:1px solid var(--red);background:var(--red-soft);color:var(--red);border-radius:var(--radius-sm);font-size:var(--text-xs);">Storage is over 80% full — click <strong>Free up space now</strong> to move artwork into IndexedDB.</div>` : ""}
+    ${topHtml}
     <div class="backup-actions" style="margin-top:var(--space-8);">
-      <button id="storageResetLogos" class="secondary-button" type="button">Clear logos (reload from sheet)</button>
+      <button id="storageFreeUp" class="primary-button" type="button">Free up space now</button>
+      <button id="storageResetLogos" class="secondary-button" type="button">Clear logos</button>
       <button id="storageRefresh" class="secondary-button" type="button">Refresh</button>
     </div>`;
+  const fu = document.getElementById("storageFreeUp");
+  if (fu) fu.onclick = async () => {
+    fu.disabled = true; const lbl = fu.textContent; fu.textContent = "Freeing space…";
+    try {
+      const r = await bciqFreeUpSpace();
+      const freed = Math.max(0, r.before - r.after);
+      if (typeof toast === "function") toast("Space freed", `${bciqFmtBytes(freed)} moved to IndexedDB. localStorage now ${bciqFmtBytes(r.after)}.`, true);
+    } catch (e) { if (typeof toast === "function") toast("Couldn't free space", "Nothing movable found, or IndexedDB is unavailable."); }
+    fu.textContent = lbl; fu.disabled = false;
+    renderStoragePanel();
+  };
   const rl = document.getElementById("storageResetLogos");
   if (rl) rl.onclick = () => { if (confirm("Clear all uploaded logos from this browser and reload the defaults? This frees storage; logos re-sync from teammates if shared.") && typeof resetAllLogos === "function") { resetAllLogos(); setTimeout(renderStoragePanel, 250); } };
   const rf = document.getElementById("storageRefresh");
@@ -16699,6 +16767,7 @@ function importBackup(rawOverride) {
 function resetAllEdits() {
   if (confirm("Reset ALL edits back to the originally imported data Logos are kept separately and will NOT be deleted.")) {
     memStore.removeItem(STORAGE_KEY); memStore.removeItem(CUSTOM_KEY); memStore.removeItem(BALLPARK_KEY);
+    ballparkMemCache = null; try { mediaDbPut(BALLPARK_KEY, null).catch(() => {}); } catch (e) {}
     toast("Reset complete", "Edits cleared — logos kept");
     refreshCurrentView();
     document.getElementById("backupBackdrop").classList.remove("show");
@@ -18342,6 +18411,11 @@ window.addEventListener("online",()=>{updateSyncStatus();flushSharedQueue().then
 window.addEventListener("beforeunload",()=>{if(loadSyncQueue().length)flushSharedQueue();});
 migrateMediaKeyToIndexedDb(LOGO_KEY, v => { logosMemCache = v; });
 migrateMediaKeyToIndexedDb(PHOTO_LIBRARY_KEY, v => { photoLibraryMemCache = v; });
+// One-time, self-healing across every browser: moves the base64 board-artwork blob out of the
+// ~5MB localStorage and into IndexedDB, then deletes the localStorage copy. This is what clears
+// the "storage over 80%" state on machines that had been filling up. Runs on every load; a no-op
+// once the key is already in IndexedDB.
+migrateMediaKeyToIndexedDb(BALLPARK_KEY, v => { ballparkMemCache = v; });
 /* ================= AUTO-PURGE: erase all photo-library photos on every browser =================
    The Photo Library was retired (nav tab removed) and the mass reference photos are being wiped
    for good. This runs once per browser: it clears this browser's local copy immediately, then
@@ -19482,6 +19556,11 @@ function renderSquadView() {
 
 /* ===== index158: Settings modal internal scroll (was scrolling the page) ===== */
 #settingsModal{max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;}
+/* Backup & restore modal got taller (storage panel + audit + import) and could overflow the
+   viewport with no way to scroll. Give it the same internal scroll as Settings, and keep the
+   close button pinned so it's always reachable. */
+#backupModal{max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;}
+#backupModal .modal-close{position:sticky;top:0;margin-left:auto;display:grid;background:var(--card);z-index:6;}
 #settingsModal .modal-close{position:sticky;top:0;margin-left:auto;display:grid;background:var(--card);z-index:6;}
 
 /* ===== index158: shared new-tab primitives ===== */
