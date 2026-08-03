@@ -1,5 +1,6 @@
-<!-- BUILD_VERSION: 172 -->
-<!-- BUILD_VERSION: 172 -->
+<!-- BUILD_VERSION: 173 -->
+<!-- BUILD_VERSION: 173 -->
+<!-- index173: THE ACTUAL "agreements delete after a few seconds" ROOT CAUSE — a sync-queue race, not contracts-specific. flushSharedQueue snapshotted the queue, POSTed each item, then did saveSyncQueue(remaining) built from that stale snapshot. Any write that arrived — or was coalesced into an existing key — DURING an in-flight flush got clobbered by that final save. addAgreementFile fires two override pushes back-to-back for the primary agreement (contractTitle, then contractFile via saveContractFile); the second (carrying contractFile) coalesced into the queue while the first flush was awaiting its fetch, then was wiped when that flush saved `remaining`. So contractFile never reached the server __state, and ~30s later (grace expiry) pullSharedData rebuilt local overrides from the server and dropped it. The first agreement added "survived" only by timing luck — matching the screenshot where only 3rd Base stuck. FIX: (1) flushSharedQueue now reconciles against the CURRENT queue (re-read after sending) — it drops only keys it sent whose patch is unchanged, keeps backed-off items AND anything added/coalesced mid-flush, then re-flushes those; (2) the primary-agreement path sets contractTitle locally and lets saveContractFile's single override push carry title+contractFile together. This fixes reliability for ALL rapid edits, not just contracts. -->
 <!-- index172: CONTRACTS SAVE/SYNC FIX (rewire). Root cause of "agreement loads for a few secs then deletes": contract METADATA was pushed/pulled on ?bucket=contracts, but data.js only allows overrides/logos/photos/displays, so it silently fell back to the overrides bucket. Worse, saveContractFile never set r.contractFile on the sponsor's override locally — the field only appeared on the server via the misrouted push, came back on the 8s overrides pull (so it "showed"), then the pull's __state decoder (which uses incoming.__state and ignores top-level fields) stripped contractFile on the next tick → deleted. FIX (client-only, no server change): agreement metadata now rides the sponsor OVERRIDE record via updateOverride(id,{contractFile:meta}) — the same proven channel r.agreements already uses — so it's inside __state and round-trips correctly. Removed all misrouted pushSharedData(...,\"contracts\") calls. pullSharedContracts no longer hits a phantom bucket; it now mirrors CONTRACT_KEY from the synced overrides (r.contractFile + r.agreements) so the ledger indicator + file names stay correct on every browser. File BODIES still go to /.netlify/functions/contracts (unchanged, already correct). Net: upload once → persists and syncs to every browser, no more vanish. -->
 <!-- index171: AUTHORED dedicated notes for all 172 catalog assets that previously only borrowed a generic note — each now has its own exact-label entry in BCIQ_ASSET_SPECS_SEED (description + specs by family: real specs where documented in the prep content — rotators 450x352/720x121, digital marquee 180x189, DDN 1920x1080 & 1080x1920, website 2568x1268, e-news 1200x150, planter 96x24/24x24, section 107.5x27.5, concourse 6x4 — and honest "confirm per location" where a size wasn't documented, never fabricated). Naming-rights entries name their specific area; weekly/theme, in-game, handout, hospitality, digital, print and program families each get tailored copy. Catalog own-notes go 16 -> 188; the ~34 strong keyword matches were already accurate and left as-is. index170: ASSET SPEC LIBRARY — surface note ownership so "which assets don't have their own note" is visible + filterable. Audit of the 222 catalog assets: 16 have their OWN dedicated note (exact label), ~34 a strong keyword match, ~172 only borrow a generic/related note (e.g. every "X Naming Rights" → one "Area Naming Rights" note), 0 are truly empty. Each row now tags Own note (blue) / Shared · <source> (gold) / Needs own note (faint red); filter dropdown gains Own / Shared / Needs-own so a rep can work through assets that still need a dedicated write-up for the prep email. No data added yet — this identifies the gaps; authoring dedicated notes is the follow-up. Only this page touched. -->
 <!-- index169: ASSET SPEC LIBRARY — reverted the index167 "remove covered assets" change (that emptied the list; it was the opposite of the intent). Now shows ALL assets again, GROUPED by their catalog category (Signage & Displays, Gameday, Game Sponsor, Sponsorship, Hospitality, etc.), each row CONDENSED with a one-line note preview (prefers the written prep language, falls back to the catalog note) so the whole prep collection reads at a glance. Filter dropdown restored, defaulting to "All assets"; added "Has a note"/"Needs a note" filters. No change to how specs/notes feed Option Creator or the Asset Prep email — every asset + its note still flows through unchanged. Only this page touched. -->
@@ -4734,7 +4735,7 @@ async function flushSharedQueue(){
   if(!SHARED_SYNC_ENABLED||syncInFlight||!loadSyncQueue().length)return;
   syncInFlight=true;
   try{
-    const queue=loadSyncQueue(),remaining=[];
+    const queue=loadSyncQueue(),remaining=[],sent=new Map();
     syncBatchTotal=queue.length;   // this flush's denominator, not an all-time high water mark
     const now=Date.now();
     for(const item of queue){
@@ -4746,6 +4747,7 @@ async function flushSharedQueue(){
         const res=await fetch(SHARED_DATA_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body});
         if(!res.ok){const err=new Error(`HTTP ${res.status}`);err.status=res.status;throw err;}
         lastSyncedAt=Date.now();lastSyncError=null;
+        sent.set(item.key, JSON.stringify(item.patch));   // index173: remember exactly what we sent for this key
       }
       catch(e){
         const status=e.status||0;
@@ -4764,10 +4766,26 @@ async function flushSharedQueue(){
         lastSyncError=e.message||"Network unavailable";
       }
     }
-    saveSyncQueue(remaining);
-    if(!remaining.length&&!loadDeadLetters().length)lastSyncError=null;   // nothing left to be wrong about
+    // index173: reconcile against the CURRENT queue, not the stale snapshot. Writes that arrived
+    // (or were coalesced into an existing key) DURING this flush must survive — the old
+    // saveSyncQueue(remaining) clobbered them, which is what dropped contractFile before it reached
+    // the server. Drop only keys we sent whose patch is unchanged; keep backed-off items and
+    // anything new/changed mid-flush.
+    const current=loadSyncQueue(), backoff=new Map(remaining.map(r=>[r.key,r])), next=[];
+    for(const it of current){
+      if(backoff.has(it.key)){ next.push(backoff.get(it.key)); backoff.delete(it.key); continue; }
+      const s=sent.get(it.key);
+      if(s!==undefined && JSON.stringify(it.patch)===s) continue;   // fully sent, unchanged -> drop
+      next.push(it);                                                // added or changed during the flush -> keep
+    }
+    for(const r of backoff.values()) next.push(r);
+    saveSyncQueue(next);
+    if(!next.length&&!loadDeadLetters().length)lastSyncError=null;   // nothing left to be wrong about
     updateSyncStatus();
   }finally{syncInFlight=false;}
+  // index173: if writes arrived during the flush, send them now. Bounded — each pass drains at
+  // least one ready item, and backed-off items are skipped until their nextTryAt.
+  if(SHARED_SYNC_ENABLED && loadSyncQueue().some(it=>!it.nextTryAt||Date.now()>=it.nextTryAt)) return flushSharedQueue();
 }
 let syncBatchTotal = 0;
 let syncStatusCache = {};
@@ -5542,7 +5560,10 @@ function addAgreementFile(sponsorId, title, fileObj) {
   const rec = getRecord(sponsorId); if (!rec || !fileObj) return false;
   // First agreement and no legacy file? Use the primary slot so it lights up the ledger and syncs.
   if (!rec.contractFile && !(Array.isArray(rec.agreements) && rec.agreements.length)) {
-    updateOverride(sponsorId, { contractTitle: title || "Agreement" });
+    // index173: set the title on the local override WITHOUT its own push, so saveContractFile's
+    // single override push carries contractTitle + contractFile together. Two back-to-back pushes
+    // to the same id used to race the queue flush and drop contractFile.
+    const ov = loadOverrides(); ov[sponsorId] = { ...(ov[sponsorId] || {}), contractTitle: title || "Agreement" }; saveOverrides(ov);
     return saveContractFile(sponsorId, fileObj);
   }
   const aid = "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
