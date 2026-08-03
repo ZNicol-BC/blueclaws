@@ -1,3 +1,4 @@
+<!-- BUILD_VERSION: 164 -->
 <!-- BUILD_VERSION: 43 -->
 <!-- BUILD_VERSION: 32 -->
 <!-- BUILD_VERSION: 163 -->
@@ -8,7 +9,8 @@
 <!-- BUILD_VERSION: 151 -->
 <!-- BUILD_VERSION: 161 -->
 <!-- index161: tri-lens polish (impeccable / design-audit / motion) — border-only nt-menu, green→blue on sched complete/ok states, two outlier page titles brought into sentence-case voice -->
-<!-- BUILD_VERSION: 163 -->
+<!-- BUILD_VERSION: 164 -->
+<!-- index164: STORAGE ROOT-CAUSE FIX. The per-account uploads library (sponsor drawer → creative/artwork/PoP files) was storing each file's full base64 body as {dataUrl} INSIDE the sponsor override record, which syncs via the "overrides" bucket to every browser's localStorage. That is what kept re-bloating local storage after Free up space (one browser holding an 8 MB upload re-pushed it to the server on the next save; every browser pulled it straight back — "storage jumps up when pushed to Netlify"). Uploads now go to the media server (Netlify Blobs, one blob per file via /.netlify/functions/media) and the override stores only a small {id, url} reference — the same pattern photos/logos/contracts already use. Added migrateUploadsToServer(): at boot + on Free up space, moves any existing base64 upload off to the server and rewrites the override to a reference; base64 dropped only AFTER the server confirms (no data loss offline). deepCleanOverrides no longer nukes upload dataUrls (migration owns them). Net: nothing base64 stays in localStorage/overrides; every browser converges small and uniform. -->
 <!-- index163: (1) removed leftover "Renewal" from asset-prep Template select (season defs already Offseason Aug1-Dec31 / Preseason Jan1-Mar30 / In-season Apr1+). (2) FIX Sponsor Fulfillment: statuses on duplicate-named assets (e.g. Homeplate/Planter Signage) now stick per-row — positional match preferred over name match. (3) Gameday: added labeled header (Sponsor/Rep · Asset · Date · Qty · Notes) + per-row date. (4) Multiple agreements per sponsor, each with a Quick Title (drawer + Agreements hub); bodies in IndexedDB under composite keys, metadata synced. (5) Marquee reworked into a Left/Right Asset Dropper (searchable 2-col partner grid left, slots right with bigger blue titles). (6) Hamburger now collapses the sidebar to a slim icon rail instead of hiding it. (7) NEW Asset Allocation hub (renamed from Ballpark Displays entry; old board kept as "Signage Boards"): grouped category rail + reusable Left/Right dropper engine covering Concourse, Suite, Section, Entitlement/Other, Digital Display Network (30 slots, JPG/MP4+duration), Game Sponsors (date/day/theme/fireworks), Gameday Script, Weekly Promotions, Website, Social, Broadcast/Podcast, Table & Plaza, Tickets, Other — Upper Tier/Home Run/Marquee/Scoreboard/E-News link to their existing boards. New store bciq_asset_alloc_v1 synced via WHOLE_STORE_CHANNELS. (8) Quick-link topbar strip now wheel/trackpad-scrolls horizontally when squeezed. -->
 <!-- index162: asset-prep email templates — removed Renewal (status) & Postseason (timing), season boundaries set to O
 <!-- index162: asset-prep email templates — removed Renewal (status) & Postseason (timing), season boundaries set to Offseason Aug1-Dec31 / Preseason Jan1-Mar30 / In-season Apr1+, standard "Hope all is well…" intro + annual-report line; FIX: prep templates now sync cross-browser (were local-only) -->
@@ -5364,6 +5366,12 @@ function contractDbGet(id) {
    successful read, so a file opens instantly this session even if the durable store is slow or
    unavailable. Not persistent by itself — IndexedDB (or the localStorage fallback) handles that. */
 const _contractBodies = {};
+/* Per-account upload file bodies, RAM only for this session. Like _contractBodies: the base64
+   never touches localStorage or the synced overrides blob — the bytes live on the media server
+   (/.netlify/functions/media) and the override stores only a small {url} reference. This map lets
+   a just-uploaded (or just-migrated) file open instantly this session even before its server URL
+   is confirmed. */
+const _uploadBodies = {};
 /* Last-resort persistence when IndexedDB is unavailable (private mode, disabled, etc.). Only
    small files fit in localStorage, so this is best-effort and honestly reported when it can't. */
 const CONTRACT_BODY_FALLBACK_KEY = "bciq_contract_bodies";
@@ -15205,12 +15213,16 @@ function openSponsorSlide(id) {
 function drawerUploadsListHTML(r) {
   const ups = Array.isArray(r.uploads) ? r.uploads : [];
   if (!ups.length) return `<div style="color:var(--muted); font-size:var(--text-xs);">No files uploaded yet.</div>`;
-  return `<div class="drawer-uploads-grid">` + ups.map((u, i) => `
+  return `<div class="drawer-uploads-grid">` + ups.map((u, i) => {
+    // Source order: server URL (?id=…) → this-session RAM body → legacy inline dataUrl (pre-migration).
+    const srcUrl = u.url || (u.id && _uploadBodies[u.id]) || u.dataUrl || "";
+    return `
     <div class="upload-chip">
-      ${/^image\//.test(u.type || "") ? `<img src="${esc(u.dataUrl)}" alt="" style="width:34px; height:34px; object-fit:cover; border-radius:var(--radius-xs);">` : `<span class="upload-doc" aria-hidden="true">▢</span>`}
-      <div style="min-width:0; flex:1;"><a href="${esc(u.dataUrl)}" download="${esc(u.name)}" class="upload-name" title="${esc(u.name)}">${esc(u.name)}</a><small style="display:block; color:var(--muted);">${esc((u.uploadedAt || "").slice(0, 10))}</small></div>
+      ${/^image\//.test(u.type || "") && srcUrl ? `<img src="${esc(srcUrl)}" alt="" style="width:34px; height:34px; object-fit:cover; border-radius:var(--radius-xs);">` : `<span class="upload-doc" aria-hidden="true">▢</span>`}
+      <div style="min-width:0; flex:1;"><a href="${esc(srcUrl)}" download="${esc(u.name)}" class="upload-name" title="${esc(u.name)}">${esc(u.name)}</a><small style="display:block; color:var(--muted);">${esc((u.uploadedAt || "").slice(0, 10))}</small></div>
       <button type="button" class="upload-remove" data-upload-remove="${i}" aria-label="Remove ${esc(u.name)}">×</button>
-    </div>`).join("") + `</div>`;
+    </div>`;
+  }).join("") + `</div>`;
 }
 function wireDrawerUploadRemoves(id) {
   document.querySelectorAll("#drawerUploadsList [data-upload-remove]").forEach(btn => btn.onclick = () => {
@@ -15652,13 +15664,24 @@ function openDrawer(id) {
       const reader = new FileReader();
       reader.onload = () => {
         const rec = getRecord(r.id); if (!rec) return;
+        // Reference-only: the base64 body goes to the media server, NOT into the synced overrides
+        // blob / localStorage. The override stores just {id, name, type, size, url}. Bytes stay in
+        // _uploadBodies for this session so the file opens instantly before the server URL lands.
+        const uid = "upload_" + r.id + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        _uploadBodies[uid] = reader.result;
         const ups = Array.isArray(rec.uploads) ? rec.uploads.slice() : [];
-        ups.push({ name: f.name, type: f.type, dataUrl: reader.result, uploadedAt: new Date().toISOString() });
+        ups.push({ id: uid, name: f.name, type: f.type, size: f.size, url: null, uploadedAt: new Date().toISOString() });
         updateOverride(r.id, { uploads: ups });
         const list = document.getElementById("drawerUploadsList");
         if (list) { list.innerHTML = drawerUploadsListHTML(getRecord(r.id)); wireDrawerUploadRemoves(r.id); }
         toast("File uploaded", `${f.name} saved to ${rec.sponsor}.`);
         upInput.value = "";
+        uploadMediaBlob(uid, reader.result).then(url => {
+          if (!url) { if (typeof toast === "function") toast("Server upload pending", `${f.name} opens on this browser but hasn't reached the server yet — it'll sync once the connection is back.`, true); return; }
+          // Write the server reference into the override so every browser gets the file (no base64).
+          const cur = loadOverrides(), rr = cur[r.id];
+          if (rr && Array.isArray(rr.uploads)) { const t = rr.uploads.find(x => x.id === uid); if (t) { t.url = url; delete t.dataUrl; saveOverrides(cur); pushSharedData(r.id, cur[r.id] || {}, "overrides"); } }
+        }).catch(() => {});
       };
       reader.readAsDataURL(f);
     };
@@ -16735,8 +16758,10 @@ function bciqTopLocalStorageKeys(count) {
    data is relocated, not deleted. This is what the "Free up space now" button runs. */
 async function bciqFreeUpSpace() {
   const before = bciqLocalStorageBytes();
-  // 0) Strip leaked base64 artwork out of the sponsor-overrides blob (the biggest offender) and
-  //    push the cleaned overrides to the server so it doesn't come back on the next pull.
+  // 0) Move any per-account upload file bodies (creative/artwork/PoP) off to the media server, then
+  //    strip leaked base64 artwork out of the sponsor-overrides blob (the biggest offenders) and
+  //    push the cleaned overrides to the server so they don't come back on the next pull.
+  try { migrateUploadsToServer(); } catch (e) {}
   try { deepCleanOverrides(); } catch (e) {}
   // 1) Move the big media blobs (board artwork / logos / any legacy photos) into IndexedDB.
   const mediaKeys = [
@@ -16777,6 +16802,38 @@ async function bciqFreeUpSpace() {
    base64 (data:) value out of the overrides blob, saves the clean copy locally, AND pushes the
    cleaned override for each affected sponsor so the server — and therefore every browser — drops
    the bloat too. Returns bytes removed. */
+/* THE per-account "uploads" library (creative / artwork / PoP files, added via the sponsor drawer)
+   used to store each file's full base64 body as {dataUrl} INSIDE the sponsor's override record —
+   the same record that syncs through the "overrides" bucket to every browser's localStorage. That
+   is what kept re-bloating local storage after "Free up space": one browser holding an 8 MB upload
+   re-pushed it to the server on the next save, and every browser pulled it straight back. This moves
+   any such base64 upload to the media server (bytes live in Netlify Blobs, one blob per file) and
+   rewrites the override entry to a small {id, url} reference — exactly how photos and logos already
+   work. Runs best-effort at boot and on Free up space; the base64 is only dropped AFTER the server
+   confirms the upload, so nothing is lost if the network is down (it just retries next boot). */
+function migrateUploadsToServer() {
+  let ov; try { ov = loadOverrides(); } catch (e) { return; }
+  Object.keys(ov || {}).forEach(id => {
+    const rec = ov[id];
+    if (!rec || !Array.isArray(rec.uploads) || !rec.uploads.length) return;
+    rec.uploads.forEach(u => {
+      if (!u || typeof u.dataUrl !== "string" || u.dataUrl.slice(0, 5) !== "data:") return;
+      if (!u.id) u.id = "upload_" + id + "_" + Math.random().toString(36).slice(2, 10);
+      const uid = u.id, body = u.dataUrl;
+      _uploadBodies[uid] = body; // keep it openable this session while the server upload is in flight
+      uploadMediaBlob(uid, body).then(url => {
+        if (!url) return; // offline / media.js not deployed — leave the dataUrl for the next boot to retry
+        const cur = loadOverrides(), rr = cur[id];
+        if (!rr || !Array.isArray(rr.uploads)) return;
+        const t = rr.uploads.find(x => x.id === uid);
+        if (!t) return;
+        t.url = url; delete t.dataUrl;                 // NOW the base64 leaves local + server
+        saveOverrides(cur);
+        pushSharedData(id, cur[id] || {}, "overrides"); // fix the server copy so it can't re-bloat on pull
+      }).catch(() => {});
+    });
+  });
+}
 function deepCleanOverrides() {
   let removed = 0;
   let ov; try { ov = loadOverrides(); } catch (e) { return 0; }
@@ -16789,7 +16846,9 @@ function deepCleanOverrides() {
       if (obj && typeof obj === "object") {
         Object.keys(obj).forEach(k => {
           const v = obj[k];
-          if (typeof v === "string" && v.slice(0, 5) === "data:") { removed += v.length; obj[k] = (k === "artwork") ? true : ""; recChanged = true; }
+          // Leave upload bodies (key "dataUrl") to migrateUploadsToServer(), which moves them to the
+          // media server before dropping them — stripping here would delete the file, not relocate it.
+          if (typeof v === "string" && v.slice(0, 5) === "data:" && k !== "dataUrl") { removed += v.length; obj[k] = (k === "artwork") ? true : ""; recChanged = true; }
           else if (v && typeof v === "object") scrub(v);
         });
       }
@@ -16805,6 +16864,7 @@ function deepCleanOverrides() {
   return removed;
 }
 function bciqAutoTidyStorage() {
+  try { migrateUploadsToServer(); } catch (e) {}
   try { deepCleanOverrides(); } catch (e) {}
   try { if (typeof CONTRACT_BODY_FALLBACK_KEY !== "undefined") localStorage.removeItem(CONTRACT_BODY_FALLBACK_KEY); } catch (e) {}
   try { if (typeof clearDeadLetters === "function") clearDeadLetters(); } catch (e) {}
