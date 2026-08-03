@@ -1,4 +1,6 @@
-<!-- BUILD_VERSION: 164 -->
+<!-- BUILD_VERSION: 167 -->
+<!-- BUILD_VERSION: 167 -->
+<!-- index167: NETWORK-FIRST HARD RESET + DEPLOY FIX. Root cause of "the storage bar never moves on Tommy/Zack's machines": the live Netlify site was still BUILD_VERSION 164 — index165 (purge stray state/ballparkDisplays blobs) and index166 (permanent pull-time guard) were built but NEVER pushed to the GitHub repo, so every teammate's browser kept downloading 164 and re-pulling the 1.6 MB strays on every 8s poll. This build carries BOTH of those fixes AND adds bciqOneTimeHardReset(): the first time any browser loads v167 it wipes ALL accumulated localStorage app data (so it re-hydrates clean and identical from the Netlify Blobs server, the source of truth) EXCEPT a tiny allowlist of genuinely personal / this-browser data (the ⚙ Settings modal, who this browser is signed in as, personal nicknames/favorites/read-markers) plus the un-pushed sync queue (kept so no offline edit is lost). Runs exactly ONCE per browser, gated by the bciq_hard_reset_v167 flag, so normal edits made after the reset are never touched. Also: covered assets are fully removed from the Asset Prep worklist. MUST be deployed to Netlify as index.html (push index167.html to the repo root; CI promotes it) — testing the old live build is why past fixes 'did nothing'. -->
 <!-- BUILD_VERSION: 43 -->
 <!-- BUILD_VERSION: 32 -->
 <!-- BUILD_VERSION: 163 -->
@@ -9,8 +11,10 @@
 <!-- BUILD_VERSION: 151 -->
 <!-- BUILD_VERSION: 161 -->
 <!-- index161: tri-lens polish (impeccable / design-audit / motion) — border-only nt-menu, green→blue on sched complete/ok states, two outlier page titles brought into sentence-case voice -->
-<!-- BUILD_VERSION: 164 -->
-<!-- index164: STORAGE ROOT-CAUSE FIX. The per-account uploads library (sponsor drawer → creative/artwork/PoP files) was storing each file's full base64 body as {dataUrl} INSIDE the sponsor override record, which syncs via the "overrides" bucket to every browser's localStorage. That is what kept re-bloating local storage after Free up space (one browser holding an 8 MB upload re-pushed it to the server on the next save; every browser pulled it straight back — "storage jumps up when pushed to Netlify"). Uploads now go to the media server (Netlify Blobs, one blob per file via /.netlify/functions/media) and the override stores only a small {id, url} reference — the same pattern photos/logos/contracts already use. Added migrateUploadsToServer(): at boot + on Free up space, moves any existing base64 upload off to the server and rewrites the override to a reference; base64 dropped only AFTER the server confirms (no data loss offline). deepCleanOverrides no longer nukes upload dataUrls (migration owns them). Net: nothing base64 stays in localStorage/overrides; every browser converges small and uniform. -->
+<!-- BUILD_VERSION: 166 -->
+<!-- index166: MAKE THE FIX STICK. index165 purged the stray "state"/"ballparkDisplays" whole-store blobs once, but the 8-second overrides pull re-wrote whatever the server still held, so "Free up space" appeared to do nothing (it dropped, then the poll re-bloated). Added a PERMANENT pull-time guard in pullSharedData: any overrides entry shaped like a whole-store leftover (top-level string `value` field — which no real sponsor override has) is skipped and never written to this browser's localStorage, regardless of what the server holds. So the cleanup now sticks: strays are dropped on every load automatically (no button needed) AND purged from the server via {__deleted, value:null}. Confirmed the "Free up space now" button is correctly wired to bciqFreeUpSpace. NOTE: must be deployed to Netlify and loaded — testing the old live version is why it looked like nothing happened. -->
+<!-- index165: THE ACTUAL 3.6 MB FIX. An in-browser size audit of bciq_sponsor_overrides showed base64 was only 9% (~174 KB); the real hog was two entries INSIDE the overrides object — "state" (~900 KB) and "ballparkDisplays" (~700 KB) — each a stringified whole-store blob in a {value:"…"} field. These are legacy Ballpark Displays board state that "used to ride inside overrides as a whole-store channel" (see data.js) before it was split into its own "displays" bucket; like the earlier logos split, moving new writes never purged the ~1.6 MB already stranded in the overrides blob, so every browser kept pulling it into localStorage. Added purgeStrayWholeStoreOverrides(): a real sponsor override never has a top-level string `value` field, so any entry that does is a mis-routed whole-store leftover — delete it locally AND push {__deleted:true, value:null} to the overrides bucket so the server copy shrinks and the pull skips it (can't re-bloat). Runs at boot + on Free up space, before the index164 upload-migration. Net: overrides drop from ~2 MB to ~250 KB across every browser. -->
+<!-- index164: STORAGE ROOT-CAUSE FIX (partial — uploads, ~9%). The per-account uploads library (sponsor drawer → creative/artwork/PoP files) was storing each file's full base64 body as {dataUrl} INSIDE the sponsor override record, which syncs via the "overrides" bucket to every browser's localStorage. That is what kept re-bloating local storage after Free up space (one browser holding an 8 MB upload re-pushed it to the server on the next save; every browser pulled it straight back — "storage jumps up when pushed to Netlify"). Uploads now go to the media server (Netlify Blobs, one blob per file via /.netlify/functions/media) and the override stores only a small {id, url} reference — the same pattern photos/logos/contracts already use. Added migrateUploadsToServer(): at boot + on Free up space, moves any existing base64 upload off to the server and rewrites the override to a reference; base64 dropped only AFTER the server confirms (no data loss offline). deepCleanOverrides no longer nukes upload dataUrls (migration owns them). Net: nothing base64 stays in localStorage/overrides; every browser converges small and uniform. -->
 <!-- index163: (1) removed leftover "Renewal" from asset-prep Template select (season defs already Offseason Aug1-Dec31 / Preseason Jan1-Mar30 / In-season Apr1+). (2) FIX Sponsor Fulfillment: statuses on duplicate-named assets (e.g. Homeplate/Planter Signage) now stick per-row — positional match preferred over name match. (3) Gameday: added labeled header (Sponsor/Rep · Asset · Date · Qty · Notes) + per-row date. (4) Multiple agreements per sponsor, each with a Quick Title (drawer + Agreements hub); bodies in IndexedDB under composite keys, metadata synced. (5) Marquee reworked into a Left/Right Asset Dropper (searchable 2-col partner grid left, slots right with bigger blue titles). (6) Hamburger now collapses the sidebar to a slim icon rail instead of hiding it. (7) NEW Asset Allocation hub (renamed from Ballpark Displays entry; old board kept as "Signage Boards"): grouped category rail + reusable Left/Right dropper engine covering Concourse, Suite, Section, Entitlement/Other, Digital Display Network (30 slots, JPG/MP4+duration), Game Sponsors (date/day/theme/fireworks), Gameday Script, Weekly Promotions, Website, Social, Broadcast/Podcast, Table & Plaza, Tickets, Other — Upper Tier/Home Run/Marquee/Scoreboard/E-News link to their existing boards. New store bciq_asset_alloc_v1 synced via WHOLE_STORE_CHANNELS. (8) Quick-link topbar strip now wheel/trackpad-scrolls horizontally when squeezed. -->
 <!-- index162: asset-prep email templates — removed Renewal (status) & Postseason (timing), season boundaries set to O
 <!-- index162: asset-prep email templates — removed Renewal (status) & Postseason (timing), season boundaries set to Offseason Aug1-Dec31 / Preseason Jan1-Mar30 / In-season Apr1+, standard "Hope all is well…" intro + annual-report line; FIX: prep templates now sync cross-browser (were local-only) -->
@@ -4526,6 +4530,68 @@ const memStore = (function () {
   }
 })();
 
+/* ============================================================
+   index167 — ONE-TIME HARD RESET (network-first convergence)
+   ------------------------------------------------------------
+   Netlify Blobs is the source of truth. Every browser that opens this build
+   ONCE wipes all locally-accumulated app data so it re-hydrates clean and
+   identical from the server on the next sync. This is what finally makes
+   every teammate's browser show the same data with a low, stable storage bar,
+   instead of each machine carrying its own pile of stale localStorage.
+
+   What SURVIVES the wipe (the only data that legitimately lives per-browser):
+     - bciq_user_settings ...... the ⚙ Settings modal (the one place personal
+                                  local settings belong, per request)
+     - bciq_current_user ....... which teammate this browser is signed in as
+                                  (so nobody gets logged out by the reset)
+     - bciq_presence_names ..... this browser's display name (also server-synced)
+     - blueclaws-iq-rep-nicknames / bciq_favorite_actions / bciq_chat_seen
+                                  personal cosmetics + read markers
+     - bciq_netlify_sync_queue . SAFETY: any edit not yet pushed to the server
+                                  is kept and flushed on boot, so the wipe can
+                                  never destroy un-synced work
+     - bciq_recent_push_ts ..... SAFETY: push/pull grace timing for the above
+
+   Everything else removed here is either shared data that re-downloads from the
+   server within seconds, or stale local-only cruft the user asked to be wiped.
+   IndexedDB (logos / board artwork) and server buckets are untouched — the huge
+   localStorage number in the storage panel is what this clears.
+
+   Runs exactly once per browser (bciq_hard_reset_v167 flag). Never blocks boot.
+   ============================================================ */
+const HARD_RESET_FLAG = "bciq_hard_reset_v167";
+(function bciqOneTimeHardReset() {
+  try {
+    if (memStore.getItem(HARD_RESET_FLAG)) return; // already reset on this browser
+    const KEEP = new Set([
+      "bciq_user_settings",
+      "bciq_current_user",
+      "bciq_presence_names",
+      "blueclaws-iq-rep-nicknames",
+      "bciq_favorite_actions",
+      "bciq_chat_seen",
+      "bciq_netlify_sync_queue",
+      "bciq_recent_push_ts",
+      HARD_RESET_FLAG
+    ]);
+    let ls = null;
+    try { ls = window.localStorage; } catch (e) { ls = null; }
+    if (!ls) { try { memStore.setItem(HARD_RESET_FLAG, "1"); } catch (e) {} return; }
+    // Snapshot keys first (removing while iterating localStorage shifts indices).
+    const keys = [];
+    for (let i = 0; i < ls.length; i++) { const k = ls.key(i); if (k) keys.push(k); }
+    let cleared = 0;
+    keys.forEach(function (k) {
+      if (KEEP.has(k)) return;
+      if (k.indexOf("bciq") === 0 || k.indexOf("blueclaws") === 0) {
+        try { ls.removeItem(k); cleared++; } catch (e) {}
+      }
+    });
+    try { memStore.setItem(HARD_RESET_FLAG, String(Date.now())); } catch (e) {}
+    try { console.info("[BCIQ] one-time hard reset v167 — cleared " + cleared + " local keys; re-syncing from server."); } catch (e) {}
+  } catch (e) { /* never block boot on the reset */ }
+})();
+
 /* ---- Logo & photo storage (IndexedDB, not localStorage) ----------------------------------
    Logos and the photo library were the two things that kept blowing the ~5MB per-origin
    localStorage quota — base64 images are large, this cache held every one as a JSON string,
@@ -4828,7 +4894,7 @@ async function pullSharedData() {
     let changed=false;
     Object.entries(WHOLE_STORE_CHANNELS).forEach(([id,key])=>{if(hasPendingWrite(id,"overrides")||recentlyPushed(id,"overrides"))return;const incoming=shared[id];const serverValue=incoming&&incoming.value!==undefined?incoming.value:null;if(serverValue===null){if(memStore.getItem(key)!==null){memStore.removeItem(key);changed=true;}}else if(memStore.getItem(key)!==serverValue){memStore.setItem(key,serverValue);changed=true;}});
     const local=loadOverrides(),authoritative={};
-    Object.keys(shared).forEach(id=>{if(WHOLE_STORE_CHANNELS[id])return;const incoming=shared[id]||{};if(incoming.__deleted)return;const decoded=incoming.__state&&typeof incoming.__state==="object"?incoming.__state:Object.fromEntries(Object.entries(incoming).filter(([k])=>k!=="__deleted"&&k!=="__state"));if(hasPendingWrite(id,"overrides")||recentlyPushed(id,"overrides"))authoritative[id]=local[id]||decoded;else authoritative[id]=decoded;});
+    Object.keys(shared).forEach(id=>{if(WHOLE_STORE_CHANNELS[id])return;const incoming=shared[id]||{};if(incoming.__deleted)return;/* PERMANENT GUARD: a legacy whole-store blob (Ballpark Displays board state) stranded in the overrides bucket has the shape {value:"…"} — a real sponsor override never has a top-level string `value`. Skip it here so it can NEVER re-enter this browser's localStorage on a pull, no matter what the server still holds. This is what makes "Free up space" actually stick instead of the 8-second poll re-bloating it. */if(typeof incoming.value==="string")return;const decoded=incoming.__state&&typeof incoming.__state==="object"?incoming.__state:Object.fromEntries(Object.entries(incoming).filter(([k])=>k!=="__deleted"&&k!=="__state"));if(hasPendingWrite(id,"overrides")||recentlyPushed(id,"overrides"))authoritative[id]=local[id]||decoded;else authoritative[id]=decoded;});
     Object.keys(local).forEach(id=>{if(hasPendingWrite(id,"overrides"))authoritative[id]=local[id];});
     if(stableSyncStringify(local)!==stableSyncStringify(authoritative)){saveOverrides(authoritative);changed=true;}
     updateSyncStatus();if(changed)refreshCurrentView();
@@ -9950,10 +10016,11 @@ function renderApSpecs(body) {
   let all = [...new Set([...catalog, ...extras])];
   const totalAssets = all.length;
   const withDetail = all.filter(n => apSpecCoverage(n)).length;
-  // Filter: default hides assets that have no prep language yet.
-  const filt = apState.specFilter || "covered";
-  if (filt === "covered") all = all.filter(n => apSpecCoverage(n));
-  else if (filt === "missing") all = all.filter(n => !apSpecCoverage(n));
+  // index167: covered assets are fully removed from this worklist. Once an asset
+  // has prep language (exact "Details added" OR a keyword "Covered · …" match) it
+  // drops off the list entirely — this view is now purely what still needs writing.
+  // The old covered/all filter dropdown is gone so nothing can bring them back.
+  all = all.filter(n => !apSpecCoverage(n));
   if (q) all = all.filter(n => n.toLowerCase().includes(q));
   if (apState.specSort === "status") all.sort((a, b) => (apSpecCoverage(b) ? 1 : 0) - (apSpecCoverage(a) ? 1 : 0) || a.localeCompare(b));
   else all.sort((a, b) => a.localeCompare(b));
@@ -9978,21 +10045,18 @@ function renderApSpecs(body) {
   body.innerHTML = `
     <div class="filter-bar">
       <div class="search-box">⌕ <input id="apSpecSearch" type="search" placeholder="Search assets…" value="${esc(apState.specSearch)}"></div>
-      <select id="apSpecFilter" aria-label="Filter assets">
-        <option value="covered"${filt === "covered" ? " selected" : ""}>With prep language (${withDetail})</option>
-        <option value="missing"${filt === "missing" ? " selected" : ""}>Needs language (${totalAssets - withDetail})</option>
-        <option value="all"${filt === "all" ? " selected" : ""}>All assets (${totalAssets})</option>
-      </select>
       <select id="apSpecSort" aria-label="Sort assets">
         <option value="az"${apState.specSort === "az" ? " selected" : ""}>Sort: A–Z</option>
         <option value="status"${apState.specSort === "status" ? " selected" : ""}>Sort: With language first</option>
       </select>
-      <span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs); align-self:center;">${withDetail} of ${totalAssets} have prep language</span>
+      <span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs); align-self:center;">${totalAssets - withDetail} still need prep language · ${withDetail} of ${totalAssets} done</span>
       <button class="primary-button" id="apSpecSave" type="button">Save spec library</button>
       <button class="secondary-button" id="apSpecAdd" type="button">+ Add custom asset</button>
       <button class="secondary-button" id="apSpecReset" type="button">Reset to defaults</button>
     </div>
-    <div id="apSpecList">${rows || `<div class="readonly-note">No assets match — switch the filter to "All assets" to see the rest.</div>`}</div>`;
+    <div id="apSpecList">${rows || (q
+        ? `<div class="readonly-note">No assets still needing prep language match "${esc(q)}".</div>`
+        : `<div class="readonly-note" style="text-align:center; padding:var(--space-14);"><strong>All caught up.</strong><br>Every asset already has prep language, so there's nothing left on the worklist. Covered assets are hidden here by design — edit an existing spec from the sponsor drawer or a report.</div>`)}</div>`;
   const search = document.getElementById("apSpecSearch");
   search.addEventListener("input", e => { apState.specSearch = e.target.value; renderApSpecs(body); const s = document.getElementById("apSpecSearch"); if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } });
   const fSel = document.getElementById("apSpecFilter");
@@ -16761,6 +16825,7 @@ async function bciqFreeUpSpace() {
   // 0) Move any per-account upload file bodies (creative/artwork/PoP) off to the media server, then
   //    strip leaked base64 artwork out of the sponsor-overrides blob (the biggest offenders) and
   //    push the cleaned overrides to the server so they don't come back on the next pull.
+  try { purgeStrayWholeStoreOverrides(); } catch (e) {}
   try { migrateUploadsToServer(); } catch (e) {}
   try { deepCleanOverrides(); } catch (e) {}
   // 1) Move the big media blobs (board artwork / logos / any legacy photos) into IndexedDB.
@@ -16834,6 +16899,34 @@ function migrateUploadsToServer() {
     });
   });
 }
+/* THE actual 3.6 MB offender (found via an in-browser size audit of bciq_sponsor_overrides):
+   two entries, "state" (~900 KB) and "ballparkDisplays" (~700 KB), sitting INSIDE the sponsor-
+   overrides object, each holding a stringified whole-store blob in a {value:"…"} field. These are
+   legacy Ballpark Displays board state: that data "used to ride inside 'overrides' as a whole-store
+   channel" (see data.js) before it was split into its own "displays" bucket — and, exactly like the
+   logos split before it, moving new writes to the new bucket never purged the copy already stranded
+   in the overrides blob. So every browser kept pulling ~1.6 MB of dead board data into localStorage
+   forever. No live code writes them anymore (saveBallparkDisplays pushes to the "displays" bucket),
+   so this is pure cleanup: a real sponsor override never has a top-level string `value` field — that
+   shape only exists on these mis-routed whole-store leftovers. Delete them locally AND purge the
+   server copy (overwrite the giant value with null + __deleted so the pull skips it and it can't
+   re-bloat). Returns bytes removed. */
+function purgeStrayWholeStoreOverrides() {
+  let ov; try { ov = loadOverrides(); } catch (e) { return 0; }
+  // Belt-and-suspenders: build the set of REAL sponsor ids (base + custom). A stray is an override
+  // entry with a top-level string `value` field (the whole-store shape, which no real sponsor uses)
+  // AND an id that isn't a real sponsor — so even a hypothetical real sponsor with a value field is safe.
+  const validIds = new Set();
+  try { (window.SPONSOR_DATA || []).forEach(r => r && r.id && validIds.add(r.id)); } catch (e) {}
+  try { (loadCustom() || []).forEach(r => r && r.id && validIds.add(r.id)); } catch (e) {}
+  const strays = Object.keys(ov || {}).filter(id => ov[id] && typeof ov[id] === "object" && typeof ov[id].value === "string" && !validIds.has(id));
+  if (!strays.length) return 0;
+  let removed = 0;
+  strays.forEach(id => { removed += (ov[id].value || "").length; delete ov[id]; });
+  try { saveOverrides(ov); } catch (e) {}
+  strays.forEach(id => { try { pushSharedData(id, { __deleted: true, value: null }, "overrides"); } catch (e) {} });
+  return removed;
+}
 function deepCleanOverrides() {
   let removed = 0;
   let ov; try { ov = loadOverrides(); } catch (e) { return 0; }
@@ -16864,6 +16957,7 @@ function deepCleanOverrides() {
   return removed;
 }
 function bciqAutoTidyStorage() {
+  try { purgeStrayWholeStoreOverrides(); } catch (e) {}
   try { migrateUploadsToServer(); } catch (e) {}
   try { deepCleanOverrides(); } catch (e) {}
   try { if (typeof CONTRACT_BODY_FALLBACK_KEY !== "undefined") localStorage.removeItem(CONTRACT_BODY_FALLBACK_KEY); } catch (e) {}
