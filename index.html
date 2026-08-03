@@ -1,5 +1,6 @@
-<!-- BUILD_VERSION: 168 -->
-<!-- BUILD_VERSION: 168 -->
+<!-- BUILD_VERSION: 169 -->
+<!-- BUILD_VERSION: 169 -->
+<!-- index169: ASSET SPEC LIBRARY — reverted the index167 "remove covered assets" change (that emptied the list; it was the opposite of the intent). Now shows ALL assets again, GROUPED by their catalog category (Signage & Displays, Gameday, Game Sponsor, Sponsorship, Hospitality, etc.), each row CONDENSED with a one-line note preview (prefers the written prep language, falls back to the catalog note) so the whole prep collection reads at a glance. Filter dropdown restored, defaulting to "All assets"; added "Has a note"/"Needs a note" filters. No change to how specs/notes feed Option Creator or the Asset Prep email — every asset + its note still flows through unchanged. Only this page touched. -->
 <!-- index168: Backup & restore modal copy fix. Replaced the alarming "Nothing saves between sessions on its own — edits live in this tab's memory only… Export a backup before closing the tab" header (which was false and scared users) with accurate reassurance: everything auto-saves and syncs to the shared Netlify server, nothing is lost on tab close, this browser only holds a small cache, and backup/restore is optional. No logic change. -->
 <!-- index167: NETWORK-FIRST HARD RESET + DEPLOY FIX. Root cause of "the storage bar never moves on Tommy/Zack's machines": the live Netlify site was still BUILD_VERSION 164 — index165 (purge stray state/ballparkDisplays blobs) and index166 (permanent pull-time guard) were built but NEVER pushed to the GitHub repo, so every teammate's browser kept downloading 164 and re-pulling the 1.6 MB strays on every 8s poll. This build carries BOTH of those fixes AND adds bciqOneTimeHardReset(): the first time any browser loads v167 it wipes ALL accumulated localStorage app data (so it re-hydrates clean and identical from the Netlify Blobs server, the source of truth) EXCEPT a tiny allowlist of genuinely personal / this-browser data (the ⚙ Settings modal, who this browser is signed in as, personal nicknames/favorites/read-markers) plus the un-pushed sync queue (kept so no offline edit is lost). Runs exactly ONCE per browser, gated by the bciq_hard_reset_v167 flag, so normal edits made after the reset are never touched. Also: covered assets are fully removed from the Asset Prep worklist. MUST be deployed to Netlify as index.html (push index167.html to the repo root; CI promotes it) — testing the old live build is why past fixes 'did nothing'. -->
 <!-- BUILD_VERSION: 43 -->
@@ -9972,7 +9973,7 @@ function apEnsureSpecDraft() {
     artwork: s.artwork || "", due: s.due || "" }));
   if (!apState.specExpanded) apState.specExpanded = [];
   if (apState.specSearch == null) apState.specSearch = "";
-  if (apState.specFilter == null) apState.specFilter = "covered";   // default: hide assets with no language
+  if (apState.specFilter == null) apState.specFilter = "all";   // index169: default to showing every asset, grouped
   if (apState.specSort == null) apState.specSort = "az";
 }
 function apSpecEntry(label) {
@@ -10011,53 +10012,93 @@ function apSpecEditorHTML(label) {
 function renderApSpecs(body) {
   apEnsureSpecDraft();
   const q = String(apState.specSearch || "").trim().toLowerCase();
-  const catalog = [...new Set(getFullCatalog().map(a => String(a.asset || "").trim()).filter(Boolean))];
-  const catLc = new Set(catalog.map(c => c.toLowerCase()));
+  // index169: show ALL assets, grouped by their catalog category, each row condensed
+  // with a one-line note preview — the whole prep collection reads at a glance, and
+  // every asset + its note still feeds the Options Creator and the Asset Prep email.
+  const catalogRows = getFullCatalog();
+  const catByName = {};
+  catalogRows.forEach(r => {
+    const nm = String(r.asset || "").trim(); if (!nm) return;
+    const lc = nm.toLowerCase();
+    if (!catByName[lc]) catByName[lc] = { name: nm, category: (r.category || "Miscellaneous & Other"), notes: (r.notes || "") };
+  });
+  const catalogNames = [...new Set(catalogRows.map(r => String(r.asset || "").trim()).filter(Boolean))];
+  const catLc = new Set(catalogNames.map(c => c.toLowerCase()));
   const extras = apState.specDraft.map(s => String(s.label || "").trim()).filter(l => l && !catLc.has(l.toLowerCase()));
-  let all = [...new Set([...catalog, ...extras])];
+  extras.forEach(n => { const lc = n.toLowerCase(); if (!catByName[lc]) catByName[lc] = { name: n, category: "Custom / Other", notes: "" }; });
+  let all = [...catalogNames, ...extras];
   const totalAssets = all.length;
   const withDetail = all.filter(n => apSpecCoverage(n)).length;
-  // index167: covered assets are fully removed from this worklist. Once an asset
-  // has prep language (exact "Details added" OR a keyword "Covered · …" match) it
-  // drops off the list entirely — this view is now purely what still needs writing.
-  // The old covered/all filter dropdown is gone so nothing can bring them back.
-  all = all.filter(n => !apSpecCoverage(n));
+  // Filter (default: show everything). "missing" = still needs a note; "covered" = already has one.
+  const filt = apState.specFilter || "all";
+  if (filt === "missing") all = all.filter(n => !apSpecCoverage(n));
+  else if (filt === "covered") all = all.filter(n => apSpecCoverage(n));
   if (q) all = all.filter(n => n.toLowerCase().includes(q));
-  if (apState.specSort === "status") all.sort((a, b) => (apSpecCoverage(b) ? 1 : 0) - (apSpecCoverage(a) ? 1 : 0) || a.localeCompare(b));
-  else all.sort((a, b) => a.localeCompare(b));
-  const cols = ["var(--blue)", "var(--gold)", "var(--red)", "var(--navy)"];
-  const rows = all.map((name, i) => {
+  // One-line note preview: prefer the written prep language, fall back to the catalog note.
+  const notePreview = name => {
     const cov = apSpecCoverage(name);
-    const expanded = apState.specExpanded.includes(name);
-    const tag = cov
-      ? (cov.kind === "exact"
-          ? `<span class="type-tag" style="background:var(--blue-bg,#e7f0fb); color:var(--blue-text); border-color:var(--blue);">Details added</span>`
-          : `<span class="type-tag" title="Covered by ${esc(cov.entry.label)}">Covered · ${esc(cov.entry.label)}</span>`)
-      : `<span class="type-tag" style="opacity:.55;">No details</span>`;
-    return `<div class="table-card" style="padding:0; margin-bottom:var(--space-8); border-left:3px solid ${cols[i % 4]};">
+    let s = "";
+    if (cov && cov.entry) s = cov.entry.description || cov.entry.specs || cov.entry.artwork || "";
+    if (!s) s = (catByName[name.toLowerCase()] || {}).notes || "";
+    s = String(s).replace(/\s+/g, " ").trim();
+    return s.length > 120 ? s.slice(0, 120) + "…" : s;
+  };
+  // Group the (filtered) assets by category, A–Z within each group.
+  const groups = {};
+  all.forEach(n => { const g = (catByName[n.toLowerCase()] || {}).category || "Custom / Other"; (groups[g] = groups[g] || []).push(n); });
+  Object.keys(groups).forEach(g => groups[g].sort((a, b) => a.localeCompare(b)));
+  const CAT_ORDER = ["Signage & Displays", "Gameday", "Game Sponsor", "Sponsorship", "Marketing - Digital & Broadcast", "Marketing - Print", "Weekly Promotion", "Sponsor Programs", "Hospitality", "Food & Beverage", "Fan Engagement & Community", "Special Events", "Non-Gameday", "Miscellaneous & Other", "Custom / Other"];
+  const groupOrder = [...CAT_ORDER.filter(g => groups[g]), ...Object.keys(groups).filter(g => !CAT_ORDER.includes(g)).sort()];
+  const cols = ["var(--blue)", "var(--gold)", "var(--red)", "var(--navy)"];
+  let ci = 0;
+  const groupsHtml = groupOrder.map(group => {
+    const rows = groups[group].map(name => {
+      const cov = apSpecCoverage(name);
+      const expanded = apState.specExpanded.includes(name);
+      const prev = notePreview(name);
+      const tag = cov
+        ? `<span class="type-tag" style="background:var(--blue-bg,#e7f0fb); color:var(--blue-text); border-color:var(--blue);">Note ready</span>`
+        : `<span class="type-tag" style="opacity:.55;">Needs note</span>`;
+      const rowHtml = `<div class="table-card" style="padding:0; margin-bottom:var(--space-8); border-left:3px solid ${cols[ci % 4]};">
         <div class="renewal-row" style="grid-template-columns:1fr auto auto; align-items:center; cursor:pointer; padding:var(--space-12) var(--space-14);" data-spec-toggle="${esc(name)}">
-          <strong style="min-width:0;">${esc(name)}</strong>
+          <div style="min-width:0;">
+            <strong style="display:block;">${esc(name)}</strong>
+            ${prev
+              ? `<div style="color:var(--muted); font-size:var(--text-xs); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(prev)}</div>`
+              : `<div style="color:var(--muted); font-size:var(--text-xs); margin-top:2px; opacity:.6;">No note yet — click to add one</div>`}
+          </div>
           ${tag}
           <button type="button" class="row-action" aria-label="Expand" style="transform:rotate(${expanded ? "90" : "0"}deg); transition:transform .12s;">→</button>
         </div>
         ${expanded ? apSpecEditorHTML(name) : ""}
       </div>`;
+      ci++;
+      return rowHtml;
+    }).join("");
+    const doneInGroup = groups[group].filter(n => apSpecCoverage(n)).length;
+    return `<div class="ap-spec-group" style="margin-bottom:var(--space-14);">
+        <div style="display:flex; align-items:center; gap:var(--space-8); margin:var(--space-10) 0 var(--space-8); padding-bottom:var(--space-6); border-bottom:2px solid var(--line);">
+          <strong style="font-family:var(--font-display, inherit); letter-spacing:.02em;">${esc(group)}</strong>
+          <span class="type-tag" style="opacity:.7;">${groups[group].length}</span>
+          <span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs);">${doneInGroup}/${groups[group].length} with notes</span>
+        </div>
+        ${rows}
+      </div>`;
   }).join("");
   body.innerHTML = `
     <div class="filter-bar">
       <div class="search-box">⌕ <input id="apSpecSearch" type="search" placeholder="Search assets…" value="${esc(apState.specSearch)}"></div>
-      <select id="apSpecSort" aria-label="Sort assets">
-        <option value="az"${apState.specSort === "az" ? " selected" : ""}>Sort: A–Z</option>
-        <option value="status"${apState.specSort === "status" ? " selected" : ""}>Sort: With language first</option>
+      <select id="apSpecFilter" aria-label="Filter assets">
+        <option value="all"${filt === "all" ? " selected" : ""}>All assets (${totalAssets})</option>
+        <option value="covered"${filt === "covered" ? " selected" : ""}>Has a note (${withDetail})</option>
+        <option value="missing"${filt === "missing" ? " selected" : ""}>Needs a note (${totalAssets - withDetail})</option>
       </select>
-      <span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs); align-self:center;">${totalAssets - withDetail} still need prep language · ${withDetail} of ${totalAssets} done</span>
+      <span style="margin-left:auto; color:var(--muted); font-size:var(--text-xs); align-self:center;">${totalAssets} assets · ${withDetail} with notes · grouped by category</span>
       <button class="primary-button" id="apSpecSave" type="button">Save spec library</button>
       <button class="secondary-button" id="apSpecAdd" type="button">+ Add custom asset</button>
       <button class="secondary-button" id="apSpecReset" type="button">Reset to defaults</button>
     </div>
-    <div id="apSpecList">${rows || (q
-        ? `<div class="readonly-note">No assets still needing prep language match "${esc(q)}".</div>`
-        : `<div class="readonly-note" style="text-align:center; padding:var(--space-14);"><strong>All caught up.</strong><br>Every asset already has prep language, so there's nothing left on the worklist. Covered assets are hidden here by design — edit an existing spec from the sponsor drawer or a report.</div>`)}</div>`;
+    <div id="apSpecList">${groupsHtml || `<div class="readonly-note">No assets match "${esc(q)}".</div>`}</div>`;
   const search = document.getElementById("apSpecSearch");
   search.addEventListener("input", e => { apState.specSearch = e.target.value; renderApSpecs(body); const s = document.getElementById("apSpecSearch"); if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } });
   const fSel = document.getElementById("apSpecFilter");
