@@ -1,5 +1,6 @@
-<!-- BUILD_VERSION: 167 -->
-<!-- BUILD_VERSION: 167 -->
+<!-- BUILD_VERSION: 168 -->
+<!-- BUILD_VERSION: 168 -->
+<!-- index168: Backup & restore modal copy fix. Replaced the alarming "Nothing saves between sessions on its own — edits live in this tab's memory only… Export a backup before closing the tab" header (which was false and scared users) with accurate reassurance: everything auto-saves and syncs to the shared Netlify server, nothing is lost on tab close, this browser only holds a small cache, and backup/restore is optional. No logic change. -->
 <!-- index167: NETWORK-FIRST HARD RESET + DEPLOY FIX. Root cause of "the storage bar never moves on Tommy/Zack's machines": the live Netlify site was still BUILD_VERSION 164 — index165 (purge stray state/ballparkDisplays blobs) and index166 (permanent pull-time guard) were built but NEVER pushed to the GitHub repo, so every teammate's browser kept downloading 164 and re-pulling the 1.6 MB strays on every 8s poll. This build carries BOTH of those fixes AND adds bciqOneTimeHardReset(): the first time any browser loads v167 it wipes ALL accumulated localStorage app data (so it re-hydrates clean and identical from the Netlify Blobs server, the source of truth) EXCEPT a tiny allowlist of genuinely personal / this-browser data (the ⚙ Settings modal, who this browser is signed in as, personal nicknames/favorites/read-markers) plus the un-pushed sync queue (kept so no offline edit is lost). Runs exactly ONCE per browser, gated by the bciq_hard_reset_v167 flag, so normal edits made after the reset are never touched. Also: covered assets are fully removed from the Asset Prep worklist. MUST be deployed to Netlify as index.html (push index167.html to the repo root; CI promotes it) — testing the old live build is why past fixes 'did nothing'. -->
 <!-- BUILD_VERSION: 43 -->
 <!-- BUILD_VERSION: 32 -->
@@ -4170,7 +4171,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
       <button class="modal-close" id="backupClose" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <span class="eyebrow">DATA</span>
       <h2>Backup &amp; restore</h2>
-      <p>Nothing saves between sessions on its own — edits live in this tab's memory only, plus whatever's shared live below. Export a backup before closing the tab if you want to keep a copy.</p>
+      <p>Everything you edit saves automatically and syncs to the shared BlueClaws server — every teammate's browser stays in sync, and nothing is lost when you close the tab. This browser only keeps a small local cache. The backup tools below are optional, for moving a snapshot between machines.</p>
       <div id="storagePanel" class="storage-panel"></div>
       <p style="margin-top:var(--space-14);">Back up your edits, or restore from a file. (Contract PDFs and photos are stored on the server, not in this browser.)</p>
       <div class="backup-actions">
