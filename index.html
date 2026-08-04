@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 187 -->
+<!-- BUILD_VERSION: 188 -->
 <!-- BUILD_VERSION: 175 -->
 <!-- index175: ASSET SPEC LIBRARY FULL REWORK + bracket-category naming. (1) Rebuilt window.BCIQ_ASSET_SPECS_SEED from ONLY the yellow-highlighted assets in the 27pp "Asset Prep Collection" binder — 286 mostly-empty/borrowed entries down to 60 real-language entries, each authored as email-ready copy (description / specs / artwork / assetDate / due) in the sponsor-facing voice of the sample email. Every per-sponsor fill-in (contact name, date, month, run length, link, ticket count) is a literal (___) placeholder the rep swaps on copy/paste — 38 blanks across the set. Labels + match keywords are keyed to the 82 sponsor bracket categories so each asset resolves via exact-label first, keyword fallback otherwise; non-highlighted/naming-rights assets intentionally have no entry and fall to the graceful "Specs: TBD" line. Duplicates and empty-description filler condensed. (2) apDealAssetLines now emits each asset's clean bracket category (Digital Marquee, Upper Tier Billboard…) instead of the messy master-sheet free-text, so the "All assets in the deal" prefill + the client email read as canonical names that map 1:1 to the library. Underlying sponsor deal data (r.assets / r.dealAssets) is NOT mutated — detail is preserved for Fulfillment. (3) buildAssetPrepEmail renders newline-separated description/specs as bullets / nested sub-bullets (Horizontal/Vertical, First Pitch/Radio/Table) to match the sample email layout. NOTE: the seed is the DEFAULT — a browser that previously edited its spec library keeps its old set until Asset Prep -> reset spec library to defaults; fresh browsers pick up all 60 automatically. -->
 <!-- BUILD_VERSION: 174 -->
@@ -5521,7 +5521,8 @@ function loadContractBody(id) {
 async function resyncPendingContractBodies() {
   const meta = loadContracts() || {};
   const ids = Object.keys(meta);
-  let uploaded = 0, alreadyOnServer = 0, noLocalBody = 0, failed = 0;
+  let uploaded = 0, alreadyOnServer = 0, failed = 0;
+  const unrecoverable = [];
   for (const id of ids) {
     let onServer = false;
     try { const r = await fetch(contractServerUrl(id), { method: "GET", cache: "no-store" }); onServer = r.ok; } catch (e) {}
@@ -5529,12 +5530,20 @@ async function resyncPendingContractBodies() {
     let body = (_contractBodies[id] && _contractBodies[id].dataUrl) ? _contractBodies[id] : null;
     if (!body) { try { const b = await contractDbGet(id); if (b && b.dataUrl) body = b; } catch (e) {} }
     if (!body) { const fb = loadContractBodyFallback()[id]; if (fb && fb.dataUrl) body = fb; }
-    if (!body) { noLocalBody++; continue; }
+    if (!body) { unrecoverable.push(id); continue; }   // no file on the server AND no copy on this browser
     const ok = await uploadContractToServer(id, body).catch(() => false);
     if (ok) { uploaded++; try { contractDbPut(id, body).catch(() => {}); } catch (e) {} }
     else failed++;
   }
-  return { uploaded, alreadyOnServer, noLocalBody, failed, total: ids.length };
+  return { uploaded, alreadyOnServer, noLocalBody: unrecoverable.length, failed, unrecoverable, total: ids.length };
+}
+/* Drop an agreement by its storage-cache id (sponsorId, or sponsorId::aid) — used to clear entries
+   that can't be recovered so they can be re-uploaded cleanly. */
+function removeAgreementByMetaId(id) {
+  const parts = String(id).split("::");
+  const sponsorId = parts[0];
+  const aid = parts.length > 1 ? parts[1] : "primary";
+  if (typeof removeAgreement === "function") removeAgreement(sponsorId, aid);
 }
 (function wireAgrResync() {
   const btn = document.getElementById("agrResyncBtn");
@@ -5550,6 +5559,14 @@ async function resyncPendingContractBodies() {
       if (r.failed) bits.push(`${r.failed} still failing — check the contracts function log`);
       toast(r.uploaded ? "Files re-synced" : "Re-sync finished", bits.join(" · ") || "Nothing to send.", true);
       if (typeof refreshCurrentView === "function") refreshCurrentView();
+      if (r.unrecoverable && r.unrecoverable.length) {
+        const go = confirm(`${r.unrecoverable.length} agreement${r.unrecoverable.length === 1 ? "" : "s"} can't be recovered on this browser — no file here and none on the server.\n\nIf you've already run this on Tommy's browser too, remove them so they can be re-uploaded cleanly? (Cancel keeps them so you can try the other browser first.)`);
+        if (go) {
+          r.unrecoverable.forEach(removeAgreementByMetaId);
+          toast("Cleared", `${r.unrecoverable.length} unrecoverable agreement${r.unrecoverable.length === 1 ? "" : "s"} removed — re-upload when ready.`, true);
+          if (typeof refreshCurrentView === "function") refreshCurrentView();
+        }
+      }
     } catch (e) { toast("Re-sync failed", "Something went wrong — try again.", true); }
     btn.disabled = false; btn.textContent = orig;
   });
@@ -20262,7 +20279,7 @@ function renderSquadView() {
     el.type = "button";
     el.setAttribute("aria-label", "Open Service Center to-do list");
     el.style.cssText = [
-      "position:fixed","right:16px","bottom:16px","z-index:70",
+      "position:fixed","left:16px","bottom:16px","z-index:60",
       "display:none","align-items:center","gap:8px",
       "padding:10px 14px","border-radius:6px",
       "background:var(--navy,#0d1d41)","color:#fff",
