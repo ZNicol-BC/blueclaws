@@ -1,38 +1,17 @@
 // BlueClaws IQ — contract/agreement PDF storage on the server (Netlify Blobs).
-// The app (index.html) uploads agreement files here instead of storing them in the browser.
-// Files are keyed by the app's composite key (sponsorId, or sponsorId::aid, sanitized).
-// Large PDFs arrive in <=3MB chunks (Netlify functions cap request bodies at ~6MB), and the
-// final chunk assembles them into one blob. GET streams the file back; DELETE removes it.
+// index.html uploads agreement files here instead of the browser. Keyed by the app's
+// composite key (sponsorId, or sponsorId::aid, sanitized). Large PDFs arrive in <=3MB
+// chunks (functions cap request bodies ~6MB); the final chunk assembles them into one
+// blob. GET streams the file back; DELETE removes it.
 //
-// Deploy: drop this file at netlify/functions/contracts.mjs in the repo and push.
-//
-// FIX (matches netlify/functions/data.js, which already works): the store is now created with
-// EXPLICIT credentials + strong consistency, instead of the bare getStore("bciq-contracts").
-// Two bugs that caused "Server upload failed / PDFs don't save between browsers":
-//   1) On this site the automatic Blobs context isn't always injected, so the bare getStore()
-//      threw a config error -> the POST 500'd -> the client showed "upload failed". data.js only
-//      works because it passes siteID/token from env; contracts must do the same.
-//   2) Default Blobs consistency is "eventual". The chunked-upload path writes each part then
-//      immediately reads all parts back to assemble them — under eventual consistency a
-//      just-written part can read as missing, so assembly failed with "missing part N". Strong
-//      consistency makes the read-after-write reliable.
-// The env vars BLOBS_SITE_ID and BLOBS_TOKEN are already set for data.js, so no new config needed.
-import { getStore } from "@netlify/blobs";
+// Store is created with EXPLICIT credentials + strong consistency (shared openStore),
+// because the automatic Blobs context isn't always injected on this site, and the
+// chunked read-after-write assembly needs strong consistency to not miss a just-written
+// part. Env vars BLOBS_SITE_ID / BLOBS_TOKEN are already set for the site.
+import shared from "./lib/store.js";
+const { cors, openStore } = shared;
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
-
-function contractStore() {
-  return getStore({
-    name: "bciq-contracts",
-    consistency: "strong",
-    siteID: process.env.BLOBS_SITE_ID,
-    token: process.env.BLOBS_TOKEN,
-  });
-}
+const CORS = cors("GET,POST,DELETE,OPTIONS");
 
 export default async (req) => {
   const url = new URL(req.url);
@@ -42,9 +21,9 @@ export default async (req) => {
   if (!id) return json({ error: "missing id" }, 400);
 
   try {
-    // Created inside the try so any Blobs-config problem returns a clean JSON 500 with the real
-    // message (visible to the client) instead of crashing the function opaquely.
-    const store = contractStore();
+    // Opened inside try so any Blobs-config problem returns a clean JSON 500 with the
+    // real message (visible to the client) instead of crashing opaquely.
+    const store = await openStore("bciq-contracts");
 
     if (req.method === "POST") {
       const parts = parseInt(url.searchParams.get("parts") || "1", 10);
