@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 186 -->
+<!-- BUILD_VERSION: 187 -->
 <!-- BUILD_VERSION: 175 -->
 <!-- index175: ASSET SPEC LIBRARY FULL REWORK + bracket-category naming. (1) Rebuilt window.BCIQ_ASSET_SPECS_SEED from ONLY the yellow-highlighted assets in the 27pp "Asset Prep Collection" binder — 286 mostly-empty/borrowed entries down to 60 real-language entries, each authored as email-ready copy (description / specs / artwork / assetDate / due) in the sponsor-facing voice of the sample email. Every per-sponsor fill-in (contact name, date, month, run length, link, ticket count) is a literal (___) placeholder the rep swaps on copy/paste — 38 blanks across the set. Labels + match keywords are keyed to the 82 sponsor bracket categories so each asset resolves via exact-label first, keyword fallback otherwise; non-highlighted/naming-rights assets intentionally have no entry and fall to the graceful "Specs: TBD" line. Duplicates and empty-description filler condensed. (2) apDealAssetLines now emits each asset's clean bracket category (Digital Marquee, Upper Tier Billboard…) instead of the messy master-sheet free-text, so the "All assets in the deal" prefill + the client email read as canonical names that map 1:1 to the library. Underlying sponsor deal data (r.assets / r.dealAssets) is NOT mutated — detail is preserved for Fulfillment. (3) buildAssetPrepEmail renders newline-separated description/specs as bullets / nested sub-bullets (Horizontal/Vertical, First Pitch/Radio/Table) to match the sample email layout. NOTE: the seed is the DEFAULT — a browser that previously edited its spec library keeps its old set until Asset Prep -> reset spec library to defaults; fresh browsers pick up all 60 automatically. -->
 <!-- BUILD_VERSION: 174 -->
@@ -3951,6 +3951,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <div class="search-box">⌕ <input id="agrHubSearch" type="search" placeholder="Search sponsor or rep"></div>
             <select id="agrHubYear" aria-label="Agreement year" class="sb-select"></select>
             <select id="agrHubSort" aria-label="Sort order" class="sb-select"><option value="name">Sort: name</option><option value="rep">Sort: rep</option><option value="missing">Sort: missing first</option></select>
+            <button type="button" class="secondary-button" id="agrResyncBtn" title="Re-upload every agreement file this browser has to the server, so other browsers can open them" style="margin-left:auto;">Re-sync files to server</button>
           </div>
           <div class="agr-hub-kpis" id="agrHubKpis"></div>
           <div class="agr-hub-list" id="agrHubList"></div>
@@ -5512,6 +5513,47 @@ function loadContractBody(id) {
       return loadContracts()[id] || null;
     }));
 }
+/* index187: recover agreements whose file body never reached the server (uploaded while the
+   contracts function was failing). For every agreement this browser has a body for — RAM, the
+   durable IndexedDB copy, or the localStorage fallback — re-POST it to the now-working server so
+   every other browser can open it. Safe to run repeatedly: it skips anything already on the server
+   and anything this browser has no local copy of. */
+async function resyncPendingContractBodies() {
+  const meta = loadContracts() || {};
+  const ids = Object.keys(meta);
+  let uploaded = 0, alreadyOnServer = 0, noLocalBody = 0, failed = 0;
+  for (const id of ids) {
+    let onServer = false;
+    try { const r = await fetch(contractServerUrl(id), { method: "GET", cache: "no-store" }); onServer = r.ok; } catch (e) {}
+    if (onServer) { alreadyOnServer++; continue; }
+    let body = (_contractBodies[id] && _contractBodies[id].dataUrl) ? _contractBodies[id] : null;
+    if (!body) { try { const b = await contractDbGet(id); if (b && b.dataUrl) body = b; } catch (e) {} }
+    if (!body) { const fb = loadContractBodyFallback()[id]; if (fb && fb.dataUrl) body = fb; }
+    if (!body) { noLocalBody++; continue; }
+    const ok = await uploadContractToServer(id, body).catch(() => false);
+    if (ok) { uploaded++; try { contractDbPut(id, body).catch(() => {}); } catch (e) {} }
+    else failed++;
+  }
+  return { uploaded, alreadyOnServer, noLocalBody, failed, total: ids.length };
+}
+(function wireAgrResync() {
+  const btn = document.getElementById("agrResyncBtn");
+  if (!btn) return;
+  btn.addEventListener("click", async () => {
+    const orig = btn.textContent; btn.disabled = true; btn.textContent = "Re-syncing…";
+    try {
+      const r = await resyncPendingContractBodies();
+      const bits = [];
+      if (r.uploaded) bits.push(`${r.uploaded} uploaded to the server`);
+      if (r.alreadyOnServer) bits.push(`${r.alreadyOnServer} already synced`);
+      if (r.noLocalBody) bits.push(`${r.noLocalBody} not on this browser (re-drop those, or run this on the browser that added them)`);
+      if (r.failed) bits.push(`${r.failed} still failing — check the contracts function log`);
+      toast(r.uploaded ? "Files re-synced" : "Re-sync finished", bits.join(" · ") || "Nothing to send.", true);
+      if (typeof refreshCurrentView === "function") refreshCurrentView();
+    } catch (e) { toast("Re-sync failed", "Something went wrong — try again.", true); }
+    btn.disabled = false; btn.textContent = orig;
+  });
+})();
 function saveContractFile(id, fileObj) {
   const contracts = loadContracts();
   if (!fileObj) {
@@ -5533,7 +5575,8 @@ function saveContractFile(id, fileObj) {
   contracts[id] = meta;
   let metaOk = true;
   try { memStore.setItem(CONTRACT_KEY, JSON.stringify(contracts)); } catch (e) { metaOk = false; }
-  _contractBodies[id] = fileObj;                 // RAM only — instant view this session, not persisted locally
+  _contractBodies[id] = fileObj;                 // RAM cache — instant view this session
+  try { contractDbPut(id, fileObj).catch(() => {}); } catch (e) {}   // index187: durable local copy so a failed server upload is never lost + can auto-retry
   updateOverride(id, { contractFile: meta });    // index172: THE FIX — metadata on the override record, syncs everywhere
   uploadContractToServer(id, fileObj).then(ok => {
     if (typeof toast === "function") toast(ok ? "Agreement saved to the server" : "Server upload failed",
@@ -5583,7 +5626,8 @@ function addAgreementFile(sponsorId, title, fileObj) {
   arr.push({ aid, title: title || "Agreement", name: fileObj.name, uploadedAt: fileObj.uploadedAt, size: fileObj.size || null });
   updateOverride(sponsorId, { agreements: arr });
   const key = agrBodyKey(sponsorId, aid);
-  _contractBodies[key] = fileObj;                 // RAM only, this session
+  _contractBodies[key] = fileObj;                 // RAM cache, this session
+  try { contractDbPut(key, fileObj).catch(() => {}); } catch (e) {}   // index187: durable local copy so a failed upload is never lost + can auto-retry
   // index172: metadata already stored in r.agreements above (syncs via overrides — the reliable
   // path). No phantom "contracts" bucket push. Only the file BODY goes to the server.
   uploadContractToServer(key, fileObj).then(ok => {
@@ -8277,7 +8321,17 @@ function ledgerStatusRank(r) {
   return 2;
 }
 
+function sponsorMissingFields(r) {
+  const m = [];
+  if (!String(r.rep || "").trim()) m.push("rep");
+  if (!String(r.primary || "").trim()) m.push("primary contact");
+  if (!String(r.email || "").trim()) m.push("email");
+  if (!r.total && !selectedSeasonTotal(r)) m.push("value");
+  if (!String(r.category || "").trim()) m.push("category");
+  return m;
+}
 function sponsorCardTemplate(r) {
+  const miss = sponsorMissingFields(r);
   const outlook = outlookOf(r);
   const activeSeason = isActiveForSelectedSeason(r);
   const inProgress = isInProgressForSelectedSeason(r);
@@ -8285,7 +8339,7 @@ function sponsorCardTemplate(r) {
   const fpct = fulfillmentPercent(r);
   const ftone = fulfillmentTone(fpct);
   return `
-  <div class="club-card" data-id="${esc(r.id)}" style="${activeSeason ? "" : "opacity:.6;"}">
+  <div class="club-card" data-id="${esc(r.id)}" style="${activeSeason ? "" : "opacity:.6;"}${miss.length ? " box-shadow: inset 4px 0 0 var(--gold); background:#fffdf5;" : ""}">
     <div class="club-card-head">
       ${r.logoDataUrl ? `<span class="club-badge" style="background:var(--card); padding:0; overflow:hidden;"><img src="${esc(r.logoDataUrl)}" alt="" style="width:100%; height:100%; object-fit:contain;" loading="lazy" decoding="async"></span>` : `<span class="club-badge" style="background:${typeColor(r.type)}; --badge-ink:${typeInk(r.type)}">${esc(initials(r.sponsor))}</span>`}
       <div><h2 class="card-title-h">${esc(r.sponsor)}</h2><span>${esc(r.department || "—")} · ${activeSeason ? "Active Partner" : (isProspect(r) ? "Prospect" : (inProgress ? "In Progress" : "Inactive"))}</span></div>
@@ -8295,6 +8349,7 @@ function sponsorCardTemplate(r) {
       <span class="type-tag ${typeClass(r.type)}">${esc(r.type || "—")}</span>
       <span class="${activeSeason || inProgress ? "type-tag" : (isProspect(r) ? "prospect-tag" : "inactive-tag")}">${activeSeason ? "Active Partner" : (isProspect(r) ? "Prospect" : (inProgress ? "In Progress" : "Inactive Partner"))}</span>
       ${isMultiYearForSelectedSeason(r) ? `<span class="contract-label">Multi-Year</span>` : ""}
+      ${miss.length ? `<span class="type-tag" style="background:#fff7db; color:#7a5b00; border-color:var(--gold);" title="Missing: ${esc(miss.join(', '))}">⚠ Missing info (${miss.length})</span>` : ""}
     </div>
     <div class="cc-hero">
       <div class="cc-total"><span>${esc(sState.season)} total</span><strong class="money">${seasonTotal ? fmtMoney(seasonTotal) : "—"}</strong></div>
