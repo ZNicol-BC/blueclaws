@@ -1,4 +1,20 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  command = "npm install && chmod +x promote-index.sh && ./promote-index.sh"
+  # Promotion is owned by GitHub Actions (.github/workflows/promote-index.yml),
+  # which runs promote-index.sh --clean and commits the single, clean index.html
+  # back to the repo. Netlify then just deploys that. Running promote here too
+  # was a second copy of the same job that could race the Actions commit.
+  command = "npm install"
+
+# Keep build/deploy artifacts and audit files from being publicly served.
+# publish = "." serves the whole repo root, so without this anyone could open
+# yoursite/motion-audits/... or the raw promote-index.sh.
+[[redirects]]
+  from = "/motion-audits/*"
+  to = "/404.html"
+  status = 404
+[[redirects]]
+  from = "/promote-index.sh"
+  to = "/404.html"
+  status = 404
