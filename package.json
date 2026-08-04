@@ -1,5 +1,7 @@
 {
+  "name": "blueclaws-iq",
   "private": true,
+  "description": "BlueClaws IQ — sponsorship management web app. Single-file front-end (index.html) plus Netlify Functions backend backed by Netlify Blobs.",
   "dependencies": {
     "@netlify/blobs": "^10.7.12"
   }

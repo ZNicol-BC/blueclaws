@@ -1,14 +1,15 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
-  # Promotion is owned by GitHub Actions (.github/workflows/promote-index.yml),
-  # which runs promote-index.sh --clean and commits the single, clean index.html
-  # back to the repo. Netlify then just deploys that. Running promote here too
-  # was a second copy of the same job that could race the Actions commit.
-  command = "npm install"
+# Netlify settings for BlueClaws IQ.
+# This tells Netlify how to build and serve the site.
 
-# Keep build/deploy artifacts and audit files from being publicly served.
-# publish = "." serves the whole repo root, so without this anyone could open
+[build]
+  publish = "."                 # serve the repo root (index.html lives here)
+  functions = "netlify/functions"
+  command = "npm install"       # just install dependencies; nothing else needed.
+  # (Promoting the newest index*.html to index.html is handled by GitHub Actions —
+  #  see .github/workflows/promote-index.yml — so it does NOT run here too.)
+
+# Keep behind-the-scenes files from being opened by the public.
+# Because publish = "." serves the whole repo, without these anyone could open
 # yoursite/motion-audits/... or the raw promote-index.sh.
 [[redirects]]
   from = "/motion-audits/*"
