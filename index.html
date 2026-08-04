@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 188 -->
+<!-- BUILD_VERSION: 189 -->
 <!-- BUILD_VERSION: 175 -->
 <!-- index175: ASSET SPEC LIBRARY FULL REWORK + bracket-category naming. (1) Rebuilt window.BCIQ_ASSET_SPECS_SEED from ONLY the yellow-highlighted assets in the 27pp "Asset Prep Collection" binder — 286 mostly-empty/borrowed entries down to 60 real-language entries, each authored as email-ready copy (description / specs / artwork / assetDate / due) in the sponsor-facing voice of the sample email. Every per-sponsor fill-in (contact name, date, month, run length, link, ticket count) is a literal (___) placeholder the rep swaps on copy/paste — 38 blanks across the set. Labels + match keywords are keyed to the 82 sponsor bracket categories so each asset resolves via exact-label first, keyword fallback otherwise; non-highlighted/naming-rights assets intentionally have no entry and fall to the graceful "Specs: TBD" line. Duplicates and empty-description filler condensed. (2) apDealAssetLines now emits each asset's clean bracket category (Digital Marquee, Upper Tier Billboard…) instead of the messy master-sheet free-text, so the "All assets in the deal" prefill + the client email read as canonical names that map 1:1 to the library. Underlying sponsor deal data (r.assets / r.dealAssets) is NOT mutated — detail is preserved for Fulfillment. (3) buildAssetPrepEmail renders newline-separated description/specs as bullets / nested sub-bullets (Horizontal/Vertical, First Pitch/Radio/Table) to match the sample email layout. NOTE: the seed is the DEFAULT — a browser that previously edited its spec library keeps its old set until Asset Prep -> reset spec library to defaults; fresh browsers pick up all 60 automatically. -->
 <!-- BUILD_VERSION: 174 -->
@@ -20271,17 +20271,28 @@ function renderSquadView() {
     } catch(e){}
     return n;
   }
+  function ensureFocusStyle(){
+    if (document.getElementById("taskAlertStyle")) return;
+    var s = document.createElement("style");
+    s.id = "taskAlertStyle";
+    // WCAG 2.4.7 focus-visible + 2.5.5 touch target; respects reduced-motion (no animation here).
+    s.textContent = "#taskAlert:focus-visible{outline:2px solid var(--blue,#0971ce);outline-offset:2px;}#taskAlert:hover{background:#12244a;}.app-shell.sidebar-collapsed #taskAlert{display:none!important;}";
+    document.head.appendChild(s);
+  }
   function ensureEl(){
     var el = document.getElementById("taskAlert");
     if (el) return el;
+    ensureFocusStyle();
     el = document.createElement("button");
     el.id = "taskAlert";
     el.type = "button";
     el.setAttribute("aria-label", "Open Service Center to-do list");
+    // index189: in normal sidebar flow, directly BELOW the whole team-chat section, so it can
+    // never overlap or block the chat input. Full-width, ~44px tall for touch/keyboard targets.
     el.style.cssText = [
-      "position:fixed","left:16px","bottom:16px","z-index:60",
-      "display:none","align-items:center","gap:8px",
-      "padding:10px 14px","border-radius:6px",
+      "display:none","align-items:center","justify-content:center","gap:8px",
+      "margin:10px 0 8px","width:100%","box-sizing:border-box","min-height:44px",
+      "padding:11px 14px","border-radius:6px",
       "background:var(--navy,#0d1d41)","color:#fff",
       "border:1px solid var(--gold,#facd01)","border-left:3px solid var(--gold,#facd01)",
       "font-family:var(--font-display,'Manrope',sans-serif)","font-weight:800",
@@ -20291,14 +20302,18 @@ function renderSquadView() {
       var nav = document.querySelector('.nav-item[data-view="service"]');
       if (nav) nav.click();
     });
-    document.body.appendChild(el);
+    var chat = document.getElementById("sideChat");
+    var sidebar = document.getElementById("sidebar");
+    if (chat && chat.parentNode) chat.parentNode.insertBefore(el, chat.nextSibling);
+    else if (sidebar) sidebar.appendChild(el);
+    else document.body.appendChild(el);
     return el;
   }
   function updateTaskAlert(){
     var el = ensureEl();
     var n = openTaskCount();
     if (!n) { el.style.display = "none"; return; }
-    el.style.display = "inline-flex";
+    el.style.display = "flex";
     el.innerHTML = '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--gold,#facd01);color:var(--navy,#0d1d41);font-size:12px;font-weight:800;">' + n + '</span><span>task' + (n===1?"":"s") + ' to complete</span>';
   }
   window.updateTaskAlert = updateTaskAlert;
