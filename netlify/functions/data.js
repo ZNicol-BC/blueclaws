@@ -1,37 +1,43 @@
-// This function is the shared "database" for BlueClaws IQ.
-// It stores data in Netlify Blobs — Netlify's own built-in storage, no external
-// account or API key needed.
+// ============================================================================
+//  BlueClaws IQ — "data" function        (Netlify Function — runs on the SERVER)
+// ============================================================================
+//  WHAT IT DOES
+//    The app's shared database for small text data. It reads and writes JSON
+//    "buckets" in Netlify Blobs (Netlify's built-in storage — no separate
+//    database, account, or API key to manage).
 //
-// CHANGED (July 2026): logos now live in a SEPARATE blob ("logos") from sponsor
-// edits ("overrides"). Before this, everything shared one blob — as real logo
-// uploads piled in, that blob grew large enough that every 8-second poll (from
-// every open browser) started timing out, which is why GET requests were
-// coming back as 502s.
+//  WHERE THE DATA LIVES
+//    On the server, in Netlify Blobs. Nothing here is stored in anyone's
+//    browser — this file IS the server side. Credentials come from two
+//    environment variables already set on the Netlify site:
+//      BLOBS_SITE_ID  and  BLOBS_TOKEN
 //
-// CHANGED AGAIN (July 2026, same day): after splitting, "logos" started working
-// fine but "overrides" kept 502ing on its own. That's because the *existing*
-// overrides blob still had all the old logo data baked into it from before the
-// split — the split only changes where NEW writes go, it doesn't clean up what
-// was already there. Added a one-time reset switch below to clear it out.
+//  THE BUCKETS (why there are four, not one)
+//    Every open browser re-downloads its data every few seconds. If everything
+//    lived in one big blob, that download got huge and slow (it caused timeouts
+//    / "502" errors in the past). So the data is split by type so each stays
+//    small:
+//      overrides -> sponsor edits        (checked often, every ~8 seconds)
+//      logos     -> logo info
+//      photos    -> photo-library info
+//      displays  -> Ballpark Displays    (checked slower, every ~60 seconds)
+//    ⚠️ Do NOT merge these back into one bucket — the split is what keeps it fast.
+//    (Actual image BYTES do not live here — they live in media.js. This file
+//     only holds small text records, including short links to those images.)
 //
-// CHANGED AGAIN (July 2026): added a fourth bucket, "displays", for Ballpark
-// Displays board photos/artwork. This data used to ride inside "overrides" as
-// a whole-store channel — but board photos are large and only grow over time,
-// so it hit the exact same problem logos did before their split: the shared
-// "overrides" blob (polled every 8 seconds by every open browser) got big
-// enough to risk 502 timeouts. Board photos now sync on their own slower
-// (60-second) poll, isolated from sponsor-edit traffic.
+//  HOW THE APP CALLS IT
+//    GET  ?bucket=overrides            -> returns that bucket's current data
+//    GET  ?bucket=<name>&reset=yes-really -> empties that bucket to {} (emergency
+//         reset for a stuck/oversized bucket; safe — each browser re-saves its
+//         own data on its next save)
+//    POST body { id, patch, bucket }   -> merges "patch" into bucket[id]
+//         (bucket defaults to "overrides" if left out)
 //
-// GET  ?bucket=overrides (default) -> returns the current shared sponsor-edit object
-// GET  ?bucket=logos              -> returns the current shared logo object
-// GET  ?bucket=photos             -> returns the current shared photo library object
-// GET  ?bucket=displays           -> returns the current shared Ballpark Displays object
-// GET  ?bucket=overrides&reset=yes-really -> WIPES that bucket back to {} and returns
-//      confirmation. Use this ONCE to clear a stuck/oversized blob, then remove the
-//      reset visit — nothing on any browser is lost, each browser's edits still live
-//      in its own local storage and will repopulate this blob the next time they save.
-// POST body: { id, patch, bucket } -> merges patch into that bucket's record for id,
-//            bucket defaults to "overrides" if omitted (keeps old clients working)
+//  TO ADD A NEW KIND OF SAVED ITEM LATER
+//    Add its name to VALID_BUCKETS below — that's the only server change needed.
+//    Anything not on the list falls back to "overrides", so a typo can't quietly
+//    create a giant new bucket.
+// ============================================================================
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",

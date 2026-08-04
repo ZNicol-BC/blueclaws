@@ -1,22 +1,32 @@
-// BlueClaws IQ — contract/agreement PDF storage on the server (Netlify Blobs).
-// The app (index.html) uploads agreement files here instead of storing them in the browser.
-// Files are keyed by the app's composite key (sponsorId, or sponsorId::aid, sanitized).
-// Large PDFs arrive in <=3MB chunks (Netlify functions cap request bodies at ~6MB), and the
-// final chunk assembles them into one blob. GET streams the file back; DELETE removes it.
+// ============================================================================
+//  BlueClaws IQ — "contracts" function   (Netlify Function — runs on the SERVER)
+// ============================================================================
+//  WHAT IT DOES
+//    Stores and serves sponsor agreement/contract PDFs on the server, so the
+//    files sync between browsers instead of being trapped in one person's
+//    browser. Each PDF is keyed by the app's id (e.g. sponsorId or
+//    sponsorId::assetId).
 //
-// Deploy: drop this file at netlify/functions/contracts.mjs in the repo and push.
+//  WHERE THE DATA LIVES
+//    On the server, in Netlify Blobs. Nothing is stored in the browser.
+//    Credentials come from the site's env vars BLOBS_SITE_ID and BLOBS_TOKEN
+//    (the same ones data.js uses — no extra setup).
 //
-// FIX (matches netlify/functions/data.js, which already works): the store is now created with
-// EXPLICIT credentials + strong consistency, instead of the bare getStore("bciq-contracts").
-// Two bugs that caused "Server upload failed / PDFs don't save between browsers":
-//   1) On this site the automatic Blobs context isn't always injected, so the bare getStore()
-//      threw a config error -> the POST 500'd -> the client showed "upload failed". data.js only
-//      works because it passes siteID/token from env; contracts must do the same.
-//   2) Default Blobs consistency is "eventual". The chunked-upload path writes each part then
-//      immediately reads all parts back to assemble them — under eventual consistency a
-//      just-written part can read as missing, so assembly failed with "missing part N". Strong
-//      consistency makes the read-after-write reliable.
-// The env vars BLOBS_SITE_ID and BLOBS_TOKEN are already set for data.js, so no new config needed.
+//  HOW THE APP CALLS IT
+//    POST ?id=<id>            -> upload a PDF. Big PDFs come in <=3MB chunks
+//         (?parts=N&part=i); the last chunk is stitched together into one file.
+//    GET  ?id=<id>            -> download / view the PDF
+//    DELETE ?id=<id>          -> remove the PDF
+//
+//  WHY "strong consistency" (don't remove it)
+//    The chunked upload writes each piece then immediately reads them back to
+//    reassemble. Strong consistency guarantees a just-written piece reads back
+//    correctly; without it, assembly could fail with "missing part N".
+//
+//  NOTE: this file uses modern Netlify syntax (export default / Request /
+//  Response), which fits its binary file handling. data.js and media.js use the
+//  older syntax — both are fine; don't feel you must make them match.
+// ============================================================================
 import { getStore } from "@netlify/blobs";
 
 const CORS = {
@@ -42,8 +52,8 @@ export default async (req) => {
   if (!id) return json({ error: "missing id" }, 400);
 
   try {
-    // Created inside the try so any Blobs-config problem returns a clean JSON 500 with the real
-    // message (visible to the client) instead of crashing the function opaquely.
+    // Created inside the try so any storage-config problem returns a clean JSON 500
+    // with the real message (visible to the app) instead of crashing opaquely.
     const store = contractStore();
 
     if (req.method === "POST") {

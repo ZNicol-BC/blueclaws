@@ -1,20 +1,28 @@
-// Stores and serves individual photo/logo bytes, OUTSIDE the JSON metadata buckets in
-// data.js. Before this existed, every photo/logo's full base64 body lived inside one of
-// data.js's JSON blobs — the same blob every open browser re-downloads on every poll, and
-// which gets read in full, patched, and rewritten in full on every single upload. That's
-// unbounded: the bigger the photo library gets, the bigger every poll and every write gets,
-// which is exactly what already forced logos and displays onto their own buckets once (see
-// the comments atop data.js) and would eventually force this again as more seasons of photos
-// pile up. Bytes now live here, one blob per id; data.js's buckets hold only a small
-// reference URL (?id=...) to this endpoint, so their size stops growing with photo *content*
-// and only grows with photo *count* (a few hundred bytes of metadata each).
+// ============================================================================
+//  BlueClaws IQ — "media" function       (Netlify Function — runs on the SERVER)
+// ============================================================================
+//  WHAT IT DOES
+//    Stores and serves the actual BYTES of photos and logos (the image files),
+//    kept separate from the small text records in data.js.
 //
-// GET  ?id=<id>              -> streams the stored bytes with a long-lived, immutable
-//                                Cache-Control, so a given id's bytes are ever fetched once
-//                                per browser (or CDN edge) no matter how many times it's
-//                                rendered or how many browsers request it.
-// POST body: { id, dataUrl } -> decodes a data: URL and stores the raw bytes + content type
-//                                under that id. Called once per new photo/logo upload.
+//  WHY IT'S SEPARATE FROM data.js
+//    Image files are large. If their bytes lived inside data.js's buckets, those
+//    buckets would balloon and slow down every browser's frequent check-ins. So
+//    the bytes live here (one entry per image), and data.js only keeps a tiny
+//    link (?id=...) pointing at them. This keeps everything fast as the photo
+//    library grows.
+//
+//  WHERE THE DATA LIVES
+//    On the server, in Netlify Blobs. Nothing is stored in the browser.
+//    Credentials come from the site's env vars BLOBS_SITE_ID and BLOBS_TOKEN.
+//
+//  HOW THE APP CALLS IT
+//    GET  ?id=<id>          -> streams the image back (cached hard, so each image
+//                             is only downloaded once per browser)
+//    POST body { id, dataUrl } -> saves one image. "dataUrl" is a base64 data URL
+//                             (e.g. "data:image/png;base64,....") which this
+//                             decodes into real bytes. One call per upload.
+// ============================================================================
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
