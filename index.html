@@ -1,4 +1,4 @@
-<!-- BUILD_VERSION: 195 -->
+<!-- BUILD_VERSION: 204 -->
 <!-- BUILD_VERSION: 175 -->
 <!-- index175: ASSET SPEC LIBRARY FULL REWORK + bracket-category naming. (1) Rebuilt window.BCIQ_ASSET_SPECS_SEED from ONLY the yellow-highlighted assets in the 27pp "Asset Prep Collection" binder — 286 mostly-empty/borrowed entries down to 60 real-language entries, each authored as email-ready copy (description / specs / artwork / assetDate / due) in the sponsor-facing voice of the sample email. Every per-sponsor fill-in (contact name, date, month, run length, link, ticket count) is a literal (___) placeholder the rep swaps on copy/paste — 38 blanks across the set. Labels + match keywords are keyed to the 82 sponsor bracket categories so each asset resolves via exact-label first, keyword fallback otherwise; non-highlighted/naming-rights assets intentionally have no entry and fall to the graceful "Specs: TBD" line. Duplicates and empty-description filler condensed. (2) apDealAssetLines now emits each asset's clean bracket category (Digital Marquee, Upper Tier Billboard…) instead of the messy master-sheet free-text, so the "All assets in the deal" prefill + the client email read as canonical names that map 1:1 to the library. Underlying sponsor deal data (r.assets / r.dealAssets) is NOT mutated — detail is preserved for Fulfillment. (3) buildAssetPrepEmail renders newline-separated description/specs as bullets / nested sub-bullets (Horizontal/Vertical, First Pitch/Radio/Table) to match the sample email layout. NOTE: the seed is the DEFAULT — a browser that previously edited its spec library keeps its old set until Asset Prep -> reset spec library to defaults; fresh browsers pick up all 60 automatically. -->
 <!-- BUILD_VERSION: 174 -->
@@ -528,6 +528,7 @@ body.bp-dragging .upper-panel-cell.house { opacity: .4; }
 .category-card, .leaderboard-card { min-height: 316px; }
 .segmented { display: flex; padding: var(--space-4); border: 1px solid var(--line); background: #f3f2ee; gap: var(--space-4); }
 .segmented button { padding: var(--space-11) var(--space-16); border: 0; background: transparent; color: var(--muted); font-size: var(--text-sm, 14px); font-weight: 600; }.segmented button.active { background: var(--card); color: var(--ink); border: 1px solid var(--line); font-weight: 700; }
+.segmented button:not(.active):hover{color:var(--ink);}
 .chart-summary { margin-top: var(--space-24); display: flex; align-items: baseline; gap: var(--space-11); }.chart-summary strong { font: 800 26px/1 var(--font-display); }.chart-summary span { font-size: var(--text-xs); font-weight: 700; }
 .trend-card { margin-bottom: var(--space-11); }
 .line-chart { height: 215px; margin-top: var(--space-10); }
@@ -784,12 +785,12 @@ body.presentation .sidebar, body.presentation .topbar { display: none; }body.pre
 /* sponsor detail drawer */
 .overlay2 { position: fixed; inset: 0; background: rgba(10,23,43,.55); z-index: 80; opacity: 0; pointer-events: none; transition: var(--transition-base); }
 .overlay2.open { opacity: 1; pointer-events: auto; }
-.sdrawer { position: fixed; top: 0; right: 0; bottom: 0; width: 660px; max-width: 96vw; background: var(--paper); z-index: 81; border-left: 1px solid var(--line); transform: translateX(100%); transition: transform .25s cubic-bezier(.4,0,1,1); display: flex; flex-direction: column; }
+.sdrawer { position: fixed; top: 0; right: 0; bottom: 0; width: 660px; max-width: 96vw; background: var(--paper); z-index: 81; border-left: 1px solid var(--line); transform: translateX(100%); transition: transform .16s cubic-bezier(.4,0,1,1); display: flex; flex-direction: column; }
 .sdrawer.open { transform: translateX(0); transition-timing-function: cubic-bezier(0,0,.2,1); }
 .sdrawer-head { background: var(--ink); color: #fff; padding: var(--space-22) var(--space-26); display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-12); flex-shrink: 0; }
 .sdrawer-head h2 { margin: var(--space-3) 0 var(--space-4); font: 700 19px var(--font-display); color: #fff; }
 .sdrawer-name-input { display: block; width: 100%; margin: var(--space-3) 0 var(--space-4); padding: var(--space-2) 0; border: 0; border-bottom: 1px solid transparent; background: transparent; font: 700 19px var(--font-display); color: #fff; }
-.sdrawer-name-input:focus { outline: 0; border-bottom-color: rgba(255,255,255,.4); }
+.sdrawer-name-input:focus { border-bottom-color: rgba(255,255,255,.4); }.sdrawer-name-input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .sdrawer-name-input::placeholder { color: var(--on-dark-muted); }
 .sdrawer-name-text { display: block; margin: var(--space-3) 0 var(--space-4); padding: var(--space-2) 0; font: 700 19px var(--font-display); color: #fff; }
 .sdrawer-head .meta { font-size: var(--text-xs); color: var(--on-dark-muted); }
@@ -1351,7 +1352,7 @@ html[data-theme="dark"] .fulfillment-bar-track { background: #26304c; }
 .agreement-item-date { color:var(--muted); font-size:10px; }
 .agreement-item-actions { display:flex; gap:var(--space-8); flex:0 0 auto; font-size:var(--text-xs); }
 .agreement-dropzone { border:1px dashed var(--blue); border-radius:var(--radius-md); background:var(--blue-soft); color:var(--blue-text); padding:var(--space-8) var(--space-10); font-size:var(--text-xs); font-weight:800; text-align:center; cursor:pointer; transition:background .15s ease,border-color .15s ease,transform .15s ease; }
-.agreement-dropzone.is-dragover { background:#dff0ff; border-color:var(--gold); transform:translateY(-1px); }
+.agreement-dropzone.is-dragover { background:var(--blue-soft); border-color:var(--gold); }
 /* ---- Left/Right Asset Dropper shared layout (Marquee + Asset Allocation categories) ---- */
 .aa-lr { display:grid; grid-template-columns:minmax(240px, 340px) 1fr; gap:var(--space-16); align-items:start; }
 @media (max-width: 1000px) { .aa-lr { grid-template-columns:1fr; } }
@@ -2202,7 +2203,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
    behavior, so the 275px card min-height (sized for a photo-drop area
    neither of them has) needs to be reset back to content height. */
 .digital-row.display-slot,.entitlement-row.display-slot{min-height:0}
-.display-slot-head{padding:var(--space-9) var(--space-11);background:var(--ink);color:#fff}.display-slot.drag-over{border:2px solid #0971ce;transform:translateY(-2px)}
+.display-slot-head{padding:var(--space-9) var(--space-11);background:var(--ink);color:#fff}.display-slot.drag-over{border:2px solid var(--blue)}
 .display-art{height:138px;border:0;border-radius:0;border-bottom:1px solid var(--line);background:#f6f8fb;padding:var(--space-12);box-sizing:border-box;order:-1}
 .display-art img{object-fit:contain}.display-art-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-7);text-align:center;height:100%;color:var(--muted)}
 .display-art-fallback img{max-width:88%;max-height:88px;object-fit:contain}.display-card-body{padding:0 11px 11px}.display-owner{margin:10px 0 7px}.display-owner img{width:36px;height:32px}.display-status{margin-top:7px}
@@ -2530,6 +2531,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
 .utg-viewtoggle{display:inline-flex;border:1.5px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
 .utg-viewtoggle button{border:0;background:var(--card);color:var(--ink);font:800 11px var(--font-body);padding:6px 14px;cursor:pointer}
 .utg-viewtoggle button.on{background:var(--blue);color:#fff}
+.utg-viewtoggle button:not(.on):hover{background:var(--blue-soft);color:var(--blue-text);}
 .utg-signed-strip{display:flex;gap:8px;overflow-x:auto;padding:var(--space-8);border:1.5px solid var(--line);border-radius:var(--radius-md);background:var(--paper);margin:0 0 var(--space-12)}
 .utg-drag{flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:6px 10px;border:1.5px solid var(--line);border-left-width:5px;border-radius:var(--radius-sm);background:var(--card);cursor:grab;font-size:var(--text-xs);font-weight:700;white-space:nowrap}
 .utg-drag img{width:22px;height:22px;object-fit:contain}
@@ -2609,7 +2611,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
 .asset-category-row span{font-size:11px;color:var(--muted);white-space:nowrap}
 .global-search{position:relative;padding:var(--space-8) var(--space-4) var(--space-6)}
 .global-search-box{height:34px;display:flex;align-items:center;gap:7px;padding:0 var(--space-9);border:1px solid rgba(255,255,255,.18);border-bottom:2px solid var(--gold);border-radius:var(--radius-md);background:rgba(255,255,255,.08);color:#cfd7e6}
-.global-search-box input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:var(--text-xs)}
+.global-search-box{background-image:var(--sidebar-wm-url);background-repeat:no-repeat;background-position:right -14px center;background-size:auto 200%;}.global-search-box input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:var(--text-xs)}
 .global-search-box input::placeholder{color:#aeb9cc}
 .global-search-results{position:absolute;left:var(--space-4);right:var(--space-4);top:44px;z-index:30;display:none;max-height:340px;overflow:auto;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-md);background:#0d1d41;box-shadow:var(--shadow-lg);padding:4px}
 .global-search-results.show{display:block}
@@ -2651,6 +2653,58 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
 </style>
 </head>
 <body>
+<!--
+====================================================================================================
+  BlueClaws IQ — DATA MAPPING & PUSH PROCESS   (developer reference; not shown on the page)
+  Read this before adding a field, view, or dataset. It explains the ONE way information moves.
+====================================================================================================
+
+  THE TWO BASES
+  -------------
+  Everything is either a SPONSOR or an ASSET. Sort a new thing into one base and it links everywhere.
+    SPONSOR base -> edited ONLY in the Sponsor Ledger drawer (openDrawer / .sdrawer).
+    ASSET base   -> edited ONLY in the Asset Ledger / Assets & Inventory (openAssetContractModal).
+  Every other screen READS these two bases; it never keeps its own private copy.
+
+  SPONSOR read path (single source of truth):
+    BASE_DATA (window.SPONSOR_DATA seed)
+      + overrides[id] (bciq_sponsor_overrides = your edits)
+      + custom[]      (bciq_sponsor_custom = hand-added sponsors)
+      + logos[id]     (bciq_sponsor_logos = separate; survives "Revert edits")
+    -> getAllRecordsRaw() -> getAllRecords() [every grid/report/search/dropdown] -> getRecord(id).
+    Edit once via updateOverride and it instantly updates Overview, Renewal, History, Prospecting,
+    Fulfillment, Process, Breakdown, Asset Prep, search, and the sponsor dropdowns.
+
+  ASSET read path:
+    ASSET_CATALOG (seed) + CUSTOM_ASSETS (bciq_custom_assets) -> getFullCatalog().
+    Rate: rates[id] (bciq_asset_rates) over RATE_CARD -> lookupRate(asset).
+    Details: assetDetailsFor(name) (bciq_asset_details) = rateCard/hardCost/totalQty.
+    Inventory: assetInventorySummary(name) = total - (sold+renewal+proposed) = available.
+    Specs: assetSpecFor(name) (bciq_asset_specs_v2). Contract: agFindTemplate(name).
+
+  PUSH PROCESS (how a save travels):
+    1) control -> save fn (updateOverride, saveRates, saveDecks, saveOptions, ...).
+    2) writes localStorage FIRST via memStore (works offline).
+    3) pushSharedData(idOrChannel, patch, bucket) -> queueSharedWrite -> flushSharedQueue -> POST
+       /.netlify/functions/data. Default bucket = "overrides".
+    4) other browsers PULL on timers: pullSharedData (8s, overrides), logos/contracts/displays (60s);
+       a change calls refreshCurrentView(). Degrades to localStorage silently if offline.
+    Real buckets: overrides, logos, photos, displays, contracts. ~26 whole-store datasets ride the
+    "overrides" bucket via WHOLE_STORE_CHANNELS.
+
+  ADDING SOMETHING NEW:
+    * new SPONSOR field -> drawer template + sdSave patch (flows via getRecord).
+    * new ASSET field   -> openAssetContractModal + its save (flows via getFullCatalog/assetDetailsFor;
+                           show on the Asset Ledger card in assetCardTemplate).
+    * new dataset       -> add a *_KEY + load/save pair + (to sync) a WHOLE_STORE_CHANNELS entry and a
+                           pushSharedData call.
+    * new page/tab      -> nav-item(data-view) + <section class="view" id="xView"> + VIEW_TITLES +
+                           VIEW_CHAPTER + one line in showView().
+
+  CAVEATS (see audit doc): asset rates split across two stores; photos are push-only; decks/proposals
+  link to a sponsor by NAME (others by id); Backup covers only 6 stores.
+====================================================================================================
+-->
 <a href="#mainContent" class="skip-link">Skip to content</a>
 <!-- Ambient background. Three wave bands drifting at different speeds so the page has some life
      without anything in the interface moving. Decorative only: aria-hidden, no pointer events, and
@@ -2682,7 +2736,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
       <div class="onclock" id="onClock" hidden></div>
       <div class="sidebar-affiliation">
         <div style="display:flex; align-items:center; gap:var(--space-8); color:#aeb9cc; font-size:var(--text-xs); font-weight:700; letter-spacing:.4px;">
-          <span style="height:19px; padding:0 var(--space-6); border-radius:var(--radius-sm); flex:0 0 auto; display:grid; place-items:center; background:#0d1d41; border:1px solid rgba(255,255,255,.22); font:800 10px/1 var(--font-display); letter-spacing:.02em; color:#fff;">MiLB</span>
+          <span style="height:22px; display:grid; place-items:center; flex:0 0 auto;"><img src="data:image/webp;base64,UklGRqgFAABXRUJQVlA4IJwFAACQHwCdASpMACwAPj0ci0QiIaETOq4AIAPEtgBUltC/K+fAq11n8d/yA6lnl7wXvtJVuv79r9uXvd/0nsA8wD9JfNV9RfmH/Z39mffA9DXoAfrL1ivoAfrN6ZP/J/xnwd/tP+1XtAf/W83fuP1Adp15A9lcng9o/Ij17/yW6Z/qv48flpyCPF/51/td536D/5X/k+NhjK86b/A/UT9XfcB83f8j3Bv5V/Qv8x+cX+N7/H7HeyB+txc3NNVV4csj965AxpTYbU9Je0PkKbMldSrOwar53/hU0Tj/QZFcuLeGaOAYwzuFZzY558B0XOPXfu3MplnLjS+wJNHRrdsAtxG6EUKpO0AA/v860UEtV8zpqrdG3BfO2AUvPDOhmq0fQWb0FXdf8hFdAJIeR6RKcXfqo5i+GZKZVqONud91OXfG9y0pb0CiJUEL8BhG+CoNN7l7f+Ipl+wbfL8KvNnD4eg2B0Xmbi1An66xvjZKH7R7oRa940vPbGaCkLlDc0xdS/pmaU9GBa1hj8mOe77Do4wG9mzPNLnAD7LIoicXRR2Gd5OayW40Tzxm18Hom8wWtktc/B5GkdjwcNN7SsdbXxylCTZZRCnHcT2p5yia2GrBkhPS4Z5/HTvJHKSe5nIrKr3Qw237K0o+LZMs3Q3sI3xMd7TS89dGRvef3ATUm29CAR52ETlrz8QRRAbvdnsWLt/emYbr3Y15bXvdhkTW5lLG7EkCi1QUELPMj53PLxmHlYkgsxUWtSZdwaKzm+byQckNW8nExzImNmn5/+A0K/e2tG35/VQbWd09w1qoLvE/D4K9uK48BzxxLsHy9VLHxpn1N0YtNy5/7HZOMahndeL1SLY9tFV54MQK3PH/LjlTDaKELQKyutELTf/6r0nWeJLlK/sdMUB+J0f/4NdKcSUGmNusPn3TLBu8Ta8yqwfyoFzR/xBcXFI0ZF7a3mnpGoewUv+RwFDlcw4HVFrj0MGQxDziHNpAfLjZ8cVZIt5usDvndZFYtakdW1Ly8EK4w//LNMBLAbEMKMwFmT0sDDeAIS43juHn+62ZI9CGOxbWf5Fc9b7KC/s8OdCQOM9Ol/T9BeHmYXQfsfx3g4cfHyLymvZNDkqZeO1anEOpB8xUlPykozyl53vUYoDcs8jcEcU2N4UDjZq8jXdNuyN8vdlUV44aUGk9L2h+eohEl0Eh4M+rGnW9ixYL2Ywh7i/N4B/bDaqR4GtTkxK9ql0Che/+TllpUBbdlGwwjh6NZ9+tg59i1Vv1O/OQ3F+F1gQFFzakSxiNwtxPZ21xB/D87F5hDGNnAGTFkTCxpjwahrrRzCQd151I5nsACHC+PFriR4MuqRBE/q7xdslln/jnUrrgK0/+Fhq9/2ni9kRT8QvVBZQJiUDgGDyGJBMs4sXCX7juqVjNEvJC4g/B/Z8A1YEPRo30r1ddPAjxdx9qa03picjAPAnJPOToX5gDT7//GAL2Dm7b4LZs3GQaKFNoraIBKfjRGwC4Lisv6x/UU/fqVvZawuOzl2ol6JW8gE8i23b59q2x2J/FaKXzqO4863hTZT8ZNzU1Fc7tz1jnTT//b7k6UhDVAYBbqXVRsT/mdA6Xxf2+DIZwqTzft+eIcx9ghssdrTPK81FAdiy0R56KZm4pF2ajVZ9IVG7y0vwsfvwRIFBz4fuT/7+OmwcbeTyNnQpXfnuIRYit7Dcy46MtRfxPlHU9qFhXicx5fAKUdtwTzUFDDu8AaHvGUAijBQMfLyR9Q0mJmFM9fDlgrXXSO1nPNijYfgbHFzuaRVm7WdlX+6v7ufNd+GzOPSB+mPW2mdbaRoA3OZ7Sy/+Ox4DauWP56to2JkVITyeA9RXP45GhlD4yEx7hoEeLbw+4nQNOyLiX05g/N42SnA7o5l4ZOi/azdiCASs9FB4wAA==" alt="MiLB — Official Affiliate" style="height:22px; width:auto; display:block; border-radius:3px;"></span>
           Official Affiliate
         </div>
         <div class="sidebar-social">
@@ -2805,6 +2859,9 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
             <span class="nav-icon">&#8962;</span> Assets &amp; Inventory
           </button>
           <div class="chapter-body">
+            <button class="nav-item" data-view="assetledger">
+              <span class="nav-icon">&#9636;</span> Asset Ledger
+            </button>
             <button class="nav-item" data-view="inventory">
               <span class="nav-icon">*</span> Assets &amp; Inventory
             </button>
@@ -2893,6 +2950,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           <span id="syncStatusLive" class="sr-only" role="status" aria-live="polite"></span>
           <button class="icon-button" id="notifBtn" title="Flagged renewals" aria-label="Flagged renewals"><span aria-hidden="true">!</span><span class="notification-dot" id="notifDot" style="display:none;"></span></button>
           <button class="icon-button" id="backupBtn" title="Backup / Restore" aria-label="Backup / Restore">⟳</button>
+          <button class="icon-button" id="sitemapBtn" title="How it connects (site map)" aria-label="How it connects" onclick="var f=document.getElementById('sitemapFrame'); if(!f.getAttribute('srcdoc')){f.srcdoc=document.getElementById('sitemapDoc').textContent;} document.getElementById('sitemapBackdrop').classList.add('show');"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 6.5v3M12 10.5l-6 6.5M12 10.5l6 6.5"/></svg></button>
           <button class="icon-button" id="settingsBtn" title="Settings" aria-label="Settings">⚙</button>
           <button class="present-button" id="printButton">Print view</button>
         </div>
@@ -3203,6 +3261,29 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
         </section>
 
         <!-- ============ BALLPARK DISPLAYS ============ -->
+        <section class="view" id="assetledgerView">
+          <div class="overview-hero">
+            <div class="overview-hero-brand">
+              <img class="overview-hero-crest" src="" alt="BlueClaws">
+              <div>
+                <div class="eyebrow">ASSET LEDGER<span class="season-badge">2026 SEASON</span></div>
+                <h1 class="overview-hero-title">Every asset on the rate card, one card each.</h1>
+                <p>The full inventory base &mdash; rate card, live availability, spec status, and contract language for every asset from the master sheets. This is the asset half of the two bases; click any asset to edit its details.</p>
+              </div>
+            </div>
+            <div class="heading-actions">
+              <button class="secondary-button" id="assetLedgerToInventory">Open inventory table &rarr;</button>
+              <button class="primary-button" id="assetLedgerAdd">+ Add asset</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <div class="search-box">&#9906; <input id="assetLedgerSearch" type="search" placeholder="Search asset or category"></div>
+            <select id="assetLedgerCategory" aria-label="Category"><option value="all">All categories</option></select>
+            <select id="assetLedgerSort" aria-label="Sort"><option value="cat">Sort: Category</option><option value="name">Sort: Name</option><option value="rate">Sort: Rate (high to low)</option><option value="avail">Sort: Availability</option></select>
+            <span id="assetLedgerCount" style="margin-left:auto; color:var(--muted); font-size:var(--text-xs); font-weight:700;"></span>
+          </div>
+          <div class="club-grid view-3" id="assetLedgerGrid"></div>
+        </section>
         <section class="view" id="assetallocView">
           <div class="overview-hero"><div class="overview-hero-brand"><img class="overview-hero-crest" data-crest-copy src="" alt="BlueClaws"><div><div class="eyebrow">ASSET ALLOCATION<span class="season-badge">2026 SEASON</span></div><h1 class="overview-hero-title">Every asset category, one place to allocate.</h1><p>Pick a category on the left, then drag signed partners into slots. Left/Right and Top/Bottom droppers work the same across every asset type.</p></div></div></div>
           <div class="aa-hub">
@@ -3413,7 +3494,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           <div id="optionsBuildPane" style="margin-top:var(--space-14);">
             <div class="proposal-header">
               <div class="proposal-logo" id="proposalLogo" style="display:none;"></div>
-              <label>Sponsor / prospect name<input id="propSponsor" list="sponsorNameOptions" placeholder="Who is this proposal for" autocomplete="off"></label>
+              <div class="bc-combobox" data-combobox-for="propSponsor" style="margin:0;"><span class="bc-combobox-label" id="propSponsor-label">Sponsor / prospect name</span><select id="propSponsor" class="bc-native-select" aria-hidden="true" tabindex="-1"><option value="">— Select sponsor —</option></select><button type="button" class="bc-combobox-trigger" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="propSponsor-listbox" aria-labelledby="propSponsor-label"><span class="bc-combobox-value placeholder">— Select sponsor —</span><span class="bc-combobox-chevron" aria-hidden="true">⌄</span></button><div class="bc-combobox-menu" id="propSponsor-menu" hidden><input type="text" class="bc-combobox-search" placeholder="Search sponsors…" role="combobox" aria-expanded="true" aria-controls="propSponsor-listbox" aria-autocomplete="list"><div class="bc-combobox-options" id="propSponsor-listbox" role="listbox" tabindex="-1" aria-labelledby="propSponsor-label"></div></div></div>
               <div id="optionsRequestNotes" class="options-request-notes" hidden></div>
               <datalist id="sponsorNameOptions"></datalist>
               <label>Sales rep<input id="propRep" placeholder="Who's working this"></label>
@@ -4184,6 +4265,177 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
     </div>
   </div>
 
+  <div class="modal-backdrop" id="sitemapBackdrop" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="modal" style="width:min(1040px,96vw); max-height:92vh; padding:0; overflow:hidden; display:flex; flex-direction:column;">
+      <button class="modal-close" title="Close" aria-label="Close" style="background:var(--paper); border:1px solid var(--line); z-index:2;" onclick="document.getElementById('sitemapBackdrop').classList.remove('show')"><span aria-hidden="true">&times;</span></button>
+      <iframe id="sitemapFrame" title="How BlueClaws IQ connects" style="width:100%; height:86vh; border:0; display:block; background:#f5f3ee;"></iframe>
+    </div>
+  </div>
+  <script type="text/html" id="sitemapDoc"><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlueClaws IQ — How It All Connects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1d41;--blue:#0971ce;--red:#c20f2f;--gold:#facd01;--paper:#f5f3ee;--line:rgba(13,29,65,.14);--ink-2:rgba(13,29,65,.6);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--navy);font:400 15px/1.55 "DM Sans",system-ui,sans-serif;}
+.stripe{height:6px;background:linear-gradient(90deg,var(--blue) 0 33%,var(--gold) 33% 66%,var(--red) 66% 100%);}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 24px 80px;}
+h1{font:800 32px/1.1 "Manrope",sans-serif;margin:24px 0 6px;letter-spacing:-.5px;}
+.sub{color:var(--ink-2);font-size:16px;margin:0 0 8px;}
+.eyebrow{font:800 11px/1 "DM Sans";letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:40px 0 10px;}
+h2{font:800 22px/1.2 "Manrope",sans-serif;margin:4px 0 14px;}
+p{margin:0 0 12px;}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:0 0 16px;}
+.card.top-blue{border-top:3px solid var(--blue);}.card.top-gold{border-top:3px solid var(--gold);}.card.top-red{border-top:3px solid var(--red);}.card.top-navy{border-top:3px solid var(--navy);}
+.hub{display:flex;flex-direction:column;align-items:center;gap:14px;margin:8px 0 4px;}
+.hub-center{background:var(--navy);color:#fff;border-radius:10px;padding:16px 22px;text-align:center;max-width:420px;}
+.hub-center b{font:800 18px "Manrope";display:block;}
+.hub-center span{font-size:13px;color:#c9d4ea;}
+.arrows{font-size:22px;color:var(--blue);line-height:1;}
+.spokes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:100%;}
+.spoke{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;font-weight:500;text-align:center;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:720px){.two{grid-template-columns:1fr;}}
+.pill{display:inline-block;background:var(--navy);color:#fff;font:700 11px "DM Sans";padding:3px 9px;border-radius:999px;margin:0 0 8px;letter-spacing:.03em;}
+.pill.read{background:var(--blue);}.pill.sep{background:var(--gold);color:var(--navy);}
+ul{margin:6px 0 0;padding-left:20px;}li{margin:0 0 5px;}
+.tree{list-style:none;padding:0;margin:0;}
+.tree>li{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;padding:10px 14px;background:#fff;}
+.tree>li>b{font:800 14px "Manrope";color:var(--blue);}
+.tree .pages{margin:6px 0 0;padding-left:2px;font-size:13.5px;color:var(--navy);}
+.tree .pages span{display:inline-block;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin:3px 4px 0 0;}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14px;}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+th{background:var(--navy);color:#fff;font:700 12px "DM Sans";text-transform:uppercase;letter-spacing:.05em;}
+tr:last-child td{border-bottom:0;}
+td b{color:var(--navy);}
+.chg{color:var(--red);font-weight:700;}.aff{color:var(--blue);font-weight:700;}
+.sync{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:6px 0;}
+.sync .box{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 14px;text-align:center;font-size:13px;font-weight:500;min-width:120px;}
+.sync .box b{display:block;font:800 13px "Manrope";}
+.sync .a{color:var(--blue);font-weight:800;font-size:13px;}
+.flag{background:#fff7e6;border:1px solid var(--gold);border-left:3px solid var(--gold);border-radius:8px;padding:12px 16px;margin:0 0 10px;font-size:14px;}
+.note{font-size:13px;color:var(--ink-2);margin-top:6px;}
+.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2);}
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<div class="wrap">
+  <div class="eyebrow" style="margin-top:8px;">Jersey Shore BlueClaws · BlueClaws IQ</div>
+  <h1>How it all connects.</h1>
+  <p class="sub">A plain-language map of where you edit things, where they show up, and how it all saves and syncs. No code — just the flow.</p>
+
+  <!-- 1 -->
+  <div class="eyebrow">The one big idea</div>
+  <div class="card top-navy">
+    <p style="margin-top:0;"><b>There is one master list of sponsors.</b> You edit a sponsor in <b>one</b> place — the <b>Sponsor Ledger</b> (the panel that slides out when you click a sponsor). Every other page just <i>shows</i> that same sponsor. Fix a name, value, or status once, and it updates <b>everywhere automatically</b>. Nobody can create a mismatched copy.</p>
+    <div class="hub">
+      <div class="hub-center"><b>Sponsor Ledger drawer</b><span>the only place sponsors are edited</span></div>
+      <div class="arrows">▼ &nbsp; updates &nbsp; ▼</div>
+      <div class="spokes">
+        <div class="spoke">Executive Overview (KPIs)</div>
+        <div class="spoke">Renewal Center &amp; Status</div>
+        <div class="spoke">Sponsorship History</div>
+        <div class="spoke">Prospecting</div>
+        <div class="spoke">Fulfillment</div>
+        <div class="spoke">Process &amp; Breakdown</div>
+        <div class="spoke">Asset Prep</div>
+        <div class="spoke">Quick search</div>
+        <div class="spoke">Options &amp; Agreement pickers</div>
+      </div>
+    </div>
+    <p class="note">Why: every one of these pages reads from the same single record for each sponsor. They don't keep their own copies.</p>
+  </div>
+
+  <!-- 2 -->
+  <div class="eyebrow">Where you edit vs. where you just look</div>
+  <div class="two">
+    <div class="card top-blue">
+      <span class="pill">Edit here — the source of truth</span>
+      <ul>
+        <li><b>Sponsors</b> → the Ledger drawer (name, value, status, contacts, notes, history).</li>
+        <li><b>Assets</b> (rates, specs, details) → Assets &amp; Inventory + Asset Prep Hub.</li>
+        <li><b>Logos</b> → "Add / Replace logo" in the drawer (stored separately — see note).</li>
+        <li><b>Everything else</b> (decks, requests, options, schedules) → each in its own page.</li>
+      </ul>
+    </div>
+    <div class="card top-blue">
+      <span class="pill read">Just shows it — read-only</span>
+      <ul>
+        <li>Overview KPIs, Renewal, History, Prospecting, Fulfillment, Process, Breakdown all <b>display</b> sponsor data — you don't retype it there.</li>
+        <li>Options Creator &amp; Digideck now <b>pick</b> sponsors from a dropdown (no more typing a name that could drift).</li>
+        <li>Pricing auto-fills from the asset rate you set in Inventory.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flag" style="border-color:var(--blue);border-left-color:var(--blue);background:#eaf3fc;"><b>Logos are kept separate on purpose.</b> If you hit "Revert edits" on a sponsor, its logo is <b>not</b> deleted — logos live in their own store.</div>
+
+  <!-- 3 -->
+  <div class="eyebrow">The navigation map</div>
+  <p>The sidebar has seven sections. Here's what lives under each:</p>
+  <ul class="tree">
+    <li><b>Executive Overview</b><div class="pages"><span>Partnership Performance</span><span>Reports</span><span>Sponsorship History</span><span>Calendar</span></div></li>
+    <li><b>Accounts</b><div class="pages"><span>Sponsor Ledger (edit sponsors here)</span></div></li>
+    <li><b>Sales Center</b><div class="pages"><span>Renewal Status</span><span>Renewal Center</span><span>Prospecting</span></div></li>
+    <li><b>Service Center</b><div class="pages"><span>Fulfillment</span><span>Gameday</span><span>Process Tracker</span><span>Partner Reports (Digideck)</span><span>Options Creator</span><span>Agreement Generator</span><span>Asset Prep</span><span>Breakdown Generator</span></div></li>
+    <li><b>Assets &amp; Inventory</b><div class="pages"><span>Assets &amp; Inventory (edit assets here)</span><span>Asset Allocation</span><span>Stadium Map</span></div></li>
+    <li><b>Tasks &amp; Approvals</b><div class="pages"><span>Requests &amp; Tasks</span><span>My Tasks</span><span>Service Squad To-Do</span><span>Squad Schedule</span></div></li>
+    <li><b>Agreements</b><div class="pages"><span>Agreements Hub</span></div></li>
+  </ul>
+
+  <!-- 4 -->
+  <div class="eyebrow">"If I change this → it affects that"</div>
+  <table>
+    <tr><th>If you change…</th><th>in…</th><th>it updates…</th></tr>
+    <tr><td><b>A sponsor's value, status, or name</b></td><td>Ledger drawer</td><td>Overview KPIs, Renewal, History, Fulfillment, and <span class="aff">every</span> sponsor list &amp; dropdown</td></tr>
+    <tr><td><b>An asset's rate / spec</b></td><td>Assets &amp; Inventory</td><td>Options Creator pricing, Agreements, and anywhere that asset is priced or listed</td></tr>
+    <tr><td><b>A logo</b></td><td>Drawer → Add/Replace logo</td><td>Everywhere that sponsor's logo appears (kept safe from "Revert edits")</td></tr>
+    <tr><td><b>The sponsor on a proposal or deck</b></td><td>Options Creator / Digideck</td><td>Now a <span class="aff">dropdown</span> tied to the real sponsor — so it links across pages, no typos</td></tr>
+    <tr><td><b>An agreement / contract file</b></td><td>Drawer or Contract modal</td><td>Stored <b>on</b> the sponsor record, so it travels with that sponsor and syncs</td></tr>
+    <tr><td><b>A request or task</b></td><td>Requests &amp; Tasks</td><td>Linked to the sponsor by ID; clicking it opens that sponsor's drawer</td></tr>
+  </table>
+
+  <!-- 5 -->
+  <div class="eyebrow">Where it saves &amp; what syncs to teammates</div>
+  <div class="card top-gold">
+    <p style="margin-top:0;"><b>Step 1 — always saves to your browser first.</b> Every change is stored locally right away, so the app keeps working even with no internet.</p>
+    <p><b>Step 2 — syncs to teammates when you're online on the live site.</b> Changes travel through five channels:</p>
+    <div class="sync">
+      <div class="box"><b>Your browser</b>saves instantly</div>
+      <div class="a">→ 8s / 60s →</div>
+      <div class="box"><b>Netlify (the server)</b>5 channels</div>
+      <div class="a">→ →</div>
+      <div class="box"><b>Teammates' browsers</b>see your changes</div>
+    </div>
+    <ul>
+      <li><b>overrides</b> — the big one. Carries sponsor edits <i>plus</i> ~26 things (decks, requests, options, asset rates &amp; specs, schedules, chat, and more), each as its own item. Checked every <b>8 seconds</b>.</li>
+      <li><b>logos</b> — sponsor logos. Checked every <b>60 seconds</b>.</li>
+      <li><b>displays</b> — the ballpark display boards. Checked every 60 seconds.</li>
+      <li><b>contracts</b> — agreement files. Checked every 60 seconds.</li>
+      <li><b>photos</b> — the photo library. <b>Push-only</b> right now (see flag below).</li>
+    </ul>
+    <p class="note">Contract files and images are large, so they're stored in a separate media store rather than these channels.</p>
+    <div class="flag" style="margin-top:12px;"><b>Important:</b> syncing only works on the live <b>blueclaws26.netlify.app</b> site. If you open the HTML file directly on your computer, everything still works but stays on <i>that</i> browser only — it won't share until you're back on the live site. This is by design and never throws an error.</div>
+  </div>
+
+  <!-- 6 -->
+  <div class="eyebrow">A few things worth knowing</div>
+  <div class="flag">Decks link to a sponsor by <b>name</b>; Requests, Agreements, and Photos link by <b>ID</b>. That's why we turned the deck &amp; proposal sponsor fields into dropdowns — so the name always matches exactly.</div>
+  <div class="flag">There are two separate internal "quick links" stores with nearly identical names — harmless, but worth knowing if links ever look out of sync.</div>
+  <div class="flag"><b>Photos are push-only.</b> When you tag or upload a photo it's sent to the server, but the app never automatically pulls photo changes <i>back</i> — so a photo tagged on one computer may not appear on another until that's fixed. (Logos, displays, and contracts each refresh every 60s; photos have no refresh timer.) Easy fix — flagged.</div>
+  <div class="flag"><b>Backup / Restore is partial.</b> The export/import covers 6 things (sponsor edits, custom sponsors, logos, custom assets, rates, ballpark displays) but <i>not</i> requests, decks, proposals, agreements, photos, schedules, or chat. Fine if you treat the live server as the real backup, but a "restore to a fresh laptop" won't bring those back.</div>
+
+  <div class="foot">Map generated from the live code in <b>index200.html</b>. Sponsors are edited only in the Ledger drawer; assets only in Assets &amp; Inventory / Asset Prep; logos in their own store. One master record per sponsor drives every page.</div>
+</div>
+</body>
+</html>
+</script>
   <div class="modal-backdrop" id="backupBackdrop">
     <div class="modal" id="backupModal">
       <button class="modal-close" id="backupClose" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -4271,9 +4523,7 @@ input[type="checkbox"]:not([data-native]):disabled { opacity: .45; cursor: not-a
           <option value="Mid-Season Report">Mid-Season Report</option>
           <option value="Annual Report">Annual Report</option>
         </select></label>
-        <label>Prospect / Sponsor<input id="deck_prospect" list="deckProspectOptions" placeholder="Who is this for">
-          <datalist id="deckProspectOptions"></datalist>
-        </label>
+        <div class="bc-combobox" data-combobox-for="deck_prospect" style="margin:0;"><span class="bc-combobox-label" id="deck_prospect-label">Prospect / Sponsor</span><select id="deck_prospect" class="bc-native-select" aria-hidden="true" tabindex="-1"><option value="">— Select sponsor —</option></select><button type="button" class="bc-combobox-trigger" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="deck_prospect-listbox" aria-labelledby="deck_prospect-label"><span class="bc-combobox-value placeholder">— Select sponsor —</span><span class="bc-combobox-chevron" aria-hidden="true">⌄</span></button><div class="bc-combobox-menu" id="deck_prospect-menu" hidden><input type="text" class="bc-combobox-search" placeholder="Search sponsors…" role="combobox" aria-expanded="true" aria-controls="deck_prospect-listbox" aria-autocomplete="list"><div class="bc-combobox-options" id="deck_prospect-listbox" role="listbox" tabindex="-1" aria-labelledby="deck_prospect-label"></div></div></div>
       </div>
       <div class="form-row">
         <label>Date created<input id="deck_dateCreated" type="date"></label>
@@ -7506,9 +7756,9 @@ function ensureBcDialogStyle() {
   const s = document.createElement("style");
   s.id = "bcDialogStyle";
   s.textContent = `
-    .bc-dialog-backdrop{position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px;background:rgba(10,23,43,.72);opacity:0;transition:opacity .14s ease-out;}
+    .bc-dialog-backdrop{position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px;background:rgba(13,29,65,.32);opacity:0;transition:opacity .14s ease-out;}
     .bc-dialog-backdrop.open{opacity:1;} .bc-dialog-backdrop.closing{opacity:0;transition:opacity .12s ease-in;}
-    .bc-dialog{width:min(460px,100%);background:var(--paper,#f5f3ee);border:1px solid var(--ink-300,#c9cfdb);border-radius:6px;overflow:hidden;}
+    .bc-dialog{width:min(460px,100%);background:var(--paper,#f5f3ee);border:1.5px solid var(--ink-300,#c9cfdb);border-radius:10px;overflow:hidden;}
     .bc-dialog-stripe{height:4px;background:linear-gradient(90deg,var(--blue,#0971ce) 0 33.34%,var(--gold,#facd01) 33.34% 66.67%,var(--red,#c20f2f) 66.67% 100%);}
     .bc-dialog-body{padding:18px 20px 16px;}
     .bc-dialog-title{font:800 16px/1.25 var(--font-display,'Manrope',sans-serif);color:var(--ink,#0d1d41);margin-bottom:6px;letter-spacing:.01em;}
@@ -7616,6 +7866,7 @@ function checkPerformanceHealth() {
 const VIEW_TITLES = {
   overview: "Partnership Performance",
   sponsors: "Sponsor Ledger",
+  assetledger: "Asset Ledger",
   statusview: "Renewal Status View",
   scoreboard: "Scoreboard Layout",
   marquee: "Digital Marquee Slots & Schedule",
@@ -7650,6 +7901,7 @@ const VIEW_TITLES = {
 const VIEW_CHAPTER = {
   overview: "overview-hub", reports: "overview-hub", history: "overview-hub", schedule: "overview-hub",
   sponsors: "accounts-hub",
+  assetledger: "assets-hub",
   statusview: "sales-hub", renewals: "sales-hub", prospecting: "sales-hub",
   fulfillment: "service-hub", gameday: "service-hub", process: "service-hub", digideck: "service-hub", options: "service-hub", agreements: "service-hub", assetprep: "service-hub", breakdown: "service-hub",
   inventory: "assets-hub", assetalloc: "assets-hub", stadiummap: "assets-hub", displays: "assets-hub", scoreboard: "assets-hub", marquee: "assets-hub", enews: "assets-hub",
@@ -7671,6 +7923,7 @@ function showView(name) {
   if (name === "statusview") renderStatusView();
   if (name === "renewals") renderRenewalCenter();
   if (name === "categories") renderCategoryInsights();
+  if (name === "assetledger") renderAssetLedger();
   if (name === "inventory") { renderAssetLibrary(); }
   if (name === "displays") { initBallparkControls(); try { renderBallparkDisplays(); } catch(e) { console.error("Ballpark Displays render failed",e); const b=document.getElementById("displayBoard"); if(b)b.innerHTML=`<div class="display-empty"><strong>Ballpark Displays could not render.</strong><br>${escDisplay(e?.message||e)}<br><button onclick="resetBallparkView()">Restore sourced board layout</button></div>`; } }
   if (name === "fulfillment") renderFulfillmentView();
@@ -8868,7 +9121,7 @@ function renderBreakdownView() {
           ${list.map(row => {
             const rows = breakdownRowsFor(row), sum = rows.reduce((t, x) => t + x.value, 0), target = breakdownTarget(row);
             const tone = !target ? "neutral" : Math.abs(sum - target) < 0.5 ? "positive" : "negative";
-            return `<div class="fulfillment-row" data-bk-row="${esc(row.id)}" style="grid-template-columns:1fr 150px 130px; cursor:pointer; padding:var(--space-8) 0; border-top:1px solid #eee;">
+            return `<div class="fulfillment-row" data-bk-row="${esc(row.id)}" style="grid-template-columns:1fr 150px 130px; cursor:pointer; padding:var(--space-8) 0; border-top:1px solid var(--line);">
               <div>${esc(row.sponsor)}<small style="display:block; color:var(--muted); font-size:var(--text-xs);">${rows.length} asset${rows.length === 1 ? "" : "s"}</small></div>
               <div class="bk-num ${tone}">${sum ? fmtMoney(sum) : "—"}</div>
               <div class="bk-num" style="color:var(--muted);">${target ? fmtMoney(target) : "—"}</div>
@@ -8984,7 +9237,7 @@ function renderFulfillmentView() {
           ${list.map(row => {
             const pct = fulfillmentPercent(row);
             const tone = fulfillmentTone(pct);
-            return `<div class="fulfillment-row" data-fulfill-overview-row="${esc(row.id)}" style="grid-template-columns:1fr 120px; cursor:pointer; padding:var(--space-8) 0; border-top:1px solid #eee;">
+            return `<div class="fulfillment-row" data-fulfill-overview-row="${esc(row.id)}" style="grid-template-columns:1fr 120px; cursor:pointer; padding:var(--space-8) 0; border-top:1px solid var(--line);">
               <div><button type="button" class="link-button" data-fulfill-open-sponsor="${esc(row.id)}">${esc(row.sponsor)}</button></div>
               <div class="${tone}">${pct === null ? "—" : pct + "%"}</div>
             </div>`;
@@ -9590,7 +9843,7 @@ function renderScheduleSummary(events) {
       <div class="table-toolbar" style="padding:0 0 var(--space-8);"><strong style="font-size:12px;">Upcoming Sponsorship Schedule</strong></div>
       <div class="schedule-agenda-compact">${quickRows || `<div style="padding:var(--space-18); color:var(--muted); font-size:var(--text-xs);">No upcoming items found.</div>`}</div>
     </article>`;
-  document.querySelectorAll("#scheduleAgenda [data-open]").forEach(row => row.addEventListener("click", () => openDrawer(row.dataset.open)));
+  document.querySelectorAll("#scheduleAgenda [data-open]").forEach(row => { row.addEventListener("click", () => openDrawer(row.dataset.open)); row.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openDrawer(row.dataset.open); } }); });
 }
 function scheduleShortNote(e) {
   const raw = String(e.note || e.type || "").replace(/\s+/g, " ").trim() || e.type || "Item";
@@ -9599,7 +9852,7 @@ function scheduleShortNote(e) {
 function scheduleAgendaRow(e, overdue) {
   const date = new Date(e.date + "T12:00:00");
   const label = isNaN(date) ? e.date : date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  return `<div class="schedule-pill ${overdue ? "is-overdue" : ""}" style="cursor:${e.sponsorId ? "pointer" : "default"};" ${e.sponsorId ? `data-open="${esc(e.sponsorId)}"` : ""}>
+  return `<div class="schedule-pill ${overdue ? "is-overdue" : ""}" style="cursor:${e.sponsorId ? "pointer" : "default"};" ${e.sponsorId ? `data-open="${esc(e.sponsorId)}" role="button" tabindex="0"` : ""}>
     <span>${esc(label)}</span>
     <div><strong>${esc(e.sponsorName)}</strong><small>${esc(scheduleShortNote(e))}</small></div>
   </div>`;
@@ -12033,7 +12286,7 @@ function paintReqForm(sponsorsArg) {
     </p>
     <div class="req-form-grid">
       <div class="sfield">${bcComboboxMarkup("reqf_sponsor", "Existing sponsor", "Search sponsors...", `<option value="">Search existing sponsors...</option>` + sponsors.map(s => `<option value="${esc(s.id)}"${s.id === sel ? " selected" : ""}>${esc(s.sponsor)}</option>`).join(""))}
-        <label style="margin-top:var(--space-8);"><span>Or new partner name</span><input id="reqf_newSponsor" type="text" placeholder="Type a partner that is not in the ledger yet"></label>
+        <p class="req-form-hint" style="margin:var(--space-8) 0 0; font-size:var(--text-xs); color:var(--muted);">New partner? Add them in the Sponsor Ledger first, then pick them above — keeps every sponsor linked across the app.</p>
       </div>
       <div class="sfield"><label for="reqf_type">${isAlertMode ? "Alert type" : "Request type"} *</label><select id="reqf_type" aria-label="reqf type">${Object.entries(REQ_TYPES).filter(([k, v]) => isAlertMode ? v.isAlert : !v.isAlert).map(([k, v]) => `<option value="${k}"${k === typeKey ? " selected" : ""}>${esc(v.label)}</option>`).join("")}</select></div>
       <div class="sfield"><label for="reqf_priority">Priority</label><select id="reqf_priority" aria-label="reqf priority"><option value="normal">Normal</option><option value="high">High</option></select></div>
@@ -12626,6 +12879,90 @@ function jumpToInventoryFolder(folder) {
   showFolderGrid();
   requestAnimationFrame(() => openFolder(folder));
 }
+let alState = { search: "", category: "all", sort: "cat" };
+function assetCardTemplate(a) {
+  const name = assetDisplayName(a.asset);
+  const detail = assetDetailsFor(a.asset);
+  const rate = (detail.rateCard !== undefined && detail.rateCard !== "" && detail.rateCard !== null) ? Number(detail.rateCard) : lookupRate(a);
+  const inv = assetInventorySummary(a.asset);
+  const spec = (typeof assetSpecFor === "function") ? assetSpecFor(a.asset) : null;
+  const hasContract = (typeof agFindTemplate === "function") ? !!agFindTemplate(a.asset) : false;
+  const availTxt = inv.available === null ? "Open" : inv.available;
+  const totalTxt = inv.total === null ? "Open" : inv.total;
+  return `
+  <div class="club-card" data-asset="${esc(a.asset)}" data-id="${esc(a.id)}" tabindex="0" role="button" title="Edit ${esc(name)}">
+    <div class="club-card-head">
+      <span class="club-badge" style="background:var(--blue); color:#fff; display:grid; place-items:center; font-size:15px;">&#9636;</span>
+      <div><h2 class="card-title-h">${esc(name)}</h2><span>${esc(a.category || "Uncategorized")}</span></div>
+    </div>
+    <div style="margin-top:var(--space-11); display:flex; gap:var(--space-6); flex-wrap:wrap;">
+      <span class="type-tag">${esc(a.category || "—")}</span>
+      ${a.frequency ? `<span class="micro-tag">${esc(a.frequency)}</span>` : ""}
+      <span class="type-tag" style="${spec ? "background:#eaf3fc; color:var(--blue-text); border-color:var(--blue);" : "background:#fdecec; color:var(--red); border-color:var(--red);"}">${spec ? "Spec on file" : "No spec yet"}</span>
+      ${hasContract ? `<span class="contract-label">Contract language</span>` : ""}
+    </div>
+    <div class="cc-hero">
+      <div class="cc-total"><span>Rate card</span><strong class="money">${(rate === "" || rate === null || rate === undefined) ? "—" : fmtMoney(Number(rate))}</strong></div>
+      <div class="cc-total"><span>Available</span><strong>${availTxt}${inv.total === null ? "" : " / " + totalTxt}</strong></div>
+    </div>
+    <div class="cc-chips">
+      <div class="cc-chip"><span>Committed</span><strong>${inv.committed || 0}</strong></div>
+      <div class="cc-chip"><span>Frequency</span><strong>${esc(a.frequency || "—")}</strong></div>
+      <div class="cc-chip"><span>Contract</span><strong>${hasContract ? "On file" : "—"}</strong></div>
+    </div>
+    ${a.notes ? `<div class="cc-foot"><span class="cc-foot-meta">${esc(a.notes)}</span></div>` : ""}
+    <div class="card-quick-actions" onclick="event.stopPropagation()">
+      <button data-asset-details="${esc(a.asset)}" title="Edit details for ${esc(name)}">Edit details</button>
+    </div>
+  </div>`;
+}
+function renderAssetLedger() {
+  const catSel = document.getElementById("assetLedgerCategory");
+  if (catSel) {
+    const cats = [...new Set(getFullCatalog().map(a => a.category).filter(Boolean))].sort();
+    const cur = alState.category || "all";
+    catSel.innerHTML = '<option value="all">All categories</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+    catSel.value = cur;
+  }
+  let list = getFullCatalog();
+  if (alState.category && alState.category !== "all") list = list.filter(a => a.category === alState.category);
+  const q = (alState.search || "").trim().toLowerCase();
+  if (q) list = list.filter(a => (assetDisplayName(a.asset) || "").toLowerCase().includes(q) || (a.asset || "").toLowerCase().includes(q) || (a.category || "").toLowerCase().includes(q));
+  if (alState.sort === "rate") list = [...list].sort((a, b) => (lookupRate(b) || 0) - (lookupRate(a) || 0));
+  else if (alState.sort === "name") list = [...list].sort((a, b) => assetDisplayName(a.asset).localeCompare(assetDisplayName(b.asset)));
+  else if (alState.sort === "avail") { const av = x => { const s = assetInventorySummary(x.asset).available; return s === null ? Infinity : s; }; list = [...list].sort((a, b) => av(a) - av(b)); }
+  else list = sortByCategoryThenRate(list, a => lookupRate(a) || 0);
+  const cnt = document.getElementById("assetLedgerCount");
+  if (cnt) cnt.textContent = `${list.length} asset${list.length === 1 ? "" : "s"} shown`;
+  const grid = document.getElementById("assetLedgerGrid");
+  if (!grid) return;
+  grid.className = "club-grid view-3";
+  grid.innerHTML = list.length ? list.map(assetCardTemplate).join("") : `<div style="grid-column:1/-1; padding:var(--space-60) var(--space-20); text-align:center; color:var(--muted);"><h3 style="color:var(--ink);">No assets match.</h3></div>`;
+  grid.querySelectorAll(".club-card").forEach(card => {
+    card.addEventListener("click", () => openAssetContractModal(card.dataset.asset));
+    card.addEventListener("keypress", e => { if (e.key === "Enter") openAssetContractModal(card.dataset.asset); });
+  });
+  grid.querySelectorAll("[data-asset-details]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); openAssetContractModal(b.dataset.assetDetails); }));
+  const s = document.getElementById("assetLedgerSearch"); if (s) s.oninput = e => { alState.search = e.target.value; renderAssetLedger(); };
+  if (catSel) catSel.onchange = e => { alState.category = e.target.value; renderAssetLedger(); };
+  const so = document.getElementById("assetLedgerSort"); if (so) so.onchange = e => { alState.sort = e.target.value; renderAssetLedger(); };
+  const invBtn = document.getElementById("assetLedgerToInventory"); if (invBtn) invBtn.onclick = () => showView("inventory");
+  const addBtn = document.getElementById("assetLedgerAdd"); if (addBtn) addBtn.onclick = assetLedgerAddAsset;
+}
+async function assetLedgerAddAsset() {
+  const name = ((await bcPrompt("Name the new asset", "", { title: "Add asset", ok: "Create", placeholder: "e.g. Custom Concourse Banner" })) || "").trim();
+  if (!name) return;
+  const existing = getFullCatalog().find(a => (a.asset || "").trim().toLowerCase() === name.toLowerCase());
+  if (existing) { toast("Already in the catalog", `${name} exists — opening it`); openAssetContractModal(existing.asset); return; }
+  const baseId = "custom--" + slugify(name);
+  let id = baseId, n = 2;
+  while (getFullCatalog().some(a => a.id === id)) { id = `${baseId}-${n++}`; }
+  CUSTOM_ASSETS.push({ id, asset: name, category: "Miscellaneous & Other", frequency: null, notes: null, _custom: true });
+  saveCustomAssets(CUSTOM_ASSETS);
+  renderAssetLedger();
+  toast("Asset added", `${name} added to the catalog — fill in its details`);
+  openAssetContractModal(name);
+}
 function renderAssetTable() {
   let list = getFullCatalog();
   if (aState.mode === "category" && aState.category) list = list.filter(a => a.category === aState.category);
@@ -13198,7 +13535,7 @@ function openOptionsCreatorForRequest(reqId) {
   showView("options");
   setTimeout(() => {
     const field = document.getElementById("propSponsor");
-    if (field) { field.value = req.sponsorName || ""; field.dispatchEvent(new Event("change", { bubbles: true })); }
+    if (field) { populateSponsorCombobox("propSponsor", req.sponsorName || ""); field.dispatchEvent(new Event("change", { bubbles: true })); }
     currentProposal.sponsorName = req.sponsorName || "";
     saveCurrentProposal();
     renderOptionsRequestNotes();
@@ -13630,7 +13967,7 @@ async function addAssetToOption(idx, asset, rate, extras) {
 }
 
 function renderOptionsView() {
-  document.getElementById("propSponsor").value = currentProposal.sponsorName || "";
+  populateSponsorCombobox("propSponsor", currentProposal.sponsorName || "");
   renderOptionsRequestNotes();
   document.getElementById("propRep").value = currentProposal.salesRep || "";
   document.getElementById("propDate").value = currentProposal.dateCreated || "";
@@ -15105,8 +15442,6 @@ function renderDigideckView() {
   renderDeckList();
   renderReportTracker();
   renderPhotoCheckList();
-  const sponsorNames = [...new Set(getAllRecords().map(r => r.sponsor).filter(Boolean))].sort();
-  document.getElementById("deckProspectOptions").innerHTML = sponsorNames.map(n => `<option value="${esc(n)}">`).join("");
 }
 function renderDeckList() {
   let list = loadDecks();
@@ -15153,7 +15488,7 @@ function openDeckModal(id) {
   document.getElementById("deckModalEyebrow").textContent = d ? "EDIT ENTRY" : "NEW ENTRY";
   document.getElementById("deckModalTitle").textContent = d ? (d.prospect || "Edit") : "New Entry";
   document.getElementById("deck_type").value = d ? (d.type || "Digideck") : "Digideck";
-  document.getElementById("deck_prospect").value = d ? d.prospect || "" : "";
+  populateSponsorCombobox("deck_prospect", d ? d.prospect || "" : "");
   document.getElementById("deck_dateCreated").value = d ? d.dateCreated || "" : new Date().toISOString().slice(0, 10);
   document.getElementById("deck_dateSent").value = d ? d.dateSent || "" : "";
   document.getElementById("deck_createdBy").value = d ? d.createdBy || "" : "";
@@ -15805,8 +16140,8 @@ function drawerTemplate(r) {
       </div>
     </div>`;
 }
-function openDrawer(id) {
-  if (pendingNewSponsorId && pendingNewSponsorId !== id) { if (!discardPendingNewSponsor()) return; }
+async function openDrawer(id) {
+  if (pendingNewSponsorId && pendingNewSponsorId !== id) { if (!(await discardPendingNewSponsor())) return; }
   const r = getRecord(id);
   if (!r) return;
   const drawer = document.getElementById("sdrawer");
@@ -16044,11 +16379,12 @@ function openDrawer(id) {
     // bailed on a validation error the drawer stays open, so only navigate once it actually closed.
     const saveBtn = document.getElementById("sdSave");
     if (saveBtn) saveBtn.click();
-    const drawerStillOpen = document.getElementById("sdrawer").classList.contains("open");
-    if (drawerStillOpen) return;
-    showView("fulfillment");
-    fState.sponsorId = id;
-    renderFulfillmentView();
+    setTimeout(() => {
+      if (document.getElementById("sdrawer").classList.contains("open")) return;
+      showView("fulfillment");
+      fState.sponsorId = id;
+      renderFulfillmentView();
+    }, 80);
   });
   document.getElementById("addDealAssetRow").addEventListener("click", () => {
     pendingDealAssets.push({ asset: "", qty: "1", notes: "" });
@@ -16293,10 +16629,10 @@ function newSponsorFormHasContent() {
     return el && el.value.trim();
   });
 }
-function discardPendingNewSponsor(skipConfirm) {
+async function discardPendingNewSponsor(skipConfirm) {
   if (!pendingNewSponsorId) return true;
   if (!skipConfirm && newSponsorFormHasContent()) {
-    if (!confirm("This new sponsor hasn't been saved yet. Close without saving and discard it?")) return false;
+    if (!(await bcConfirm("This new sponsor hasn't been saved yet. Close without saving and discard it?", {title:"Discard unsaved sponsor", ok:"Discard", cancel:"Keep editing", danger:true}))) return false;
   }
   const id = pendingNewSponsorId;
   pendingNewSponsorId = null;
@@ -16304,8 +16640,8 @@ function discardPendingNewSponsor(skipConfirm) {
   resetOverride(id);
   return true;
 }
-function closeDrawer() {
-  if (!discardPendingNewSponsor()) return;
+async function closeDrawer() {
+  if (!(await discardPendingNewSponsor())) return;
   document.getElementById("sdrawer").classList.remove("open");
   document.getElementById("overlay2").classList.remove("open");
   refreshCurrentView();
@@ -16323,6 +16659,7 @@ function refreshCurrentView() {
   if (name === "sponsors") renderSponsorGrid();
   if (name === "renewals") renderRenewalCenter();
   if (name === "categories") renderCategoryInsights();
+  if (name === "assetledger") renderAssetLedger();
   if (name === "inventory") { renderAssetLibrary(); }
   if (name === "displays") { try { renderBallparkDisplays(); } catch(e) { console.error("Ballpark Displays render failed",e); } }
   if (name === "fulfillment") renderFulfillmentView();
@@ -17343,6 +17680,19 @@ function bcComboboxSelect(selectId, value) {
   const root = bcComboboxRoot(selectId);
   if (root) root.querySelector(".bc-combobox-trigger").focus();
 }
+function populateSponsorCombobox(selectId, selectedName) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const src = (typeof getAllRecordsRaw === "function") ? getAllRecordsRaw() : (window.SPONSOR_DATA || []);
+  const names = [...new Set(src.map(r => r && r.sponsor).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const sn = (selectedName || "").trim();
+  const legacy = sn && !names.includes(sn);
+  sel.innerHTML = '<option value="">— Select sponsor —</option>' +
+    (legacy ? `<option value="${esc(sn)}" selected>${esc(sn)} (not in ledger)</option>` : "") +
+    names.map(n => `<option value="${esc(n)}"${n === sn ? " selected" : ""}>${esc(n)}</option>`).join("");
+  sel.value = sn;
+  if (typeof syncBcCombobox === "function") syncBcCombobox(selectId);
+}
 function bcComboboxMoveFocus(selectId, delta) {
   const root = bcComboboxRoot(selectId);
   const state = bcComboboxState[selectId];
@@ -17975,6 +18325,13 @@ document.getElementById("printButton").addEventListener("click", () => window.pr
 
 document.getElementById("addSponsorBtn").addEventListener("click", addSponsor);
 document.getElementById("addSponsorBtn2").addEventListener("click", addSponsor);
+document.getElementById("prospectingSearch")?.addEventListener("input", e => { if (typeof pState === "object") { pState.search = e.target.value; renderProspectingView(); } });
+document.querySelectorAll("#prospectingSegmented [data-pview]").forEach(btn => btn.addEventListener("click", () => {
+  if (typeof pState !== "object") return;
+  pState.view = btn.dataset.pview;
+  document.querySelectorAll("#prospectingSegmented [data-pview]").forEach(b => b.classList.toggle("active", b === btn));
+  renderProspectingView();
+}));
 
 /* ---- Hidden sponsors panel ---- */
 function refreshHiddenSponsorsCount() {
@@ -18090,6 +18447,7 @@ document.getElementById("assetContractSave").addEventListener("click", () => {
   closeAssetContractModal();
   toast("Asset details saved", saved);
   if (document.getElementById("assetFileList")) renderAssetTable();
+  if (typeof renderAssetLedger === "function" && document.getElementById("assetledgerView") && document.getElementById("assetledgerView").classList.contains("active")) renderAssetLedger();
   if (typeof renderContractLanguageLibrary === "function") renderContractLanguageLibrary();
 });
 document.getElementById("assetContractDelete").addEventListener("click", async () => {
@@ -18099,6 +18457,7 @@ document.getElementById("assetContractDelete").addEventListener("click", async (
   closeAssetContractModal();
   toast("Cleared", "No saved language for this asset now");
   if (document.getElementById("assetFileList")) renderAssetTable();
+  if (typeof renderAssetLedger === "function" && document.getElementById("assetledgerView") && document.getElementById("assetledgerView").classList.contains("active")) renderAssetLedger();
   if (typeof renderContractLanguageLibrary === "function") renderContractLanguageLibrary();
 });
 
@@ -18451,7 +18810,7 @@ document.getElementById("lineDetailClose").addEventListener("click", () => docum
 document.getElementById("lineDetailBackdrop").addEventListener("click", e => { if (e.target.id === "lineDetailBackdrop") e.currentTarget.classList.remove("show"); });
 document.getElementById("ld_save").addEventListener("click", saveLineDetail);
 document.getElementById("ld_delete").addEventListener("click", async () => { if (await bcConfirm("Remove this asset from the option", {title:"Remove asset", ok:"Remove", danger:true})) deleteLineDetail(); });
-document.getElementById("propSponsor").addEventListener("input", e => {
+document.getElementById("propSponsor").addEventListener("change", e => {
   currentProposal.sponsorName = e.target.value;
   saveCurrentProposal();
   renderProposalLogo();
@@ -18502,6 +18861,8 @@ document.getElementById("photoCheckReviewFilter").addEventListener("change", e =
 document.getElementById("photoCheckApprovalFilter").addEventListener("change", e => { pcState.approval = e.target.value; renderPhotoCheckList(); });
 initBcCombobox("annualAddSponsor");
 initBcCombobox("annualAddAsset");
+initBcCombobox("propSponsor");
+initBcCombobox("deck_prospect");
 document.getElementById("annualAddClose").addEventListener("click", () => document.getElementById("annualAddBackdrop").classList.remove("show"));
 document.getElementById("annualAddCancel").addEventListener("click", () => document.getElementById("annualAddBackdrop").classList.remove("show"));
 document.getElementById("annualAddBackdrop").addEventListener("click", e => { if (e.target.id === "annualAddBackdrop") e.currentTarget.classList.remove("show"); });
@@ -19020,7 +19381,7 @@ runWhenIdle(pullSharedDisplays, 1600);
 setInterval(() => { if (document.hidden) return; runWhenIdle(pullSharedDisplays); }, LOGO_SYNC_INTERVAL_MS);
 
 const BELL_LOGO_DATA = 'assets/branding/bell_logo_data.png';
-const BEACHBALL_LOGO_DATA = 'assets/branding/beachball_logo_data.png';
+const BEACHBALL_LOGO_DATA = 'data:image/webp;base64,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';
 const NAVY_JS_LOGO_DATA = 'assets/branding/navy_js_logo_data.png';
 (function installPageLogos(){
   document.querySelectorAll(".overview-hero-crest").forEach(img=>{img.src=BEACHBALL_LOGO_DATA;img.alt="Jersey Shore BlueClaws beach-ball logo";});
