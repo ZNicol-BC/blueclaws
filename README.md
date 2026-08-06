@@ -37,7 +37,7 @@ Everything else in the repo is images, settings, and a small deploy helper.
 | `assets/` | All the images the app uses (logos, branding, ballpark photos, board art). Referenced by path from `index.html`. |
 | `netlify.toml` | Netlify's settings (how to build and serve the site). |
 | `package.json` | Lists the one code library the server functions need. |
-| `promote-index.sh` + `.github/workflows/promote-index.yml` | The deploy helper — turns your newest numbered `indexNN.html` into the live `index.html` (see below). |
+| `promoteindex.sh` + `.github/workflows/promoteindex.yml` | The deploy helper — turns whatever new `.html` file you uploaded into the live `index.html` (see below). |
 | `motion-audits/` | Old one-off report file. Not part of the app — safe to delete. |
 
 ---
@@ -64,25 +64,29 @@ the site, check these first.
 
 ---
 
-## How deploying works (the numbered-file trick)
+## How deploying works (upload a new HTML file)
 
 You never hand-edit the live `index.html` directly. Instead:
 
-1. You make a new version of the app and name it with the **next number** —
-   e.g. after `index192.html`, you save `index193.html`.
-2. You upload that file to GitHub (drag-and-drop on the GitHub website is fine).
-3. A GitHub Action automatically **promotes the highest-numbered file** to become
-   the live `index.html`, cleans up the leftovers, and Netlify redeploys the site.
+1. You make a new version of the app and save it as an HTML file with **any
+   name other than `index.html`** — e.g. `index193.html`, `newbuild.html`,
+   whatever your tool happens to save it as.
+2. You upload that one file to GitHub (drag-and-drop on the GitHub website is
+   fine). Only upload **one** new HTML file at a time — the promotion always
+   treats whichever one is on disk as the newest.
+3. A GitHub Action automatically **promotes that file** to become the live
+   `index.html`, deletes the upload, and Netlify redeploys the site.
 
-So the rule is simply: **higher number = newer = what goes live.** That's what
-`promote-index.sh` and the workflow file handle for you.
+So the rule is simply: **the new file you just uploaded is what goes live.**
+That's what `promoteindex.sh` and the workflow file handle for you.
 
 ---
 
 ## Making common changes
 
-- **Change how the app looks or works:** edit `index.html`, save it as the next
-  number, upload it. Wait ~2 minutes, then check the live site.
+- **Change how the app looks or works:** edit `index.html`, save it under a
+  different name (anything but `index.html`), upload it. Wait ~2 minutes,
+  then check the live site.
 - **Add or change an image:** put it in the right `assets/` subfolder and point to
   it from `index.html` by its path.
 - **Add a brand-new kind of saved data:** add its name to the `VALID_BUCKETS` list

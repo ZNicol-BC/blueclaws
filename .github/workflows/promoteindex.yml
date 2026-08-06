@@ -1,13 +1,14 @@
 name: Promote Latest Index File
 
-# Runs when a numbered index file is pushed, when index.html is touched, and
-# on demand. The manual trigger matters: when the site is down, you need a way
-# to re-run the promotion without inventing a commit to trigger it.
+# Runs when any HTML file at the repo root is pushed (a new build upload can
+# be named anything), and on demand. The manual trigger matters: when the site
+# is down, you need a way to re-run the promotion without inventing a commit
+# to trigger it.
 on:
   push:
     branches: [main]
     paths:
-      - 'index*.html'
+      - '*.html'
   workflow_dispatch:
 
 permissions:
@@ -72,7 +73,7 @@ jobs:
             echo "Nothing to commit — already promoted."
             exit 0
           fi
-          git commit -m "chore: promote index${BUILD_NUM:-} to index.html [skip actions]"
+          git commit -m "chore: promote uploaded HTML file to index.html [skip actions]"
           # Rebase-and-retry rather than failing outright. A plain `git push`
           # against a branch that moved during the run fails permanently, which
           # is how a promotion gets dropped and the site is left without an
@@ -106,7 +107,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ ! -f index.html ]; then
-            echo "::error title=Site would 404::index.html is missing from the repo root. Netlify serves / from index.html, so the deployed site will return 404 for every page. Upload a numbered build (index<N>.html) and re-run this workflow."
+            echo "::error title=Site would 404::index.html is missing from the repo root. Netlify serves / from index.html, so the deployed site will return 404 for every page. Upload the new build as any *.html file and re-run this workflow."
             exit 1
           fi
           bytes=$(wc -c < index.html)
@@ -118,4 +119,4 @@ jobs:
             echo "::error title=index.html is not HTML::No <html> tag found in index.html."
             exit 1
           fi
-          echo "index.html present: ${bytes} bytes, version $(grep -oE 'BUILD_VERSION: *[0-9]+' index.html | head -1 || echo unknown)"
+          echo "index.html present: ${bytes} bytes"
