@@ -36,7 +36,7 @@ Everything else in the repo is images, settings, and a small deploy helper.
 | `netlify/functions/contracts.mjs` | Server: saves sponsor contract PDFs. |
 | `netlify.toml` | Netlify's settings (how to build and serve the site). |
 | `package.json` | Lists the one code library the server functions need. |
-| `promoteindex.sh` | The deploy helper — turns whatever new `.html` file you uploaded into the live `index.html` (see below). Runs automatically as part of the Netlify build (`netlify.toml`); `.github/workflows/promoteindex.yml` is a backup that runs the same script via GitHub Actions, but GitHub's hosted runners haven't been able to pick up jobs for this repo, so Netlify is what actually does the promotion right now. |
+| `promoteindex.sh` | The deploy helper — turns whatever new `.html` file you uploaded into the live `index.html` (see below). Runs automatically as part of the Netlify build (`netlify.toml`). There used to be a GitHub Actions workflow doing the same job, but GitHub's hosted runners were never able to pick up a job for this repo (every run failed for months), so it was removed — it was pure noise (failure-notification emails) with no upside once Netlify was handling promotion directly. |
 
 Logos, branding photos, and board art are embedded directly as base64 inside `index.html` (see `LOGO_SEED`, `BOARD_ART_SEED`, and the branding constants near the bottom of the file) — there's no separate `assets/` folder to keep in sync.
 
