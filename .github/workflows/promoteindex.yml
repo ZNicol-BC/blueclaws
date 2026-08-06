@@ -1,0 +1,103 @@
+name: Promote Latest Index File
+
+# Runs when a numbered index file is pushed, when index.html is touched, and
+# on demand. The manual trigger matters: when the site is down, you need a way
+# to re-run the promotion without inventing a commit to trigger it.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index*.html'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Two runs must never promote at the same time. Uploading a file and then
+# deleting another one starts two runs against the same branch; both check out,
+# both promote, and the second push lands on a branch that has already moved —
+# so it fails, and whichever run was carrying the real promotion is the one that
+# gets lost. `cancel-in-progress: false` queues them instead, so the second run
+# sees the first one's result.
+concurrency:
+  group: promote-index-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    # A promotion is seconds of work. Anything past this is stuck, and failing
+    # in 5 minutes beats burning 15 before anyone looks.
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Depth 1 is enough — the script only ever reads the working tree.
+          # The previous `fetch-depth: 0` pulled all 447 commits of a repo where
+          # nearly every commit carries a ~5 MB HTML file.
+          fetch-depth: 1
+
+      - name: Promote latest index file
+        run: bash promote-index.sh --clean
+
+      - name: Commit and push
+        if: env.PROMOTED == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          # Nothing staged means someone else already promoted this build.
+          if git diff --cached --quiet; then
+            echo "Nothing to commit — already promoted."
+            exit 0
+          fi
+          git commit -m "chore: promote index${BUILD_NUM:-} to index.html [skip actions]"
+          # Rebase-and-retry rather than failing outright. A plain `git push`
+          # against a branch that moved during the run fails permanently, which
+          # is how a promotion gets dropped and the site is left without an
+          # index.html.
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt) — rebasing onto the branch and retrying."
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            sleep $(( attempt * 3 ))
+          done
+          echo "::error::Could not push the promoted index.html after 3 attempts."
+          exit 1
+
+      # ---------------------------------------------------------------------
+      # The check that would have caught the outage.
+      #
+      # The site went down because the repo ended up with no index.html at all:
+      # two promotion runs failed, index.html had been deleted by hand, and the
+      # next deploy published a repo whose root had nothing to serve. Netlify
+      # returned 404 for every request and nothing upstream said a word.
+      #
+      # This step runs even when the promotion step is skipped, because "nothing
+      # to promote" is exactly the state in which a missing index.html goes
+      # unnoticed.
+      # ---------------------------------------------------------------------
+      - name: Verify the site has something to serve
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ ! -f index.html ]; then
+            echo "::error title=Site would 404::index.html is missing from the repo root. Netlify serves / from index.html, so the deployed site will return 404 for every page. Upload a numbered build (index<N>.html) and re-run this workflow."
+            exit 1
+          fi
+          bytes=$(wc -c < index.html)
+          if [ "$bytes" -lt 10000 ]; then
+            echo "::error title=index.html looks truncated::index.html is only ${bytes} bytes. A real build is several megabytes."
+            exit 1
+          fi
+          if ! grep -qi '<html' index.html; then
+            echo "::error title=index.html is not HTML::No <html> tag found in index.html."
+            exit 1
+          fi
+          echo "index.html present: ${bytes} bytes, version $(grep -oE 'BUILD_VERSION: *[0-9]+' index.html | head -1 || echo unknown)"
