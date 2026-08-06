@@ -53,14 +53,33 @@ The data is split into a few "buckets" on purpose (sponsor edits, logos, photos,
 displays, contracts) so each stays small and fast. **Don't combine them** — keeping
 them separate is what prevents slow-downs.
 
-**Two settings must exist on the Netlify site** for saving to work
-(Site settings → Environment variables):
+**Three settings must exist on the Netlify site** (Site configuration →
+Environment variables):
 
 - `BLOBS_SITE_ID`
 - `BLOBS_TOKEN`
+- `BCIQ_SHARED_PASSWORD` — the one passphrase everyone types into the login gate
+  on first visit to a browser (see "Who can get in" below). Not hardcoded
+  anywhere in the code on purpose — change it here and every browser will be
+  prompted again next time its stored copy fails to verify.
 
 These are already set on the live site. If saving ever stops working after moving
 the site, check these first.
+
+---
+
+## Who can get in
+
+The app is gated behind a single shared passphrase (`BCIQ_SHARED_PASSWORD` above),
+not individual logins — whoever knows the passphrase gets full access, same as
+everyone else. A browser only needs to enter it once; it's remembered after that
+until the browser's storage is cleared or the passphrase is changed on Netlify.
+
+This app previously used Netlify Identity (real per-person login) for a few hours,
+but the ballpark's own wifi silently blocks `identity.netlify.com`, which that
+widget's login modal depends on — so nobody on-site could actually log in. If you
+ever want real per-person accounts again, that network restriction is the first
+thing to solve (e.g. asking whoever manages ballpark wifi to allow that domain).
 
 ---
 

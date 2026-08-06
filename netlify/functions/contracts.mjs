@@ -44,16 +44,25 @@ function contractStore() {
   });
 }
 
-export default async (req, context) => {
+// Same shared-passphrase check as data.js/media.js — see data.js for why it's not hardcoded.
+function isAuthorized(req) {
+  const expected = process.env.BCIQ_SHARED_PASSWORD;
+  if (!expected) return false;
+  const header = req.headers.get("authorization") || "";
+  const given = header.startsWith("Bearer ") ? header.slice(7) : "";
+  return given === expected;
+}
+
+export default async (req) => {
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
 
   if (req.method === "OPTIONS") return new Response("", { status: 204, headers: CORS });
   // Every call to this function goes through index.html's bciqFetch(), which attaches the
-  // signed-in Netlify Identity token — contracts are real legal documents, so every method
-  // (including GET) requires sign-in, unlike media.js where GET stays open.
-  if (!context.clientContext || !context.clientContext.user) {
-    return json({ error: "Sign in required" }, 401);
+  // shared passphrase — contracts are real legal documents, so every method (including GET)
+  // requires it, unlike media.js where GET stays open.
+  if (!isAuthorized(req)) {
+    return json({ error: "Passphrase required" }, 401);
   }
   if (!id) return json({ error: "missing id" }, 400);
 
