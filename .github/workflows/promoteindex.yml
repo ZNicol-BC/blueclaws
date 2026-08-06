@@ -39,8 +39,26 @@ jobs:
           # nearly every commit carries a ~5 MB HTML file.
           fetch-depth: 1
 
+      # Find the promotion script by pattern rather than by one exact name.
+      # Downloading a file and re-uploading it through a browser has repeatedly
+      # stripped the hyphen ("promote-index.sh" arriving as "promoteindex.sh"),
+      # and the workflow then failed on a missing file while the script sat
+      # right there under a slightly different name. Accept either spelling.
+      - name: Locate the promotion script
+        run: |
+          set -euo pipefail
+          for candidate in promote-index.sh promoteindex.sh promote_index.sh; do
+            if [ -f "$candidate" ]; then
+              echo "PROMOTE_SCRIPT=$candidate" >> "$GITHUB_ENV"
+              echo "Using $candidate"
+              exit 0
+            fi
+          done
+          echo "::error title=No promotion script::Expected promote-index.sh at the repo root. Found none of: promote-index.sh, promoteindex.sh, promote_index.sh"
+          exit 1
+
       - name: Promote latest index file
-        run: bash promote-index.sh --clean
+        run: bash "$PROMOTE_SCRIPT" --clean
 
       - name: Commit and push
         if: env.PROMOTED == 'true'
