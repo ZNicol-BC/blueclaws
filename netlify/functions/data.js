@@ -41,28 +41,13 @@
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type",
   "Content-Type": "application/json"
 };
 const VALID_BUCKETS = new Set(["overrides", "logos", "photos", "displays"]);
-// One shared passphrase, set as the BCIQ_SHARED_PASSWORD environment variable on the
-// Netlify site (Site configuration -> Environment variables) — never hardcoded here or in
-// index.html. The client (see index.html's bciqFetch) sends it as "Authorization: Bearer
-// <passphrase>" on every call. If the env var isn't set at all, every request is rejected —
-// that's deliberate: an unset password must fail closed, not silently allow everyone through.
-function isAuthorized(event) {
-  const expected = process.env.BCIQ_SHARED_PASSWORD;
-  if (!expected) return false;
-  const header = (event.headers && (event.headers.authorization || event.headers.Authorization)) || "";
-  const given = header.startsWith("Bearer ") ? header.slice(7) : "";
-  return given === expected;
-}
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
-  }
-  if (!isAuthorized(event)) {
-    return { statusCode: 401, headers: CORS_HEADERS, body: JSON.stringify({ error: "Passphrase required" }) };
   }
   try {
     const { getStore } = await import("@netlify/blobs");

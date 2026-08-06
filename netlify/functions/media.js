@@ -26,27 +26,12 @@
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization"
+  "Access-Control-Allow-Headers": "Content-Type"
 };
 const DATA_URL_RE = /^data:([^;,]+)(?:;charset=[^;,]+)?;base64,([a-zA-Z0-9+/=]+)$/;
-// Same shared-passphrase check as data.js (see there for why it's not hardcoded).
-function isAuthorized(event) {
-  const expected = process.env.BCIQ_SHARED_PASSWORD;
-  if (!expected) return false;
-  const header = (event.headers && (event.headers.authorization || event.headers.Authorization)) || "";
-  const given = header.startsWith("Bearer ") ? header.slice(7) : "";
-  return given === expected;
-}
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
-  }
-  // Only the write path (POST) requires the passphrase. GET stays open: images are displayed
-  // via plain <img src="...?id=..."> tags all over the app, which can't carry an Authorization
-  // header, so gating GET would break every logo/photo on the page. Reading requires already
-  // knowing a specific image's id; writing is the actual thing worth gating.
-  if (event.httpMethod === "POST" && !isAuthorized(event)) {
-    return { statusCode: 401, headers: CORS_HEADERS, body: JSON.stringify({ error: "Passphrase required" }) };
   }
   try {
     const { getStore } = await import("@netlify/blobs");
