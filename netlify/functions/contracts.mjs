@@ -32,7 +32,7 @@ import { getStore } from "@netlify/blobs";
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
 function contractStore() {
@@ -44,11 +44,17 @@ function contractStore() {
   });
 }
 
-export default async (req) => {
+export default async (req, context) => {
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
 
   if (req.method === "OPTIONS") return new Response("", { status: 204, headers: CORS });
+  // Every call to this function goes through index.html's bciqFetch(), which attaches the
+  // signed-in Netlify Identity token — contracts are real legal documents, so every method
+  // (including GET) requires sign-in, unlike media.js where GET stays open.
+  if (!context.clientContext || !context.clientContext.user) {
+    return json({ error: "Sign in required" }, 401);
+  }
   if (!id) return json({ error: "missing id" }, 400);
 
   try {
