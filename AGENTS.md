@@ -40,12 +40,12 @@ code lives on GitHub. That's the whole system.
    `assets/board-art/tier-1.jpg`. If you move or rename an asset, you MUST update
    every reference to it inside `index.html`, or images break.
 
-5. **New `index.html` files are numbered, and the highest number wins.** When you
-   produce a new version of the front-end, save it as `index` + the next number
-   (e.g. after `index192.html`, the next is `index193.html`). Pushing it to GitHub
-   automatically promotes it to the live `index.html` (see README → "How deploying
-   works"). Also update the `<!-- BUILD_VERSION: N -->` note near the top so the
-   file's number matches its name.
+5. **A new front-end build is any `.html` file that isn't `index.html`, and it
+   always wins.** When you produce a new version of the front-end, save it
+   under any name other than `index.html` (e.g. `index193.html`,
+   `newbuild.html`). Only have **one** such file in the repo root at a time —
+   pushing it to GitHub automatically promotes it to the live `index.html`
+   and deletes it (see README → "How deploying works").
 
 ---
 
