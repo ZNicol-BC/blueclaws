@@ -35,10 +35,10 @@ code lives on GitHub. That's the whole system.
    photos, and displays in separate buckets on purpose — merging them made the app
    slow and caused timeout ("502") errors before. Keep them separate.
 
-4. **Assets are referenced by path — don't rename or move them casually.**
-   Images live in `assets/` and `index.html` points at exact paths like
-   `assets/board-art/tier-1.jpg`. If you move or rename an asset, you MUST update
-   every reference to it inside `index.html`, or images break.
+4. **Images are embedded as base64 directly inside `index.html`, not loaded
+   from files.** Logos, branding photos, and board art live in constants like
+   `LOGO_SEED` and `BOARD_ART_SEED` inside the file itself — there's no
+   `assets/` folder to keep paths in sync with.
 
 5. **A new front-end build is any `.html` file that isn't `index.html`, and it
    always wins.** When you produce a new version of the front-end, save it

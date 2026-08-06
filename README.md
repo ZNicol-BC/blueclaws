@@ -34,11 +34,11 @@ Everything else in the repo is images, settings, and a small deploy helper.
 | `netlify/functions/data.js` | Server: saves small text data (sponsor edits, and info about logos/photos/displays). |
 | `netlify/functions/media.js` | Server: saves the actual image files (photo & logo bytes). |
 | `netlify/functions/contracts.mjs` | Server: saves sponsor contract PDFs. |
-| `assets/` | All the images the app uses (logos, branding, ballpark photos, board art). Referenced by path from `index.html`. |
 | `netlify.toml` | Netlify's settings (how to build and serve the site). |
 | `package.json` | Lists the one code library the server functions need. |
 | `promoteindex.sh` | The deploy helper — turns whatever new `.html` file you uploaded into the live `index.html` (see below). Runs automatically as part of the Netlify build (`netlify.toml`); `.github/workflows/promoteindex.yml` is a backup that runs the same script via GitHub Actions, but GitHub's hosted runners haven't been able to pick up jobs for this repo, so Netlify is what actually does the promotion right now. |
-| `motion-audits/` | Old one-off report file. Not part of the app — safe to delete. |
+
+Logos, branding photos, and board art are embedded directly as base64 inside `index.html` (see `LOGO_SEED`, `BOARD_ART_SEED`, and the branding constants near the bottom of the file) — there's no separate `assets/` folder to keep in sync.
 
 ---
 
@@ -87,8 +87,8 @@ That's what `promoteindex.sh` and the workflow file handle for you.
 - **Change how the app looks or works:** edit `index.html`, save it under a
   different name (anything but `index.html`), upload it. Wait ~2 minutes,
   then check the live site.
-- **Add or change an image:** put it in the right `assets/` subfolder and point to
-  it from `index.html` by its path.
+- **Add or change an image:** convert it to base64 and add it to the matching
+  seed constant in `index.html` (`LOGO_SEED`, `BOARD_ART_SEED`, etc.).
 - **Add a brand-new kind of saved data:** add its name to the `VALID_BUCKETS` list
   in `data.js` (that's the only server change needed), then have the app save to
   that bucket.

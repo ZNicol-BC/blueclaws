@@ -13,12 +13,8 @@
   command = "bash promoteindex.sh --clean && npm install"
 
 # Keep behind-the-scenes files from being opened by the public.
-# Because publish = "." serves the whole repo, without these anyone could open
-# yoursite/motion-audits/... or the raw promoteindex.sh.
-[[redirects]]
-  from = "/motion-audits/*"
-  to = "/404.html"
-  status = 404
+# Because publish = "." serves the whole repo, without this anyone could open
+# the raw promoteindex.sh.
 [[redirects]]
   from = "/promoteindex.sh"
   to = "/404.html"
