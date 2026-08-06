@@ -37,7 +37,7 @@ Everything else in the repo is images, settings, and a small deploy helper.
 | `assets/` | All the images the app uses (logos, branding, ballpark photos, board art). Referenced by path from `index.html`. |
 | `netlify.toml` | Netlify's settings (how to build and serve the site). |
 | `package.json` | Lists the one code library the server functions need. |
-| `promoteindex.sh` + `.github/workflows/promoteindex.yml` | The deploy helper — turns whatever new `.html` file you uploaded into the live `index.html` (see below). |
+| `promoteindex.sh` | The deploy helper — turns whatever new `.html` file you uploaded into the live `index.html` (see below). Runs automatically as part of the Netlify build (`netlify.toml`); `.github/workflows/promoteindex.yml` is a backup that runs the same script via GitHub Actions, but GitHub's hosted runners haven't been able to pick up jobs for this repo, so Netlify is what actually does the promotion right now. |
 | `motion-audits/` | Old one-off report file. Not part of the app — safe to delete. |
 
 ---
@@ -74,8 +74,8 @@ You never hand-edit the live `index.html` directly. Instead:
 2. You upload that one file to GitHub (drag-and-drop on the GitHub website is
    fine). Only upload **one** new HTML file at a time — the promotion always
    treats whichever one is on disk as the newest.
-3. A GitHub Action automatically **promotes that file** to become the live
-   `index.html`, deletes the upload, and Netlify redeploys the site.
+3. Netlify's build step automatically **promotes that file** to become the
+   live `index.html`, deletes the upload, and redeploys the site.
 
 So the rule is simply: **the new file you just uploaded is what goes live.**
 That's what `promoteindex.sh` and the workflow file handle for you.
