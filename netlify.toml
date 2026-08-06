@@ -19,3 +19,16 @@
   from = "/promoteindex.sh"
   to = "/404.html"
   status = 404
+
+# index.html is the whole app and changes on every deploy — it must never be cached long-term
+# (a stale copy would mean stale app code, not just a stale asset). "no-cache" still lets the
+# browser send a conditional request and get a cheap 304 on repeat visits between deploys,
+# instead of re-downloading the full ~4.8MB file every single time.
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"

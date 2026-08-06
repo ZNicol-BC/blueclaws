@@ -41,13 +41,20 @@
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Content-Type": "application/json"
 };
 const VALID_BUCKETS = new Set(["overrides", "logos", "photos", "displays"]);
-exports.handler = async (event) => {
+exports.handler = async (event, context) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
+  }
+  // Requires a signed-in Netlify Identity user (see index.html's bciqFetch, which attaches
+  // the Authorization: Bearer <token> header). Netlify verifies that token and populates
+  // context.clientContext.user before this function ever runs — no verification to do here,
+  // just check it showed up.
+  if (!context.clientContext || !context.clientContext.user) {
+    return { statusCode: 401, headers: CORS_HEADERS, body: JSON.stringify({ error: "Sign in required" }) };
   }
   try {
     const { getStore } = await import("@netlify/blobs");

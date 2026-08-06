@@ -26,12 +26,19 @@
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type"
+  "Access-Control-Allow-Headers": "Content-Type, Authorization"
 };
 const DATA_URL_RE = /^data:([^;,]+)(?:;charset=[^;,]+)?;base64,([a-zA-Z0-9+/=]+)$/;
-exports.handler = async (event) => {
+exports.handler = async (event, context) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
+  }
+  // Only the write path (POST) requires sign-in. GET stays open: images are displayed via
+  // plain <img src="...?id=..."> tags all over the app, which can't carry an Authorization
+  // header, so gating GET would break every logo/photo on the page. Reading requires already
+  // knowing a specific image's id; writing is the actual thing worth gating.
+  if (event.httpMethod === "POST" && (!context.clientContext || !context.clientContext.user)) {
+    return { statusCode: 401, headers: CORS_HEADERS, body: JSON.stringify({ error: "Sign in required" }) };
   }
   try {
     const { getStore } = await import("@netlify/blobs");
