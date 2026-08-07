@@ -10,7 +10,7 @@ ignore them and you'll break things that are annoying to fix.
 ## What this project is (in one breath)
 
 BlueClaws IQ is a sponsorship-management web app for the Jersey Shore BlueClaws.
-The **entire front-end is ONE file: `index.html`** (all HTML, CSS, and JavaScript
+The **entire front-end is ONE file: `BlueClawsIQ.html`** (all HTML, CSS, and JavaScript
 inlined together). The **back-end is three small Netlify Functions** in
 `netlify/functions/` that save data on the server. It's hosted on Netlify and the
 code lives on GitHub. That's the whole system.
@@ -19,10 +19,17 @@ code lives on GitHub. That's the whole system.
 
 ## The golden rules (do not break these)
 
-1. **`index.html` stays a single self-contained file.** Do NOT split the CSS or
-   JavaScript into separate files, and do NOT add relative links to other local
-   files for the app's own code. It has broken in hosting every time someone tried.
-   One file. Everything inlined.
+0. **`BlueClawsIQ.html` is the app's name now; `index.html` is a backup, not a
+   second app.** Static hosting (Netlify included) resolves the bare site URL
+   to `index.html`, so it has to keep existing and keep matching
+   `BlueClawsIQ.html` byte-for-byte — `promoteindex.sh` keeps them in sync
+   automatically on every deploy. Never edit them separately by hand; there is
+   only ever one real version of the file, under two names.
+
+1. **`BlueClawsIQ.html` stays a single self-contained file.** Do NOT split the
+   CSS or JavaScript into separate files, and do NOT add relative links to
+   other local files for the app's own code. It has broken in hosting every
+   time someone tried. One file. Everything inlined.
 
 2. **All real data saves to the SERVER, never the browser.** Sponsor edits, logos,
    photos, board displays, and contracts must go to the Netlify Functions
@@ -35,23 +42,24 @@ code lives on GitHub. That's the whole system.
    photos, and displays in separate buckets on purpose — merging them made the app
    slow and caused timeout ("502") errors before. Keep them separate.
 
-4. **Images are embedded as base64 directly inside `index.html`, not loaded
-   from files.** Logos, branding photos, and board art live in constants like
-   `LOGO_SEED` and `BOARD_ART_SEED` inside the file itself — there's no
-   `assets/` folder to keep paths in sync with.
+4. **Images are embedded as base64 directly inside `BlueClawsIQ.html`, not
+   loaded from files.** Logos, branding photos, and board art live in
+   constants like `LOGO_SEED` and `BOARD_ART_SEED` inside the file itself —
+   there's no `assets/` folder to keep paths in sync with.
 
-5. **A new front-end build is any `.html` file that isn't `index.html`, and it
-   always wins.** When you produce a new version of the front-end, save it
-   under any name other than `index.html` (e.g. `index193.html`,
+5. **A new front-end build is any `.html` file that isn't `BlueClawsIQ.html`
+   or `index.html`, and it always wins.** When you produce a new version of
+   the front-end, save it under any other name (e.g. `index193.html`,
    `newbuild.html`). Only have **one** such file in the repo root at a time —
-   pushing it to GitHub automatically promotes it to the live `index.html`
-   and deletes it (see README → "How deploying works").
+   pushing it to GitHub automatically promotes it to `BlueClawsIQ.html`,
+   mirrors it to `index.html`, and deletes the upload (see README → "How
+   deploying works").
 
 ---
 
 ## How to make a change safely
 
-1. Make your edit (usually inside `index.html`).
+1. Make your edit (usually inside `BlueClawsIQ.html`).
 2. Save it as the next numbered file (`indexNN.html`).
 3. Upload it to the GitHub repo (drag-and-drop in the GitHub website is fine).
 4. Wait ~2 minutes for Netlify to rebuild.

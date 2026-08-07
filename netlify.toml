@@ -2,9 +2,10 @@
 # This tells Netlify how to build and serve the site.
 
 [build]
-  publish = "."                 # serve the repo root (index.html lives here)
+  publish = "."                 # serve the repo root (BlueClawsIQ.html / index.html live here)
   functions = "netlify/functions"
-  # Promote any newly uploaded HTML file to index.html before installing.
+  # Promote any newly uploaded HTML file to BlueClawsIQ.html (and mirror it to
+  # index.html, which the bare site URL resolves to) before installing.
   # This used to be handled by a GitHub Actions workflow, but GitHub's hosted
   # runners have never successfully picked up a job for this account/repo
   # (every run fails with "internal server error" assigning a runner), so the
@@ -20,15 +21,19 @@
   to = "/404.html"
   status = 404
 
-# index.html is the whole app and changes on every deploy — it must never be cached long-term
-# (a stale copy would mean stale app code, not just a stale asset). "no-cache" still lets the
-# browser send a conditional request and get a cheap 304 on repeat visits between deploys,
-# instead of re-downloading the full ~4.8MB file every single time.
+# BlueClawsIQ.html (and its index.html mirror) is the whole app and changes on every deploy —
+# it must never be cached long-term (a stale copy would mean stale app code, not just a stale
+# asset). "no-cache" still lets the browser send a conditional request and get a cheap 304 on
+# repeat visits between deploys, instead of re-downloading the full ~4.8MB file every time.
 [[headers]]
   for = "/"
   [headers.values]
     Cache-Control = "no-cache"
 [[headers]]
   for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/BlueClawsIQ.html"
   [headers.values]
     Cache-Control = "no-cache"
