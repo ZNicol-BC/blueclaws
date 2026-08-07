@@ -1,0 +1,37 @@
+name: Promote uploaded HTML
+
+# Whenever a new .html file is pushed to the repo root (e.g. dragged into
+# GitHub as "index253.html", "newbuild.html", whatever), promote it to
+# BlueClawsIQ.html, mirror it to index.html, and remove the leftover — right
+# in git, not just at Netlify build time. See promoteindex.sh and AGENTS.md
+# rule 0/5 for why this has to hold: exactly one real file, always reachable
+# under both names.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "*.html"
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Promote newest upload
+        run: bash promoteindex.sh --clean
+
+      - name: Commit and push if anything changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to promote."
+          else
+            git commit -m "Auto-promote uploaded HTML to BlueClawsIQ.html"
+            git push
+          fi
