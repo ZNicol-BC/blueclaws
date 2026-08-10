@@ -51,12 +51,12 @@ exports.handler = async (event) => {
   }
   try {
     const { getStore } = await import("@netlify/blobs");
-    const store = getStore({
-      name: "blueclaws-iq-data",
-      consistency: "strong",
-      siteID: process.env.BLOBS_SITE_ID,
-      token: process.env.BLOBS_TOKEN
-    });
+    const storeOptions = { consistency: "strong" };
+    if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
+      storeOptions.siteID = process.env.BLOBS_SITE_ID;
+      storeOptions.token = process.env.BLOBS_TOKEN;
+    }
+    const store = getStore("blueclaws-iq-data", storeOptions);
     if (event.httpMethod === "GET") {
       const params = event.queryStringParameters || {};
       const bucketParam = params.bucket || "overrides";

@@ -35,12 +35,12 @@ exports.handler = async (event) => {
   }
   try {
     const { getStore } = await import("@netlify/blobs");
-    const store = getStore({
-      name: "blueclaws-iq-media",
-      consistency: "strong",
-      siteID: process.env.BLOBS_SITE_ID,
-      token: process.env.BLOBS_TOKEN
-    });
+    const storeOptions = { consistency: "strong" };
+    if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
+      storeOptions.siteID = process.env.BLOBS_SITE_ID;
+      storeOptions.token = process.env.BLOBS_TOKEN;
+    }
+    const store = getStore("blueclaws-iq-media", storeOptions);
     if (event.httpMethod === "GET") {
       const id = (event.queryStringParameters || {}).id;
       if (!id) return { statusCode: 400, headers: CORS_HEADERS, body: "Missing id" };
