@@ -5,7 +5,7 @@ It tracks sponsors, their agreements and values, logos, photos, ballpark signage
 contracts, and fulfillment — all in one place, shared live across everyone's
 browsers.
 
-- **Live site:** https://blueclaws26.netlify.app
+- **Live site:** https://blueclawsiq.netlify.app
 - **Hosting:** Netlify (auto-deploys from this GitHub repo)
 - **If you're an AI assistant (ChatGPT/Claude) about to edit this, read
   [`AGENTS.md`](AGENTS.md) first.**
