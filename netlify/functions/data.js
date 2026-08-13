@@ -32,6 +32,9 @@
 //         own data on its next save)
 //    POST body { id, patch, bucket }   -> merges "patch" into bucket[id]
 //         (bucket defaults to "overrides" if left out)
+//    POST body { bulk, bucket }        -> merges many { id: patch } records in one
+//         read/write. Used for photo recovery so hundreds of restored records do
+//         not rewrite the full bucket hundreds of separate times.
 //
 //  TO ADD A NEW KIND OF SAVED ITEM LATER
 //    Add its name to VALID_BUCKETS below — that's the only server change needed.
@@ -75,8 +78,19 @@ exports.handler = async (event) => {
       } catch {
         return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: "Invalid JSON body" }) };
       }
-      const { id, patch } = payload;
       const bucket = VALID_BUCKETS.has(payload.bucket) ? payload.bucket : "overrides";
+      if (payload.bulk && typeof payload.bulk === "object" && !Array.isArray(payload.bulk)) {
+        const data = (await store.get(bucket, { type: "json" })) || {};
+        let count = 0;
+        for (const [id, patch] of Object.entries(payload.bulk)) {
+          if (!id || typeof patch !== "object" || patch === null || Array.isArray(patch)) continue;
+          data[id] = { ...(data[id] || {}), ...patch };
+          count++;
+        }
+        await store.setJSON(bucket, data);
+        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ ok: true, bucket, count }) };
+      }
+      const { id, patch } = payload;
       if (!id || typeof patch !== "object" || patch === null) {
         return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: "Body must be { id, patch }" }) };
       }
