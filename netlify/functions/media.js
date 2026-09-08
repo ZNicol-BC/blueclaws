@@ -30,7 +30,7 @@ const CORS_HEADERS = {
 };
 const DATA_URL_RE = /^data:([^;,]+)(?:;charset=[^;,]+)?;base64,([a-zA-Z0-9+/=]+)$/;
 function openBlobStore(getStore, name) {
-  const options = { consistency: "strong" };
+  const options = {};
   if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
     options.siteID = process.env.BLOBS_SITE_ID;
     options.token = process.env.BLOBS_TOKEN;

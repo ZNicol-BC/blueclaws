@@ -18,10 +18,11 @@
 //    GET  ?id=<id>            -> download / view the PDF
 //    DELETE ?id=<id>          -> remove the PDF
 //
-//  WHY "strong consistency" (don't remove it)
-//    The chunked upload writes each piece then immediately reads them back to
-//    reassemble. Strong consistency guarantees a just-written piece reads back
-//    correctly; without it, assembly could fail with "missing part N".
+//  NOTE ON CONSISTENCY
+//    The free Netlify runtime available to this site does not expose the
+//    uncached edge URL required by Blobs strong consistency, so this function
+//    uses the default store consistency. Chunked uploads still retry cleanly if
+//    Netlify ever returns a not-yet-visible part.
 //
 //  NOTE: this file uses modern Netlify syntax (export default / Request /
 //  Response), which fits its binary file handling. data.js and media.js use the
@@ -38,7 +39,6 @@ const CORS = {
 function contractStore() {
   const options = {
     name: "bciq-contracts",
-    consistency: "strong",
   };
   if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
     options.siteID = process.env.BLOBS_SITE_ID;

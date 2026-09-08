@@ -51,7 +51,7 @@ const VALID_BUCKETS = new Set(["overrides", "logos", "photos", "displays"]);
 const sidecarIndexKey = (bucket) => `${bucket}__sidecar_index`;
 const sidecarRecordKey = (bucket, id) => `${bucket}__sidecar__${Buffer.from(String(id)).toString("base64url")}`;
 function openBlobStore(getStore, name) {
-  const options = { consistency: "strong" };
+  const options = {};
   if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
     options.siteID = process.env.BLOBS_SITE_ID;
     options.token = process.env.BLOBS_TOKEN;
