@@ -36,12 +36,23 @@ const CORS = {
 };
 
 function contractStore() {
-  return getStore({
+  const options = {
     name: "bciq-contracts",
     consistency: "strong",
-    siteID: process.env.BLOBS_SITE_ID,
-    token: process.env.BLOBS_TOKEN,
-  });
+  };
+  if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
+    options.siteID = process.env.BLOBS_SITE_ID;
+    options.token = process.env.BLOBS_TOKEN;
+  }
+  try {
+    return getStore(options);
+  } catch (e) {
+    const missing = String(e && e.message || e).includes("environment has not been configured");
+    if (missing && (!process.env.BLOBS_SITE_ID || !process.env.BLOBS_TOKEN)) {
+      throw new Error("Netlify Blobs is not configured for this site. Set BLOBS_SITE_ID and BLOBS_TOKEN in Netlify Environment Variables so BlueClaws IQ can save shared agreements.");
+    }
+    throw e;
+  }
 }
 
 export default async (req) => {

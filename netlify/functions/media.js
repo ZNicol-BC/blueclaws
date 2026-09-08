@@ -29,18 +29,29 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type"
 };
 const DATA_URL_RE = /^data:([^;,]+)(?:;charset=[^;,]+)?;base64,([a-zA-Z0-9+/=]+)$/;
+function openBlobStore(getStore, name) {
+  const options = { consistency: "strong" };
+  if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
+    options.siteID = process.env.BLOBS_SITE_ID;
+    options.token = process.env.BLOBS_TOKEN;
+  }
+  try {
+    return getStore({ name, ...options });
+  } catch (e) {
+    const missing = String(e && e.message || e).includes("environment has not been configured");
+    if (missing && (!process.env.BLOBS_SITE_ID || !process.env.BLOBS_TOKEN)) {
+      throw new Error("Netlify Blobs is not configured for this site. Set BLOBS_SITE_ID and BLOBS_TOKEN in Netlify Environment Variables so BlueClaws IQ can save shared photos and logos.");
+    }
+    throw e;
+  }
+}
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
   }
   try {
     const { getStore } = await import("@netlify/blobs");
-    const storeOptions = { consistency: "strong" };
-    if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
-      storeOptions.siteID = process.env.BLOBS_SITE_ID;
-      storeOptions.token = process.env.BLOBS_TOKEN;
-    }
-    const store = getStore("blueclaws-iq-media", storeOptions);
+    const store = openBlobStore(getStore, "blueclaws-iq-media");
     if (event.httpMethod === "GET") {
       const id = (event.queryStringParameters || {}).id;
       if (!id) return { statusCode: 400, headers: CORS_HEADERS, body: "Missing id" };

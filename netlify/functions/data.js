@@ -48,18 +48,60 @@ const CORS_HEADERS = {
   "Content-Type": "application/json"
 };
 const VALID_BUCKETS = new Set(["overrides", "logos", "photos", "displays"]);
+const sidecarIndexKey = (bucket) => `${bucket}__sidecar_index`;
+const sidecarRecordKey = (bucket, id) => `${bucket}__sidecar__${Buffer.from(String(id)).toString("base64url")}`;
+function openBlobStore(getStore, name) {
+  const options = { consistency: "strong" };
+  if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
+    options.siteID = process.env.BLOBS_SITE_ID;
+    options.token = process.env.BLOBS_TOKEN;
+  }
+  try {
+    return getStore({ name, ...options });
+  } catch (e) {
+    const missing = String(e && e.message || e).includes("environment has not been configured");
+    if (missing && (!process.env.BLOBS_SITE_ID || !process.env.BLOBS_TOKEN)) {
+      throw new Error("Netlify Blobs is not configured for this site. Set BLOBS_SITE_ID and BLOBS_TOKEN in Netlify Environment Variables so BlueClaws IQ can save shared team data.");
+    }
+    throw e;
+  }
+}
+async function readJSON(store, key, fallback) {
+  try {
+    const value = await store.get(key, { type: "json" });
+    return value === null || value === undefined ? fallback : value;
+  } catch {
+    return fallback;
+  }
+}
+async function readBucket(store, bucket) {
+  const data = await readJSON(store, bucket, {});
+  const index = await readJSON(store, sidecarIndexKey(bucket), []);
+  const ids = Array.isArray(index) ? index : Object.keys(index || {});
+  for (const id of ids) {
+    const record = await readJSON(store, sidecarRecordKey(bucket, id), null);
+    if (!record || typeof record !== "object" || Array.isArray(record)) continue;
+    data[id] = { ...(data[id] || {}), ...record };
+  }
+  return data;
+}
+async function writeSidecars(store, bucket, records) {
+  const existing = await readJSON(store, sidecarIndexKey(bucket), []);
+  const ids = new Set(Array.isArray(existing) ? existing : Object.keys(existing || {}));
+  for (const [id, record] of Object.entries(records)) {
+    if (!id || !record || typeof record !== "object" || Array.isArray(record)) continue;
+    ids.add(id);
+    await store.setJSON(sidecarRecordKey(bucket, id), record);
+  }
+  await store.setJSON(sidecarIndexKey(bucket), Array.from(ids));
+}
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
   }
   try {
     const { getStore } = await import("@netlify/blobs");
-    const storeOptions = { consistency: "strong" };
-    if (process.env.BLOBS_SITE_ID && process.env.BLOBS_TOKEN) {
-      storeOptions.siteID = process.env.BLOBS_SITE_ID;
-      storeOptions.token = process.env.BLOBS_TOKEN;
-    }
-    const store = getStore("blueclaws-iq-data", storeOptions);
+    const store = openBlobStore(getStore, "blueclaws-iq-data");
     if (event.httpMethod === "GET") {
       const params = event.queryStringParameters || {};
       const bucketParam = params.bucket || "overrides";

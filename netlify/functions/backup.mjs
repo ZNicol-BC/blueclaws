@@ -31,7 +31,9 @@
 // ============================================================================
 import { getStore } from "@netlify/blobs";
 
-export const config = { schedule: "0 8 * * *" }; // daily, 8:00 UTC
+// Scheduled backups are disabled while the site is on Netlify's credit-based Free plan.
+// The function can still be invoked manually if a snapshot is needed.
+export const config = {};
 
 const BUCKETS = ["overrides", "logos", "photos", "displays"];
 const RETENTION_DAYS = 30;
