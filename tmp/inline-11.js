@@ -1,0 +1,1 @@
+try{setTimeout(function(){try{renderGlance();}catch(e){}},1400);setTimeout(function(){try{renderGlance();}catch(e){}},4000);setInterval(function(){try{if(document.hidden)return;renderGlance();}catch(e){}},30000);}catch(e){}
