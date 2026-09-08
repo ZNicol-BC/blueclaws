@@ -108,9 +108,10 @@ exports.handler = async (event) => {
       const bucket = VALID_BUCKETS.has(bucketParam) ? bucketParam : "overrides";
       if (params.reset === "yes-really") {
         await store.setJSON(bucket, {});
+        await store.setJSON(sidecarIndexKey(bucket), []);
         return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ reset: bucket, ok: true }) };
       }
-      const data = (await store.get(bucket, { type: "json" })) || {};
+      const data = await readBucket(store, bucket);
       return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(data) };
     }
     if (event.httpMethod === "POST") {
@@ -122,24 +123,22 @@ exports.handler = async (event) => {
       }
       const bucket = VALID_BUCKETS.has(payload.bucket) ? payload.bucket : "overrides";
       if (payload.bulk && typeof payload.bulk === "object" && !Array.isArray(payload.bulk)) {
-        const data = (await store.get(bucket, { type: "json" })) || {};
         let count = 0;
+        const sidecars = {};
         for (const [id, patch] of Object.entries(payload.bulk)) {
           if (!id || typeof patch !== "object" || patch === null || Array.isArray(patch)) continue;
-          data[id] = { ...(data[id] || {}), ...patch };
+          sidecars[id] = patch;
           count++;
         }
-        await store.setJSON(bucket, data);
+        await writeSidecars(store, bucket, sidecars);
         return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ ok: true, bucket, count }) };
       }
       const { id, patch } = payload;
       if (!id || typeof patch !== "object" || patch === null) {
         return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: "Body must be { id, patch }" }) };
       }
-      const data = (await store.get(bucket, { type: "json" })) || {};
-      data[id] = { ...(data[id] || {}), ...patch };
-      await store.setJSON(bucket, data);
-      return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(data[id]) };
+      await writeSidecars(store, bucket, { [id]: patch });
+      return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ ...(patch || {}), ok: true }) };
     }
     return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: "Method not allowed" }) };
   } catch (e) {

@@ -6123,6 +6123,14 @@ html[data-dz="off"] .dz-toggle { opacity: .55; }
         <small id="setSitePasswordHint" style="min-height:16px; color:var(--muted); font-size:var(--text-xs); font-weight:700;"></small>
       </div>
 
+      <div class="settings-row">
+        <div>
+          <strong>Login gate</strong>
+          <small>Show the password screen again on this browser. Chrome can still save and autofill the password.</small>
+        </div>
+        <button class="secondary-button" id="settingsLogoutGate" type="button">Log out</button>
+      </div>
+
       <div class="settings-row" style="align-items:stretch; flex-direction:column; gap:var(--space-8);">
         <button type="button" id="setStageToggle" aria-expanded="false" style="display:flex; align-items:center; gap:var(--space-8); width:100%; background:none; border:none; cursor:pointer; padding:0; text-align:left; color:inherit; font:inherit;">
           <span id="setStageChevron" style="display:inline-block; transition:transform .12s; color:var(--muted);">▸</span>
@@ -6882,8 +6890,13 @@ function loadDeadLetters() {
 function saveDeadLetters(list){ return durableSet(SYNC_DEAD_KEY, JSON.stringify(list.slice(-25)), "the record of a change that failed to sync"); }
 function recordDeadLetter(item,reason){
   const list=loadDeadLetters();
+  let retryPatch = null;
+  try {
+    const raw = JSON.stringify(item.patch || {});
+    if (raw.length < 300000) retryPatch = item.patch || {};
+  } catch (e) {}
   list.push({key:item.key,id:item.id,bucket:item.bucket,reason,at:new Date().toISOString(),
-             fields:Object.keys(item.patch||{}).join(", ")});
+             fields:Object.keys(item.patch||{}).join(", "),patch:retryPatch});
   saveDeadLetters(list);
   announceDeadLetter(item,reason);
 }
@@ -6915,6 +6928,23 @@ function announceDeadLetter(item,reason){
   }catch(e){}
 }
 function clearDeadLetters(){saveDeadLetters([]);updateSyncStatus();}
+function retryRecoverableDeadLetters(){
+  const list = loadDeadLetters();
+  const keep = [];
+  let restored = 0;
+  list.forEach(d => {
+    if (d && d.id && d.patch && typeof d.patch === "object" && !Array.isArray(d.patch)) {
+      queueSharedWrite(d.id, d.patch, d.bucket || "overrides");
+      restored++;
+    } else {
+      keep.push(d);
+    }
+  });
+  saveDeadLetters(keep);
+  updateSyncStatus();
+  if (restored) flushSharedQueue();
+  return restored;
+}
 function loadSyncQueue(){try{return JSON.parse(memStore.getItem(SYNC_QUEUE_KEY))||[];}catch{return [];}}
 function hasQueuedSharedSave(id,bucket){const key=(bucket||"overrides")+":"+id;return loadSyncQueue().some(x=>x.key===key||((x.bucket||"overrides")+":"+x.id)===key);}
 /* index242 — if either of these was mirrored to IndexedDB during a full-storage episode,
@@ -7053,7 +7083,8 @@ function syncDetailHtml() {
     <div class="sync-dead-list">
       ${(c.deadList || []).slice(-5).reverse().map(d => `<div class="sync-dead-row"><small>${esc(d.bucket)} · ${esc(d.id)}</small><span>${esc(d.reason)}</span></div>`).join("")}
     </div>
-    <p class="sync-detail-note">These are saved in this browser but the server would not take them. Usually that means the change was too large to sync. Dismissing clears the warning; it does not delete your data.</p>
+    <p class="sync-detail-note">These are saved in this browser but the server would not take them. Retry refused changes sends any recoverable local copies back to the team board. Dismissing clears the warning; it does not delete your data.</p>
+    <button type="button" class="secondary-button" id="syncRetryDead">Retry refused changes</button>
     <button type="button" class="secondary-button" id="syncDismissDead">Dismiss these</button>` : "";
   return `
     <div class="sync-detail-head">
@@ -7107,6 +7138,12 @@ function toggleSyncDetail(force) {
   };
   const dismiss = panel.querySelector("#syncDismissDead");
   if (dismiss) dismiss.onclick = () => { clearDeadLetters(); toggleSyncDetail(true); toast("Cleared", "The warning is dismissed — nothing was deleted.", true); };
+  const retryDead = panel.querySelector("#syncRetryDead");
+  if (retryDead) retryDead.onclick = () => {
+    const n = retryRecoverableDeadLetters();
+    toggleSyncDetail(true);
+    toast(n ? "Retrying refused changes" : "Nothing recoverable to retry", n ? `${n} change${n === 1 ? "" : "s"} moved back into the sync queue.` : "Open and save the affected record again if the old warning did not include a retry copy.", true);
+  };
   panel.querySelector("#syncRetryNow").focus();
 }
 function updateSyncStatus() {
@@ -26986,6 +27023,18 @@ document.getElementById("setSitePasswordBtn").addEventListener("click", () => {
   if (hint) { hint.textContent = "Site password updated. It will sync to teammates through the shared site data."; hint.style.color = "var(--blue-text)"; }
   toast("Site password updated", "The new password is saved and syncing to the team.", true);
 });
+document.getElementById("settingsLogoutGate").addEventListener("click", () => {
+  try { sessionStorage.removeItem("bciq.site.auth"); } catch (e) {}
+  try { localStorage.removeItem("bciq.site.auth"); } catch (e) {}
+  try { sessionStorage.setItem("bciq.liveUpdates", "0"); } catch (e) {}
+  document.documentElement.classList.remove("bciq-unlocked");
+  document.documentElement.classList.add("bciq-locked");
+  document.getElementById("settingsBackdrop").classList.remove("show");
+  setTimeout(() => {
+    const input = document.getElementById("bciqPasswordInput");
+    if (input) { input.value = ""; input.focus(); }
+  }, 60);
+});
 (function wireStageDropdown() {
   const tog = document.getElementById("setStageToggle");
   if (!tog) return;
@@ -27807,7 +27856,22 @@ setInterval(() => { if (document.hidden && !loadSyncQueue().length) return; upda
 setInterval(() => { if (SHARED_SYNC_ENABLED && loadSyncQueue().length) flushSharedQueue(); }, 20000);
 setInterval(() => { if (document.hidden || !bciqLiveUpdatesEnabled()) return; if (requestTaskViewIsActive()) runWhenIdle(() => pullSharedRequestsData(), 150); }, 3000); /* index258: live request polling only runs when the user opts into Live Updates at login. */
 setInterval(() => { if (document.hidden || !bciqLiveUpdatesEnabled()) return; pulseOnRemoteChange(); applyWaveTempo(); }, 25000);
-runWhenIdle(() => { checkPerformanceHealth(); if (bciqLiveUpdatesEnabled()) { pullSharedData(); pullSharedContracts(); } }, 600);
+let bciqInitialSyncStarted = false;
+function bciqInitialCatchupSync() {
+  if (bciqInitialSyncStarted || !SHARED_SYNC_ENABLED) return;
+  if (document.documentElement.classList.contains("bciq-locked")) return;
+  bciqInitialSyncStarted = true;
+  runWhenIdle(() => {
+    checkPerformanceHealth();
+    flushSharedQueue().then(pullSharedData).catch(() => updateSyncStatus());
+  }, 600);
+  runWhenIdle(() => { try { pullSharedContracts(); } catch (e) {} }, 1000);
+  runWhenIdle(() => { try { pullSharedLogos(); } catch (e) {} }, 1400);
+  runWhenIdle(() => { try { pullSharedDisplays(); } catch (e) {} }, 1800);
+  runWhenIdle(() => { try { pullSharedPhotos(); } catch (e) {} }, 2400);
+}
+runWhenIdle(bciqInitialCatchupSync, 600);
+window.addEventListener("bciq-unlocked", () => runWhenIdle(bciqInitialCatchupSync, 200));
 setInterval(() => { if (document.hidden || !bciqLiveUpdatesEnabled()) return; runWhenIdle(pullSharedData); }, SHARED_SYNC_INTERVAL_MS);
 /* PERF: when the tab was hidden the periodic polls above were skipped, so pull once on
    return to catch up on anything teammates changed while you were away. */
@@ -27897,17 +27961,13 @@ try { bciqAutoTidyStorage(); } catch (e) {}
     } catch (e) { clearInterval(guard); }
   }, 1000);
 })();
-runWhenIdle(() => { if (bciqLiveUpdatesEnabled()) pullSharedLogos(); }, 1200);
 setInterval(() => { if (document.hidden || !bciqLiveUpdatesEnabled()) return; runWhenIdle(pullSharedLogos); }, LOGO_SYNC_INTERVAL_MS);
-runWhenIdle(() => { if (bciqLiveUpdatesEnabled()) pullSharedContracts(); }, 1800);
 setInterval(() => { if (document.hidden || !bciqLiveUpdatesEnabled()) return; runWhenIdle(pullSharedContracts); }, LOGO_SYNC_INTERVAL_MS);
-runWhenIdle(() => { if (bciqLiveUpdatesEnabled()) pullSharedDisplays(); }, 1600);
 setInterval(() => { if (document.hidden || !bciqLiveUpdatesEnabled()) return; runWhenIdle(pullSharedDisplays); }, LOGO_SYNC_INTERVAL_MS);
 /* index211: photos were PUSH-ONLY — pullSharedPhotos existed (with the same pending-write and
    recently-pushed race guards as every other pull) but nothing ever called it, so a photo tagged
    on one computer never appeared on another until a manual reload. It now polls on the same
    60-second cadence as logos, displays, and contracts. */
-runWhenIdle(() => { if (bciqLiveUpdatesEnabled()) pullSharedPhotos(); }, 2000);
 /* index256: one delegated drag handler for every photo on every surface, present or future. */
 try { wireGlobalPhotoDragOut(); wireDragEdgeWatch(); } catch (e) { console.error("global photo drag wiring", e); }
 /* index237: after the first pull has settled, sweep up anything this browser is holding that the
