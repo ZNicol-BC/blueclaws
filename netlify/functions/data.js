@@ -100,7 +100,8 @@ exports.handler = async (event) => {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
   }
   try {
-    const { getStore } = await import("@netlify/blobs");
+    const { connectLambda, getStore } = await import("@netlify/blobs");
+    if (typeof connectLambda === "function") connectLambda(event);
     const store = openBlobStore(getStore, "blueclaws-iq-data");
     if (event.httpMethod === "GET") {
       const params = event.queryStringParameters || {};
@@ -110,6 +111,13 @@ exports.handler = async (event) => {
         await store.setJSON(bucket, {});
         await store.setJSON(sidecarIndexKey(bucket), []);
         return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ reset: bucket, ok: true }) };
+      }
+      if (params.id) {
+        const id = String(params.id);
+        const bucketData = await readJSON(store, bucket, {});
+        const record = await readJSON(store, sidecarRecordKey(bucket, id), null);
+        const merged = { ...(bucketData && bucketData[id] || {}), ...(record || {}) };
+        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(merged) };
       }
       const data = await readBucket(store, bucket);
       return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(data) };

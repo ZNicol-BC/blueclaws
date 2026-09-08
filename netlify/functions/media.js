@@ -50,7 +50,8 @@ exports.handler = async (event) => {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
   }
   try {
-    const { getStore } = await import("@netlify/blobs");
+    const { connectLambda, getStore } = await import("@netlify/blobs");
+    if (typeof connectLambda === "function") connectLambda(event);
     const store = openBlobStore(getStore, "blueclaws-iq-media");
     if (event.httpMethod === "GET") {
       const id = (event.queryStringParameters || {}).id;

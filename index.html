@@ -4204,10 +4204,10 @@ html[data-dz="off"] .dz-toggle { opacity: .55; }
     function syncRemotePassword(){
       if (!/^https?:$/.test(location.protocol)) return Promise.resolve(cachedPassword);
       var timeout = new Promise(function(resolve){ setTimeout(function(){ resolve(cachedPassword); }, 1600); });
-      var remote = fetch("/.netlify/functions/data?bucket=overrides", { cache: "no-store" })
+      var remote = fetch("/.netlify/functions/data?bucket=overrides&id=sitePassword", { cache: "no-store" })
         .then(function(res){ return res.ok ? res.json() : null; })
         .then(function(shared){
-          var remote = shared && shared.sitePassword && shared.sitePassword.value;
+          var remote = shared && shared.value;
           if (remote) {
             cachedPassword = String(remote);
             try { localStorage.setItem(KEY, cachedPassword); } catch(e) {}
