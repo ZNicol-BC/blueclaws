@@ -6872,6 +6872,7 @@ let lastSyncError = null;
 let syncInFlight = false;
 const SYNC_MAX_ATTEMPTS = 8;
 const SYNC_DEAD_KEY = "blueclaws-iq-sync-dead";
+const SYNC_DEAD_MAX = 8;
 /* A write the server refused is dropped from the retry queue but NOT thrown away silently —
    it lands here and is reported in the sync panel, so "it didn't save" is visible instead of
    being a badge that stays yellow with no explanation. */
@@ -6880,20 +6881,23 @@ function loadDeadLetters() {
      before anyone could see them. */
   try {
     const list = JSON.parse(memStore.getItem(SYNC_DEAD_KEY)) || [];
-    const cutoff = Date.now() - 14 * 86400000;
-    return Array.isArray(list) ? list.filter(d => { const t = Date.parse(d.at || "") || 0; return !t || t >= cutoff; }) : [];
+    const cutoff = Date.now() - 3 * 86400000;
+    return Array.isArray(list) ? list
+      .filter(d => { const t = Date.parse(d.at || "") || 0; return !t || t >= cutoff; })
+      .slice(-SYNC_DEAD_MAX)
+      .map(d => ({ ...d, patch: d && d.patch && d.bucket !== "photos" && d.bucket !== "logos" && d.bucket !== "displays" ? d.patch : null })) : [];
   } catch (e) { return []; }
 }
 /* index242 — this log is the mechanism that makes "it didn't save" visible. It used to be
    able to fail silently itself, at exactly the moment it was most needed (storage full),
    which erased the only record of a permanently dropped edit. Durable now. */
-function saveDeadLetters(list){ return durableSet(SYNC_DEAD_KEY, JSON.stringify(list.slice(-25)), "the record of a change that failed to sync"); }
+function saveDeadLetters(list){ return durableSet(SYNC_DEAD_KEY, JSON.stringify((list || []).slice(-SYNC_DEAD_MAX)), "the record of a change that failed to sync"); }
 function recordDeadLetter(item,reason){
   const list=loadDeadLetters();
   let retryPatch = null;
   try {
     const raw = JSON.stringify(item.patch || {});
-    if (raw.length < 300000) retryPatch = item.patch || {};
+    if (raw.length < 50000 && !["photos","logos","displays"].includes(item.bucket || "")) retryPatch = item.patch || {};
   } catch (e) {}
   list.push({key:item.key,id:item.id,bucket:item.bucket,reason,at:new Date().toISOString(),
              fields:Object.keys(item.patch||{}).join(", "),patch:retryPatch});
@@ -6945,6 +6949,9 @@ function retryRecoverableDeadLetters(){
   if (restored) flushSharedQueue();
   return restored;
 }
+(function pruneDeadLettersOnBoot(){
+  try { saveDeadLetters(loadDeadLetters()); } catch (e) {}
+})();
 function loadSyncQueue(){try{return JSON.parse(memStore.getItem(SYNC_QUEUE_KEY))||[];}catch{return [];}}
 function hasQueuedSharedSave(id,bucket){const key=(bucket||"overrides")+":"+id;return loadSyncQueue().some(x=>x.key===key||((x.bucket||"overrides")+":"+x.id)===key);}
 /* index242 — if either of these was mirrored to IndexedDB during a full-storage episode,
@@ -6985,6 +6992,21 @@ function queueSharedWrite(id,patch,bucket){
   saveSyncQueue(q);markRecentPush(id,bucket);return entry;
 }
 function hasPendingWrite(id,bucket){return loadSyncQueue().some(x=>x.id===id&&x.bucket===(bucket||"overrides"));}
+async function bciqPrepareQueuedPatchForPost(item) {
+  if (!item || !item.patch || typeof item.patch !== "object") return item;
+  const patch = { ...(item.patch || {}) };
+  if (item.bucket === "photos" && typeof patch.dataUrl === "string" && patch.dataUrl.startsWith("data:")) {
+    const url = await uploadMediaBlob(item.id, patch.dataUrl);
+    if (!url) throw new Error("Photo media upload is not available yet");
+    patch.dataUrl = url;
+  }
+  if (item.bucket === "logos" && typeof patch.logoDataUrl === "string" && patch.logoDataUrl.startsWith("data:")) {
+    const url = await uploadMediaBlob(item.id, patch.logoDataUrl);
+    if (!url) throw new Error("Logo media upload is not available yet");
+    patch.logoDataUrl = url;
+  }
+  return { ...item, patch };
+}
 /* ---- Recent-push grace window ----
    Fixes a real race: a local write can finish POSTing successfully (clearing it from the
    pending queue) microseconds before the *next* 8-second poll's GET request reaches the
@@ -7015,11 +7037,17 @@ async function flushSharedQueue(){
       if(item.nextTryAt && now < item.nextTryAt){ remaining.push(item); continue; }
       const attempts=(item.attempts||0)+1;
       try{
-        const body=JSON.stringify({id:item.id,patch:item.patch,bucket:item.bucket});
+        const readyItem = await bciqPrepareQueuedPatchForPost(item);
+        const body=JSON.stringify({id:readyItem.id,patch:readyItem.patch,bucket:readyItem.bucket});
+        if (body.length > 900000) {
+          const tooLarge = new Error("Queued change is too large for the shared sync endpoint");
+          tooLarge.status = 413;
+          throw tooLarge;
+        }
         const res=await fetch(SHARED_DATA_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body});
         if(!res.ok){const err=new Error(`HTTP ${res.status}`);err.status=res.status;throw err;}
         lastSyncedAt=Date.now();lastSyncError=null;
-        sent.set(item.key, JSON.stringify(item.patch));   // index173: remember exactly what we sent for this key
+        sent.set(item.key, JSON.stringify(item.patch));   // index173: remember the queued version so a converted media upload can still drain
       }
       catch(e){
         const status=e.status||0;
@@ -19369,6 +19397,7 @@ const PHOTO_RESTORE_PACK_URL = "photo-restore-pack-2026-08-10.json";
 const PHOTO_RESTORE_VERSION = "2026-08-13-active-annual-media-restore-v4";
 const PHOTO_RESTORE_FLAG_KEY = "bciq_photo_restore_pack_version";
 const PHOTO_RESTORE_SHARED_FLAG_KEY = "bciq_photo_restore_shared_version";
+const PHOTO_RESTORE_MANUAL_FLAG_KEY = "bciq_run_static_photo_restore";
 const PHOTO_RESTORE_SAMPLE_IDS = [
   "photo_1785946961139_rwcf6",
   "photo_1785947026982_e379g",
@@ -19394,6 +19423,14 @@ function waitForPhotoLibraryHydration(timeoutMs = 6000) {
 }
 async function applyStaticPhotoRestorePack() {
   try {
+    /* v2026.09.08 — this is an emergency recovery pack, not normal app data.
+       Leaving it automatic made every new browser download an 18 MB JSON file and potentially
+       re-upload hundreds of photos through Netlify Functions, which caused the memory crash and
+       unnecessary credit usage. Shared photos now load from the photos bucket; run this only by
+       explicitly setting localStorage/sessionStorage bciq_run_static_photo_restore=1 for a
+       one-off recovery. */
+    const manual = sessionStorage.getItem(PHOTO_RESTORE_MANUAL_FLAG_KEY) === "1" || memStore.getItem(PHOTO_RESTORE_MANUAL_FLAG_KEY) === "1";
+    if (!manual) return;
     await waitForPhotoLibraryHydration();
     if (memStore.getItem(PHOTO_RESTORE_FLAG_KEY) === PHOTO_RESTORE_VERSION && photoRestoreSamplesPresent()) return;
     const res = await fetch(PHOTO_RESTORE_PACK_URL, { cache: "no-store" });
@@ -19437,6 +19474,7 @@ async function applyStaticPhotoRestorePack() {
     }
     queueStaticPhotoRestorePackToShared(records);
     if (photoRestoreSamplesPresent()) memStore.setItem(PHOTO_RESTORE_FLAG_KEY, PHOTO_RESTORE_VERSION);
+    try { sessionStorage.removeItem(PHOTO_RESTORE_MANUAL_FLAG_KEY); memStore.removeItem(PHOTO_RESTORE_MANUAL_FLAG_KEY); } catch (e) {}
   } catch (e) {
     console.error("BlueClaws IQ: recovered photo restore pack failed", e);
   }
@@ -27903,7 +27941,7 @@ migrateMediaKeyToIndexedDb(LOGO_KEY, v => { logosMemCache = v; });
 /* index248: photos hydrate through their own path — it merges instead of overwriting and it
    always resolves photoLibraryHydrated. See the block above savePhotoLibraryLocalOnly. */
 hydratePhotoLibraryFromDisk();
-runWhenIdle(applyStaticPhotoRestorePack, 900);
+if (memStore.getItem(PHOTO_RESTORE_MANUAL_FLAG_KEY) === "1") runWhenIdle(applyStaticPhotoRestorePack, 900);
 // One-time, self-healing across every browser: moves the base64 board-artwork blob out of the
 // ~5MB localStorage and into IndexedDB, then deletes the localStorage copy. This is what clears
 // the "storage over 80%" state on machines that had been filling up. Runs on every load; a no-op
