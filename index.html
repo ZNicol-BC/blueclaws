@@ -25,7 +25,9 @@
 (function(){
   try {
     if (sessionStorage.getItem("bciq.liveUpdates") !== "1") sessionStorage.setItem("bciq.liveUpdates", "0");
-    document.documentElement.classList.add((sessionStorage.getItem("bciq.site.auth") === "ok" || localStorage.getItem("bciq.site.auth") === "ok") ? "bciq-unlocked" : "bciq-locked");
+    localStorage.removeItem("bciq.site.auth");
+    sessionStorage.removeItem("bciq.site.auth");
+    document.documentElement.classList.add("bciq-locked");
   } catch (e) {
     document.documentElement.classList.add("bciq-locked");
   }
@@ -4178,7 +4180,7 @@ html[data-dz="off"] .dz-toggle { opacity: .55; }
       </label>
       <label class="bciq-remember" for="bciqRememberBrowser">
         <input id="bciqRememberBrowser" type="checkbox" checked>
-        Remember this browser
+        Remember my name on this browser
       </label>
       <label for="bciqLiveMode">Update mode
         <select id="bciqLiveMode" name="bciq_live_mode">
@@ -4221,8 +4223,6 @@ html[data-dz="off"] .dz-toggle { opacity: .55; }
     function unlock(remember){
       saveIdentity();
       saveLiveMode();
-      try { sessionStorage.setItem("bciq.site.auth", "ok"); } catch(e) {}
-      if (remember) { try { localStorage.setItem("bciq.site.auth", "ok"); } catch(e) {} }
       document.documentElement.classList.remove("bciq-locked");
       document.documentElement.classList.add("bciq-unlocked");
       try { window.dispatchEvent(new Event("bciq-unlocked")); } catch(e) {}
@@ -5255,6 +5255,7 @@ html[data-dz="off"] .dz-toggle { opacity: .55; }
 
             <div style="display:flex; gap:var(--space-10); align-items:center; flex-wrap:wrap;">
               <button class="primary-button full" id="saveProposalBtn" style="max-width:280px;">Save proposal</button>
+              <button class="secondary-button" id="sendProposalApprovalBtn" type="button">Send for approval</button>
               <button class="secondary-button" id="newProposalBtn" type="button" title="Discard unsaved changes and start a blank proposal">+ New proposal</button>
             </div>
           </div>
@@ -19181,9 +19182,9 @@ function updateOptionsNavCount() {
 }
 function saveProposal() {
   const sponsorName = document.getElementById("propSponsor").value.trim();
-  if (!sponsorName) { toast("Name it first", "Enter a sponsor / prospect name"); return; }
+  if (!sponsorName) { toast("Name it first", "Enter a sponsor / prospect name"); return null; }
   const hasItems = currentProposal.options.some(o => o.items.length);
-  if (!hasItems) { toast("Nothing to save", "Add at least one asset to an option"); return; }
+  if (!hasItems) { toast("Nothing to save", "Add at least one asset to an option"); return null; }
   currentProposal.sponsorName = sponsorName;
   /* index214: proposals carry the sponsor ID too — same reasoning as decks. */
   currentProposal.sponsorId = ((typeof findSponsorByName === "function" && findSponsorByName(sponsorName)) || {}).id || currentProposal.sponsorId || null;
@@ -19234,6 +19235,91 @@ function saveProposal() {
   saveCurrentProposal();
   renderOptionsView();
   renderSavedProposals();
+  return currentProposal;
+}
+
+function proposalApprovalSummary(p) {
+  if (!p) return "";
+  const lines = [
+    `Sponsor: ${p.sponsorName || "Untitled"}`,
+    `Sales rep: ${p.salesRep || "Not set"}`,
+    `Proposal date: ${p.dateCreated || today()}`
+  ];
+  if (p.digideckLink) lines.push(`Digideck proposal: ${p.digideckLink}`);
+  if (p.notes) lines.push(`Notes: ${p.notes}`);
+  const summary = optionsPlainSummary(p.sponsorName);
+  return [lines.join("\n"), summary].filter(Boolean).join("\n\n");
+}
+
+function upsertOptionsApprovalRequest(p) {
+  const sponsor = findSponsorByName(p.sponsorName);
+  const all = loadRequests();
+  const needle = String(p.sponsorName || "").trim().toLowerCase();
+  let req = all
+    .filter(r => r.type === "custom_options" && String(r.sponsorName || "").trim().toLowerCase() === needle)
+    .sort((a, b) => String(b.requestedAt || "").localeCompare(String(a.requestedAt || "")))[0];
+  if (!req) {
+    req = {
+      id: "req_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      sponsorId: sponsor ? sponsor.id : (p.sponsorId || ""),
+      sponsorName: p.sponsorName,
+      type: "custom_options",
+      status: "in_progress",
+      priority: "normal",
+      requestedBy: p.salesRep || currentUser() || "",
+      requestedAt: nowStamp(),
+      owner: currentUser() || "",
+      claimedAt: nowStamp(),
+      dueDate: "",
+      fields: {},
+      link: "",
+      approvals: [],
+      versions: [],
+      revNumber: 1,
+      log: []
+    };
+    req.rootId = req.id;
+    all.unshift(req);
+  }
+  req.sponsorId = req.sponsorId || (sponsor ? sponsor.id : p.sponsorId || "");
+  req.sponsorName = p.sponsorName;
+  req.owner = req.owner || currentUser() || "";
+  req.claimedAt = req.claimedAt || nowStamp();
+  req.requestedBy = req.requestedBy || p.salesRep || currentUser() || "";
+  req.status = "ready_for_review";
+  req.link = p.digideckLink || req.link || reqDeepLink(req);
+  req.fields = Object.assign({}, req.fields || {}, {
+    summary: req.fields?.summary || p.notes || "Options built in the Options Creator.",
+    budget: (p.options || []).map((o, i) => `Option ${i + 1}: ${o.askingPrice ? fmtMoney(parseFloat(o.askingPrice)) : "asking price not set"}`).join(" / ")
+  });
+  req.optionsRef = p.id || p.sponsorName;
+  req.approvals = buildApprovals(req).map(a => a.name === req.owner
+    ? Object.assign({}, a, { status: "skipped", ts: nowStamp(), note: "Builder cannot self-approve." })
+    : a);
+  pushVersion(req, p.digideckLink || p.id || "", "submitted for approval from Options Creator");
+  reqLog(req, "submitted for approval from Options Creator", req.approvals.length ? "Approvers: " + req.approvals.map(a => `${a.name}${a.status === "skipped" ? " (skipped)" : ""}`).join(", ") : "No approvers configured");
+  if (!approvalsPending(req).length) {
+    req.status = "approved";
+    reqLog(req, "auto-approved — no outside approvers were configured");
+  }
+  saveRequests(all);
+  refreshRequestViews();
+  return req;
+}
+
+function sendProposalForApproval() {
+  const saved = saveProposal();
+  if (!saved) return;
+  const proposals = loadOptions();
+  const idx = proposals.findIndex(p => p.id === saved.id);
+  if (idx >= 0 && proposals[idx].status !== "sent") {
+    proposals[idx].status = "sent";
+    saveOptions(proposals);
+  }
+  const req = upsertOptionsApprovalRequest(saved);
+  notifyApproversNeeded(req);
+  const pending = approvalsPending(req).map(a => a.name);
+  toast("Approval email opened", pending.length ? `Sent to ${pending.join(", ")}.` : "The request is on the board, but no pending approver email was available.", true);
 }
 
 /* ================= PHOTO LIBRARY ================= */
@@ -26470,7 +26556,11 @@ function approvalEmailExtra(r) {
     lines.push(`Score update: ${f.scoreUpdated === "complete" ? "Complete" : "Incomplete"}`);
     return lines.join("\n");
   }
-  if (["custom_options", "custom_presentation", "agreement", "term_sheet"].includes(r.type)) return optionsPlainSummary(r.sponsorName);
+  if (r.type === "custom_options") {
+    const p = loadOptions().find(x => String(x.id || "") === String(r.optionsRef || "") || String(x.sponsorName || "").trim().toLowerCase() === String(r.sponsorName || "").trim().toLowerCase());
+    return p ? proposalApprovalSummary(p) : optionsPlainSummary(r.sponsorName);
+  }
+  if (["custom_presentation", "agreement", "term_sheet"].includes(r.type)) return optionsPlainSummary(r.sponsorName);
   return "";
 }
 
@@ -27353,6 +27443,7 @@ document.getElementById("addOptionBtn").addEventListener("click", () => {
   saveCurrentProposal(); renderOptionsView();
 });
 document.getElementById("saveProposalBtn").addEventListener("click", saveProposal);
+document.getElementById("sendProposalApprovalBtn").addEventListener("click", sendProposalForApproval);
 document.getElementById("newProposalBtn").addEventListener("click", newProposal);
 
 document.getElementById("reportSearch").addEventListener("input", e => { rtState.search = e.target.value; renderReportTable(); });
