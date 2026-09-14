@@ -95,6 +95,51 @@ async function writeSidecars(store, bucket, records) {
   }
   await store.setJSON(sidecarIndexKey(bucket), Array.from(ids));
 }
+function parseRequestList(value) {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== "string") return [];
+  try {
+    const parsed = JSON.parse(value || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+function requestKey(request) {
+  if (!request || typeof request !== "object") return "";
+  return String(request.id || request.rootId || "").trim();
+}
+function requestStamp(request) {
+  const raw = request && (request.updatedAt || request.requestedAt || request.createdAt || request.dueDate);
+  const time = raw ? Date.parse(raw) : 0;
+  return Number.isFinite(time) ? time : 0;
+}
+function mergeRequestListValues(existingValue, incomingValue) {
+  const existing = parseRequestList(existingValue);
+  const incoming = parseRequestList(incomingValue);
+  const byId = new Map();
+  const order = [];
+  for (const request of existing) {
+    const key = requestKey(request);
+    if (!key) continue;
+    byId.set(key, request);
+    order.push(key);
+  }
+  for (const request of incoming) {
+    const key = requestKey(request);
+    if (!key) continue;
+    const current = byId.get(key);
+    if (!current) {
+      order.push(key);
+      byId.set(key, request);
+      continue;
+    }
+    // Whole-store request saves can come from an older browser tab. Keep every
+    // known request ID and let the newer copy of the same ID win when possible.
+    byId.set(key, requestStamp(request) >= requestStamp(current) ? { ...current, ...request } : { ...request, ...current });
+  }
+  return JSON.stringify(order.map((key) => byId.get(key)).filter(Boolean));
+}
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS_HEADERS, body: "" };
@@ -135,6 +180,10 @@ exports.handler = async (event) => {
         const sidecars = {};
         for (const [id, patch] of Object.entries(payload.bulk)) {
           if (!id || typeof patch !== "object" || patch === null || Array.isArray(patch)) continue;
+          if (bucket === "overrides" && id === "requests" && Object.prototype.hasOwnProperty.call(patch, "value")) {
+            const current = await readBucket(store, bucket);
+            patch.value = mergeRequestListValues(current && current[id] && current[id].value, patch.value);
+          }
           sidecars[id] = patch;
           count++;
         }
@@ -144,6 +193,10 @@ exports.handler = async (event) => {
       const { id, patch } = payload;
       if (!id || typeof patch !== "object" || patch === null) {
         return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: "Body must be { id, patch }" }) };
+      }
+      if (bucket === "overrides" && id === "requests" && Object.prototype.hasOwnProperty.call(patch, "value")) {
+        const current = await readBucket(store, bucket);
+        patch.value = mergeRequestListValues(current && current[id] && current[id].value, patch.value);
       }
       await writeSidecars(store, bucket, { [id]: patch });
       return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ ...(patch || {}), ok: true }) };
