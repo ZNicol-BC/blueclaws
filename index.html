@@ -15909,7 +15909,7 @@ function renderReqDetail(r) {
     if (!v) return "";
     let shown = v;
     if (f.type === "optionsref") {
-      const c = savedOptionsChoices().find(x => x.value === v);
+      const c = savedOptionsChoices(r.sponsorId || r.sponsorName || "").find(x => x.value === v) || savedOptionsChoices().find(x => x.value === v);
       shown = c ? c.label : v;   // falls back to the old free-text value on legacy requests
     }
     return `<div><small>${esc(f.label)}</small><strong class="req-rich-value">${isRichField(f) ? richToSafeHtml(v) : esc(shown)}</strong></div>`;
@@ -16882,7 +16882,7 @@ function paintReqForm(sponsorsArg) {
           <label class="agr-import"><span>Import from</span>
             <select id="${id}_import" aria-label="Import assets from a saved Options Creator">
               <option value="">Choose saved options…</option>
-              ${savedOptionsChoices().map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join("")}
+              ${savedOptionsChoices(rec).map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join("")}
             </select>
           </label>
           <button type="button" class="secondary-button" id="${id}_add">+ Add an asset</button>
@@ -16917,7 +16917,7 @@ function paintReqForm(sponsorsArg) {
           <label class="agr-import"><span>Import from</span>
             <select id="${id}_import" aria-label="Import assets from a saved Options Creator">
               <option value="">Choose saved options…</option>
-              ${savedOptionsChoices().map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join("")}
+              ${savedOptionsChoices(rec).map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join("")}
             </select>
           </label>
           <button type="button" class="secondary-button" id="${id}_add">+ Add an asset</button>
@@ -16978,7 +16978,7 @@ function paintReqForm(sponsorsArg) {
     }
     if (f.type === "optionsref") {
       return `<div class="sfield">${bcComboboxMarkup(id, f.label + (f.required ? " *" : ""), "Search saved options…",
-        `<option value="">— Select saved options —</option>` + savedOptionsChoices().map(c =>
+        `<option value="">— Select saved options —</option>` + savedOptionsChoices(getRecord((document.getElementById("reqf_sponsor") || {}).value || sel) || "").map(c =>
           `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join(""))}</div>`;
     }
     if (isRichField(f)) return richEditorMarkup(id, f.label, f.required);
@@ -18178,6 +18178,56 @@ function saveCurrentProposal() { memStore.setItem(CURRENT_OPTION_KEY, JSON.strin
 let currentProposal = loadCurrentProposal();
 let pickerTargetIndex = 0;
 
+function optionSponsorKey(value) {
+  const sponsor = value && typeof value === "object" ? value : (getRecord(value) || findSponsorByName(value));
+  if (sponsor && sponsor.id) return `id:${sponsor.id}`;
+  return `name:${String((sponsor && sponsor.sponsor) || value || "").trim().toLowerCase()}`;
+}
+function optionMatchesSponsor(proposal, sponsorRef) {
+  const sponsor = sponsorRef && typeof sponsorRef === "object" ? sponsorRef : (getRecord(sponsorRef) || findSponsorByName(sponsorRef));
+  const propId = String(proposal && proposal.sponsorId || "").trim();
+  if (propId && sponsor && String(sponsor.id || "") === propId) return true;
+  const propName = String(proposal && proposal.sponsorName || "").trim().toLowerCase();
+  const sponsorName = String((sponsor && sponsor.sponsor) || sponsorRef || "").trim().toLowerCase();
+  return !!propName && !!sponsorName && propName === sponsorName;
+}
+function blankProposalForSponsor(sponsorRef) {
+  const sponsor = sponsorRef && typeof sponsorRef === "object" ? sponsorRef : (getRecord(sponsorRef) || findSponsorByName(sponsorRef));
+  return {
+    sponsorName: (sponsor && sponsor.sponsor) || String(sponsorRef || ""),
+    sponsorId: (sponsor && sponsor.id) || null,
+    salesRep: (sponsor && sponsor.rep) || "",
+    dateCreated: new Date().toISOString().slice(0, 10),
+    digideckLink: "",
+    notes: "",
+    options: [blankOption(), blankOption(), blankOption()]
+  };
+}
+function latestProposalForSponsor(sponsorRef) {
+  return loadOptions()
+    .filter(p => optionMatchesSponsor(p, sponsorRef))
+    .sort((a, b) => String(b.createdAt || b.dateCreated || "").localeCompare(String(a.createdAt || a.dateCreated || "")))[0] || null;
+}
+function proposalEditorShape(p) {
+  return {
+    id: p.id,
+    sponsorName: p.sponsorName || "",
+    sponsorId: p.sponsorId || ((findSponsorByName(p.sponsorName) || {}).id || null),
+    salesRep: p.salesRep || "",
+    dateCreated: p.dateCreated || new Date().toISOString().slice(0, 10),
+    digideckLink: p.digideckLink || "",
+    notes: p.notes || "",
+    options: JSON.parse(JSON.stringify(p.options && p.options.length ? p.options : [blankOption(), blankOption(), blankOption()]))
+  };
+}
+function loadProposalForSponsorOrBlank(sponsorRef) {
+  const existing = latestProposalForSponsor(sponsorRef);
+  currentProposal = existing ? proposalEditorShape(existing) : blankProposalForSponsor(sponsorRef);
+  saveCurrentProposal();
+  renderOptionsView();
+  return !!existing;
+}
+
 function renderLegendKey() {
   document.getElementById("legendKey").innerHTML = Object.entries(LINE_STATUS).filter(([k]) => k).map(([k, v]) => `
     <span class="legend-chip"><span class="legend-dot2" style="background:${v.color}"></span>${v.label}</span>`).join("");
@@ -18359,10 +18409,14 @@ function suggestLineStatus(targetIdx, asset, qty) {
 
 function openAssetPicker(idx) {
   pickerTargetIndex = idx;
+  oState.pickerSearch = "";
   document.getElementById("pickerTargetLabel").textContent = `Add to Option ${idx + 1}`;
+  const search = document.getElementById("pickerSearch");
+  if (search) search.value = "";
   populatePickerCategoryFilter();
   renderPicker();
   document.getElementById("pickerBackdrop").classList.add("show");
+  setTimeout(() => { if (search) search.focus(); }, 0);
 }
 function populatePickerCategoryFilter() {
   const cats = [...new Set(getFullCatalog().map(a => a.category))].sort();
@@ -18428,9 +18482,11 @@ function attachProposalToTask(p) {
     /* index242 — routine-success toast removed. The action it announced is already visible: the list re-renders, the row updates, or the panel closes. */
   }, 220);
 }
-function savedOptionsChoices() {
+function savedOptionsChoices(sponsorRef) {
   const reqs = loadRequests();
-  return loadOptions().slice()
+  let proposals = loadOptions();
+  if (sponsorRef) proposals = proposals.filter(p => optionMatchesSponsor(p, sponsorRef));
+  return proposals.slice()
     .sort((a, b) => String(b.dateCreated || "").localeCompare(String(a.dateCreated || "")))
     .map(p => {
       const match = reqs.find(r => r.type === "custom_options"
@@ -18599,11 +18655,9 @@ function openOptionsCreatorForRequest(reqId) {
   if (!req) return;
   showView("options");
   setTimeout(() => {
-    const field = document.getElementById("propSponsor");
-    if (field) { populateSponsorCombobox("propSponsor", req.sponsorName || ""); field.dispatchEvent(new Event("change", { bubbles: true })); }
-    currentProposal.sponsorName = req.sponsorName || "";
-    saveCurrentProposal();
+    const hadExisting = loadProposalForSponsorOrBlank(req.sponsorId || req.sponsorName || "");
     renderOptionsRequestNotes();
+    if (!hadExisting) toast("New options draft", `${req.sponsorName || "This sponsor"} has no saved options yet.`);
     /* index242 — routine-success toast removed. The action it announced is already visible: the list re-renders, the row updates, or the panel closes. */
   }, 250);
 }
@@ -18956,11 +19010,11 @@ function readRichValue(id) {
 }
 function renderPicker() {
   let list = getFullCatalog();
-  if (oState.pickerCategory !== "all") list = list.filter(a => a.category === oState.pickerCategory);
-  // Default: only assets that have prep language in the spec library; switch to "All assets" to see the rest.
-  if ((oState.pickerLanguage || "covered") === "covered" && typeof assetSpecFor === "function") list = list.filter(a => !!assetSpecFor(a.asset));
   const q = oState.pickerSearch.trim().toLowerCase();
-  if (q) list = list.filter(a => (a.asset || "").toLowerCase().includes(q) || (a.category || "").toLowerCase().includes(q) || (a.formerName || "").toLowerCase().includes(q));
+  if (oState.pickerCategory !== "all") list = list.filter(a => a.category === oState.pickerCategory);
+  // Once someone types, search the real catalog even if the prep-language filter was left on.
+  if (!q && (oState.pickerLanguage || "covered") === "covered" && typeof assetSpecFor === "function") list = list.filter(a => !!assetSpecFor(a.asset));
+  if (q) list = list.filter(a => [a.asset, assetDisplayName(a.asset), a.category, a.formerName, a.notes].some(v => String(v || "").toLowerCase().includes(q)));
   document.getElementById("pickerList").innerHTML = list.slice(0, 150).map(a => {
     const detail = assetDetailsFor(a.asset);
     const rate = detail.rateCard !== undefined && detail.rateCard !== "" && detail.rateCard !== null ? Number(detail.rateCard) : lookupRate(a);
@@ -19068,6 +19122,8 @@ function renderSavedProposals(filter) {
   const sortF = (document.getElementById("savedProposalSort") || {}).value || "newest";
   const askingTotal = p => (p.options || []).reduce((s, o) => s + (parseFloat(o.askingPrice) || 0), 0);
   let list = loadOptions();
+  const activeSponsor = String(currentProposal.sponsorName || "").trim();
+  if (activeSponsor) list = list.filter(p => optionMatchesSponsor(p, currentProposal.sponsorId || activeSponsor));
   if (q) list = list.filter(p => (p.sponsorName || "").toLowerCase().includes(q));
   if (statusF !== "all") list = list.filter(p => (p.status || "draft") === statusF);
   list = list.slice();
@@ -19075,7 +19131,7 @@ function renderSavedProposals(filter) {
   else if (sortF === "value") list.sort((a, b) => askingTotal(b) - askingTotal(a));
   else list.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
   if (!list.length) {
-    wrap.innerHTML = `<div style="padding:var(--space-30); text-align:center; color:var(--muted); font-size:var(--text-xs);">No saved proposals yet. Build one below and click Save.</div>`;
+    wrap.innerHTML = `<div style="padding:var(--space-30); text-align:center; color:var(--muted); font-size:var(--text-xs);">${activeSponsor ? `No saved proposals for ${esc(activeSponsor)} yet. Build one below and click Save.` : "No saved proposals yet. Build one below and click Save."}</div>`;
     return;
   }
   const statusMeta = { draft: { cls: "medium", label: "Draft" }, sent: { cls: "low", label: "Sent" }, negotiating: { cls: "medium", label: "Negotiating" }, won: { cls: "low", label: "Won" }, lost: { cls: "high", label: "Lost" } };
@@ -19153,15 +19209,7 @@ function syncProposalStatusToDealStage(proposalId, newStatus) {
 function loadProposalIntoEditor(id) {
   const p = loadOptions().find(x => x.id === id);
   if (!p) return;
-  currentProposal = {
-    id: p.id,
-    sponsorName: p.sponsorName || "",
-    salesRep: p.salesRep || "",
-    dateCreated: p.dateCreated || new Date().toISOString().slice(0, 10),
-    digideckLink: p.digideckLink || "",
-    notes: p.notes || "",
-    options: JSON.parse(JSON.stringify(p.options && p.options.length ? p.options : [blankOption(), blankOption(), blankOption()]))
-  };
+  currentProposal = proposalEditorShape(p);
   saveCurrentProposal();
   renderOptionsView();
   toast("Loaded", `${p.sponsorName || "Proposal"} loaded into the editor below — Save will update this proposal, not duplicate it`);
@@ -27412,16 +27460,15 @@ document.getElementById("lineDetailBackdrop").addEventListener("click", e => { i
 document.getElementById("ld_save").addEventListener("click", saveLineDetail);
 document.getElementById("ld_delete").addEventListener("click", async () => { if (await bcConfirm("Remove this asset from the option", {title:"Remove asset", ok:"Remove", danger:true})) deleteLineDetail(); });
 document.getElementById("propSponsor").addEventListener("change", e => {
-  currentProposal.sponsorName = e.target.value;
-  saveCurrentProposal();
-  renderProposalLogo();
   const match = findSponsorByName(e.target.value);
-  if (match && !document.getElementById("propRep").value.trim() && match.rep) {
+  const hadExisting = loadProposalForSponsorOrBlank(match || e.target.value);
+  renderProposalLogo();
+  if (match && !hadExisting && match.rep) {
     if (window.__syncPropRep) window.__syncPropRep(match.rep); else document.getElementById("propRep").value = match.rep;
     currentProposal.salesRep = match.rep;
     saveCurrentProposal();
-    toast("Auto-filled", `Sales rep set from ${match.sponsor}'s record`, true);
   }
+  if (!hadExisting && e.target.value) toast("Blank options draft", `No saved Options Creator proposal exists for ${e.target.value} yet.`);
 });
 /* index214: the sales rep is picked from the one shared rep list (with the sanctioned
    "+ Add new…" path) — it was the last free-text rep field in the app, and it feeds
