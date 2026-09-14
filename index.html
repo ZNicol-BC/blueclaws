@@ -1458,7 +1458,7 @@ html[data-theme="dark"] .type-tag[style*="fff7db"] { background: var(--gold-soft
 .picker-row-fields .pick-status { width: 160px; }
 .picker-row-fields .picker-note-field { flex: 1 1 150px; min-width: 130px; }
 .picker-row-fields .pick-note { width: 100%; }
-#pickerBackdrop { padding: clamp(10px, 2vw, 24px); }
+#pickerBackdrop { padding: clamp(10px, 2vw, 24px); z-index: 10000; }
 #pickerBackdrop.show { align-items:flex-start; justify-content:center; overflow:auto; }
 #pickerBackdrop .picker-modal { width: min(1080px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: hidden; display: flex; flex-direction: column; margin:0 auto; }
 #pickerBackdrop .modal-close { position:absolute; top:10px; right:10px; z-index:5; }
@@ -1467,6 +1467,7 @@ html[data-theme="dark"] .type-tag[style*="fff7db"] { background: var(--gold-soft
 #pickerBackdrop .picker-row { grid-template-columns: minmax(180px, 1fr) minmax(430px, 1.65fr) auto; }
 #pickerBackdrop .add-to-option-btn { white-space: nowrap; }
 .picker-rate-year { min-width:128px; }
+#lineDetailBackdrop { z-index: 10010; }
 @media (max-width: 900px) { .picker-row, #pickerBackdrop .picker-row { grid-template-columns: 1fr; } #pickerBackdrop .picker-modal { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); } #pickerBackdrop .filter-bar { padding-right:0; } }
 .picker-row:first-child { border-top: 0; }
 .picker-row strong, .picker-row small { display: block; }
@@ -2167,7 +2168,17 @@ html[data-theme="dark"] .type-tag[style*="fff7db"] { background: var(--gold-soft
 /* The status colour now fills the whole row (Tab 4), so the label has to hold up on a yellow
    fill as well as a blue or red one — pick the text colour from the fill, not a fixed white. */
 .opt-line-compact[style*="facd01"] strong, .opt-line-compact[style*="facd01"] small,
-.opt-line-compact[style*="facd01"] b, .opt-line-compact[style*="facd01"] button { color: var(--ink) !important; }
+.opt-line-compact[style*="facd01"] b, .opt-line-compact[style*="facd01"] button,
+.opt-line-compact[style*="d9ae00"] strong, .opt-line-compact[style*="d9ae00"] small,
+.opt-line-compact[style*="d9ae00"] b, .opt-line-compact[style*="d9ae00"] button,
+.opt-line-compact[style*="f2c230"] strong, .opt-line-compact[style*="f2c230"] small,
+.opt-line-compact[style*="f2c230"] b, .opt-line-compact[style*="f2c230"] button,
+.opt-line-compact[style*="ffe06a"] strong, .opt-line-compact[style*="ffe06a"] small,
+.opt-line-compact[style*="ffe06a"] b, .opt-line-compact[style*="ffe06a"] button,
+.opt-line-compact[style*="ffeb96"] strong, .opt-line-compact[style*="ffeb96"] small,
+.opt-line-compact[style*="ffeb96"] b, .opt-line-compact[style*="ffeb96"] button,
+.opt-line-compact[style*="fda4af"] strong, .opt-line-compact[style*="fda4af"] small,
+.opt-line-compact[style*="fda4af"] b, .opt-line-compact[style*="fda4af"] button { color: var(--ink) !important; }
 .opt-status-dot { width: 8px; height: 8px; flex-shrink: 0; border: 1px solid rgba(255,255,255,.55); }
 .rich-field .rich-toolbar { display: flex; gap: var(--space-4); margin-bottom: var(--space-4); }
 .rich-field .rich-toolbar button { width: 26px; height: 26px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: 600 12px/1 var(--font-body); cursor: pointer; border-radius: var(--radius-sm); }
@@ -2392,8 +2403,10 @@ html[data-theme="dark"] .type-tag[style*="fff7db"] { background: var(--gold-soft
 .opt-line-note:hover { background: rgba(255,255,255,.4); }
 .add-to-option-btn.is-added { background: var(--blue); color: #fff; border-color: var(--blue); }
 .opt-status-dot { display: inline-block; width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; }
-.opt-line-compact strong { flex: 1; min-width: 0; font-size: var(--text-xs); color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.opt-line-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.opt-line-compact strong { min-width: 0; font-size: var(--text-xs); color: #fff; overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.2; font-weight: 700; }
 .opt-line-compact small { flex-shrink: 0; color: var(--muted); font-size: var(--text-xs); }
+.opt-line-compact .opt-line-detail { color: inherit; opacity: .86; white-space: normal; line-height: 1.25; }
 .opt-line-compact b { flex-shrink: 0; font-size: var(--text-xs); color: #fff; }
 .opt-line-compact button { border: 0; background: transparent; color: #ff9ea6; font-size: 12px; cursor: pointer; flex-shrink: 0; }
 
@@ -6883,8 +6896,10 @@ function loadDeadLetters() {
   try {
     const list = JSON.parse(memStore.getItem(SYNC_DEAD_KEY)) || [];
     const cutoff = Date.now() - 3 * 86400000;
+    const legacyOverrideIds = new Set(["customAssets", "rates"]);
     return Array.isArray(list) ? list
       .filter(d => { const t = Date.parse(d.at || "") || 0; return !t || t >= cutoff; })
+      .filter(d => !(d && d.bucket === "overrides" && legacyOverrideIds.has(d.id) && /Rejected by the server \(404\)/i.test(String(d.reason || ""))))
       .slice(-SYNC_DEAD_MAX)
       .map(d => ({ ...d, patch: d && d.patch && d.bucket !== "photos" && d.bucket !== "logos" && d.bucket !== "displays" ? d.patch : null })) : [];
   } catch (e) { return []; }
@@ -14603,41 +14618,69 @@ function renderCategoryManager() {
 }
 function renderServiceView() {
   const tasks = [];
-  getAllRecords().forEach(r => { (r.todo || "").split("\n").map(t => t.trim()).filter(Boolean).forEach((t, lineIdx) => tasks.push({ sponsor: r.sponsor, id: r.id, task: t, rep: r.service || r.rep || "Unassigned", cat: "Sponsor Activation", lineIdx, checkable: true })); });
+  getAllRecords().filter(r => isActiveForSelectedSeason(r)).forEach(r => { (r.todo || "").split("\n").map(t => t.trim()).filter(Boolean).forEach((t, lineIdx) => tasks.push({ sponsor: r.sponsor, id: r.id, task: t, rep: r.service || r.rep || "Unassigned", cat: "Sponsor Activation", lineIdx, checkable: true, taskType: "todo" })); });
   getAllReportRows().forEach(r => {
-    if (!reportCompletedFor(r, "mid")) tasks.push({ sponsor: r.sponsor, id: r.id, task: `Advance Mid-Season Report from ${reportStatusFor(r, "mid")}`, rep: "Service", cat: "Reports", checkable: false });
-    if (!reportCompletedFor(r, "annual")) tasks.push({ sponsor: r.sponsor, id: r.id, task: `Advance Annual Report from ${reportStatusFor(r, "annual")}`, rep: "Service", cat: "Reports", checkable: false });
+    const sponsorRec = getRecord(r.id);
+    if (sponsorRec && !isActiveForSelectedSeason(sponsorRec)) return;
+    if (!reportCompletedFor(r, "mid")) tasks.push({ sponsor: r.sponsor, id: r.id, task: `Advance Mid-Season Report from ${reportStatusFor(r, "mid")}`, rep: "Service", cat: "Reports", checkable: true, taskType: "midReport" });
+    if (!reportCompletedFor(r, "annual")) tasks.push({ sponsor: r.sponsor, id: r.id, task: `Advance Annual Report from ${reportStatusFor(r, "annual")}`, rep: "Service", cat: "Reports", checkable: true, taskType: "annualReport" });
   });
-  tasks.sort((a, b) => (a.sponsor || "").localeCompare(b.sponsor || ""));
-  document.getElementById("serviceKpis").innerHTML = `<div class="mini-kpi"><span>Open tasks</span><strong>${tasks.length}</strong></div><div class="mini-kpi"><span>Report tasks</span><strong>${tasks.filter(t => t.cat === "Reports").length}</strong></div><div class="mini-kpi"><span>Activation tasks</span><strong>${tasks.filter(t => t.cat !== "Reports").length}</strong></div><div class="mini-kpi"><span>Assignees</span><strong>${new Set(tasks.map(t => t.rep)).size}</strong></div>`;
-  document.getElementById("serviceRows").innerHTML = tasks.slice(0, 180).map(t => `
+  const typeFilter = window.__serviceTaskType || "all";
+  const sortMode = window.__serviceTaskSort || "sponsor";
+  const typeLabel = t => t.taskType === "midReport" ? "Mid-Season Reports" : t.taskType === "annualReport" ? "Annual Reports" : "Sponsor To-Dos";
+  let visibleTasks = tasks.filter(t => typeFilter === "all" || t.taskType === typeFilter);
+  visibleTasks.sort((a, b) => sortMode === "type"
+    ? typeLabel(a).localeCompare(typeLabel(b)) || (a.sponsor || "").localeCompare(b.sponsor || "")
+    : sortMode === "rep"
+      ? (a.rep || "").localeCompare(b.rep || "") || (a.sponsor || "").localeCompare(b.sponsor || "")
+      : (a.sponsor || "").localeCompare(b.sponsor || ""));
+  document.getElementById("serviceKpis").innerHTML = `<div class="mini-kpi"><span>${sState.season} open tasks</span><strong>${tasks.length}</strong></div><div class="mini-kpi"><span>Report tasks</span><strong>${tasks.filter(t => t.cat === "Reports").length}</strong></div><div class="mini-kpi"><span>Activation tasks</span><strong>${tasks.filter(t => t.cat !== "Reports").length}</strong></div><div class="mini-kpi"><span>Assignees</span><strong>${new Set(tasks.map(t => t.rep)).size}</strong></div>`;
+  const controls = `<div class="toolbar" style="margin:var(--space-12) 0;gap:var(--space-8);align-items:center;flex-wrap:wrap;">
+    <label class="inline-select"><span>Task type</span><select id="serviceTaskType"><option value="all">All task types</option><option value="todo">Sponsor To-Dos</option><option value="midReport">Mid-Season Reports</option><option value="annualReport">Annual Reports</option></select></label>
+    <label class="inline-select"><span>Sort</span><select id="serviceTaskSort"><option value="sponsor">Sponsor</option><option value="type">Task type</option><option value="rep">Assigned rep</option></select></label>
+    <button class="ghost-btn" id="serviceSelectVisible" type="button">Select visible</button>
+    <button class="ghost-btn" id="serviceCompleteSelected" type="button">Mark selected complete</button>
+    <button class="ghost-btn" id="serviceCompleteType" type="button">Mark this type complete</button>
+  </div>`;
+  document.getElementById("serviceRows").innerHTML = controls + (visibleTasks.slice(0, 180).map(t => `
     <div class="tracker-row" data-id="${esc(t.id)}" style="cursor:pointer; grid-template-columns: 28px 1fr 1.4fr .7fr .7fr 40px;">
-      <span onclick="event.stopPropagation()">${t.checkable ? `<input type="checkbox" class="service-task-check" aria-label="Mark this to-do complete" data-id="${esc(t.id)}" data-tasktext="${esc(t.task)}" title="Mark this to-do complete">` : ""}</span>
+      <span onclick="event.stopPropagation()">${t.checkable ? `<input type="checkbox" class="service-task-check" aria-label="Select this task" data-id="${esc(t.id)}" data-tasktype="${esc(t.taskType)}" data-tasktext="${esc(t.task)}" title="Select this task">` : ""}</span>
       <div><strong>${esc(t.sponsor)}</strong><small>${esc(t.cat)}</small></div>
       <div><strong style="font-size:var(--text-xs);">${esc(t.task)}</strong></div>
       <div><small>Assigned to</small><strong style="font-size:var(--text-xs);">${esc(t.rep)}</strong></div>
       <span class="risk-badge medium">Open</span>
       <button class="row-action" title="Open" aria-label="Open ${esc(t.sponsor || "this to-do")}">→</button>
-    </div>`).join("") || `<div style="padding:var(--space-40); text-align:center; color:var(--muted);">No open service tasks found.</div>`;
+    </div>`).join("") || `<div style="padding:var(--space-40); text-align:center; color:var(--muted);">No open service tasks found for ${sState.season}.</div>`);
+  const typeSel = document.getElementById("serviceTaskType");
+  const sortSel = document.getElementById("serviceTaskSort");
+  if (typeSel) { typeSel.value = typeFilter; typeSel.addEventListener("change", e => { window.__serviceTaskType = e.target.value; renderServiceView(); }); }
+  if (sortSel) { sortSel.value = sortMode; sortSel.addEventListener("change", e => { window.__serviceTaskSort = e.target.value; renderServiceView(); }); }
+  const completeTaskNodes = nodes => {
+    const checks = Array.from(nodes).filter(cb => cb.checked || nodes.length > 1);
+    let count = 0;
+    checks.forEach(cb => {
+      const id = cb.dataset.id, taskType = cb.dataset.tasktype, r = getRecord(id);
+      if (taskType === "todo" && r) {
+        const lines = (r.todo || "").split("\n").map(t => t.trim()).filter(Boolean);
+        const ti = lines.indexOf(String(cb.dataset.tasktext || "").trim());
+        if (ti >= 0) { lines.splice(ti, 1); updateOverride(id, { todo: lines.join("\n") || null }); count++; }
+      } else if (taskType === "midReport" || taskType === "annualReport") {
+        const overrides = loadReportOverrides();
+        const patch = taskType === "midReport" ? { midSeasonCompleted: true, midSeasonStatus: "Zack Check" } : { annualCompleted: true, annualStatus: "Zack Check" };
+        overrides[id] = { ...(overrides[id] || {}), ...patch };
+        saveReportOverrides(overrides);
+        count++;
+      }
+    });
+    if (count) toast("Tasks completed", `${count} ${count === 1 ? "task" : "tasks"} marked complete`);
+    refreshCurrentView();
+  };
+  document.getElementById("serviceSelectVisible")?.addEventListener("click", () => document.querySelectorAll("#serviceRows .service-task-check").forEach(cb => { cb.checked = true; }));
+  document.getElementById("serviceCompleteSelected")?.addEventListener("click", () => completeTaskNodes(Array.from(document.querySelectorAll("#serviceRows .service-task-check:checked"))));
+  document.getElementById("serviceCompleteType")?.addEventListener("click", () => completeTaskNodes(Array.from(document.querySelectorAll(`#serviceRows .service-task-check[data-tasktype="${typeFilter === "all" ? "todo" : typeFilter}"]`))));
   document.querySelectorAll("#serviceRows .tracker-row").forEach(row => row.addEventListener("click", () => openDrawer(row.dataset.id)));
   document.querySelectorAll("#serviceRows .service-task-check").forEach(cb => {
     cb.addEventListener("click", e => e.stopPropagation());
-    cb.addEventListener("change", e => {
-      e.stopPropagation();
-      const id = cb.dataset.id;
-      const r = getRecord(id);
-      if (!r) return;
-      /* index213: completing used to splice by the index captured at render time — if the 8s
-         poll or a teammate reordered the to-dos in between, the WRONG task was deleted, silently
-         and permanently. Now it removes the exact text, and refuses if the text is gone. */
-      const lines = (r.todo || "").split("\n").map(t => t.trim()).filter(Boolean);
-      const ti = lines.indexOf(String(cb.dataset.tasktext || "").trim());
-      if (ti < 0) { toast("That to-do changed", "The list was updated elsewhere — refreshing"); refreshCurrentView(); return; }
-      lines.splice(ti, 1);
-      updateOverride(id, { todo: lines.join("\n") || null });
-      toast("To-do completed", r.sponsor);
-      refreshCurrentView();
-    });
   });
 }
 /* ================= ASSET PREP HUB ================= */
@@ -18136,18 +18179,20 @@ function unmappedCategories() {
 
 const LINE_STATUS = {
   "": { label: "Standard", color: "#8a94a6" },
-  "upgrade1": { label: "Upgrade from Opt. 1", color: "#0971ce" },
-  "new1": { label: "New from Opt. 1", color: "#facd01" },
-  "upgrade2": { label: "Upgraded from Opt. 2", color: "#0971ce" },
-  "new2": { label: "New from Opt. 2", color: "#facd01" },
-  "upgrade3": { label: "Upgraded from Opt. 3", color: "#0971ce" },
-  "new3": { label: "New from Opt. 3", color: "#facd01" },
-  "excl1": { label: "Exclusive to Option 1", color: "#c20f2f" },
-  "excl2": { label: "Exclusive to Option 2", color: "#c20f2f" },
-  "excl3": { label: "Exclusive to Option 3", color: "#c20f2f" },
-  "excl4": { label: "Exclusive to Option 4", color: "#c20f2f" },
-  "excl5": { label: "Exclusive to Option 5", color: "#c20f2f" },
-  "excl2opt": { label: "Exclusive to 2 Options", color: "#c20f2f" }
+  "upgrade1": { label: "Upgraded from Opt. 1", color: "#0068b7" },
+  "new1": { label: "New from Opt. 1", color: "#d9ae00" },
+  "upgrade2": { label: "Upgraded from Opt. 2", color: "#1687d9" },
+  "new2": { label: "New from Opt. 2", color: "#f2c230" },
+  "upgrade3": { label: "Upgraded from Opt. 3", color: "#35a6ee" },
+  "new3": { label: "New from Opt. 3", color: "#ffe06a" },
+  "upgrade4": { label: "Upgraded from Opt. 4", color: "#62bff5" },
+  "new4": { label: "New from Opt. 4", color: "#ffeb96" },
+  "excl1": { label: "Exclusive to Option 1", color: "#9f1239" },
+  "excl2": { label: "Exclusive to Option 2", color: "#be123c" },
+  "excl3": { label: "Exclusive to Option 3", color: "#e11d48" },
+  "excl4": { label: "Exclusive to Option 4", color: "#fb7185" },
+  "excl5": { label: "Exclusive to Option 5", color: "#fda4af" },
+  "excl2opt": { label: "Exclusive to 2 Options", color: "#db2777" }
 };
 function targetPct(askingPrice) {
   const p = parseFloat(askingPrice) || 0;
@@ -18177,6 +18222,11 @@ function loadCurrentProposal() {
 function saveCurrentProposal() { memStore.setItem(CURRENT_OPTION_KEY, JSON.stringify(currentProposal)); }
 let currentProposal = loadCurrentProposal();
 let pickerTargetIndex = 0;
+
+function optionAssetLabel(name) {
+  return String(assetDisplayName(name || ""))
+    .replace(/\s[-–]\s(Single|Double|Triple|Quad|6-Panel)$/i, " ($1)");
+}
 
 function optionSponsorKey(value) {
   const sponsor = value && typeof value === "object" ? value : (getRecord(value) || findSponsorByName(value));
@@ -18235,6 +18285,7 @@ function renderLegendKey() {
 
 function renderOptionColumns() {
   const wrap = document.getElementById("optionColumns");
+  refreshAutoLineStatuses();
   wrap.innerHTML = currentProposal.options.map((opt, idx) => {
     const total = optTotalRateCard(opt);
     const target = targetPct(opt.askingPrice);
@@ -18259,11 +18310,11 @@ function renderOptionColumns() {
         <div><span>Total rate card</span><strong>${fmtMoney(total)}</strong></div>
       </div>
       <div class="opt-lines">
-        ${opt.items.length ? sortByCategoryThenRate(opt.items.map((it, i) => ({ ...it, _li: i })), optLineTotal).map((item) => { const li = item._li; return `
-          <div class="opt-line-compact" data-idx="${idx}" data-li="${li}" style="background:${LINE_STATUS[item.status || ""].color}; border-color:${LINE_STATUS[item.status || ""].color};">
-            <span class="opt-status-dot" style="background:${LINE_STATUS[item.status || ""].color}" title="${LINE_STATUS[item.status || ""].label}"></span>
-            <strong>${esc(item.asset)}</strong>
-            <small>×${item.qty || 1}</small>
+        ${opt.items.length ? sortByCategoryThenRate(opt.items.map((it, i) => ({ ...it, _li: i })), optLineTotal).map((item) => { const li = item._li; const meta = LINE_STATUS[item.status || ""] || LINE_STATUS[""]; const label = optionAssetLabel(item.asset); return `
+          <div class="opt-line-compact" data-idx="${idx}" data-li="${li}" style="background:${meta.color}; border-color:${meta.color};" title="${esc(label)}${item.notes ? " — " + esc(item.notes) : ""}">
+            <span class="opt-status-dot" style="background:${meta.color}" title="${esc(meta.label)}"></span>
+            <span class="opt-line-copy"><strong>${esc(label)}</strong>${item.notes ? `<small class="opt-line-detail">${esc(item.notes)}</small>` : ""}</span>
+            <small>Qty ${item.qty || 1}</small>
             <b>${fmtMoney(optLineTotal(item))}</b>
             ${item.notes ? `<button class="opt-line-note" data-note-for="${idx}:${li}" title="${esc(item.notes)}" aria-label="Notes on ${esc(item.asset)}">§</button>` : ""}
             <button data-remove-line="${idx}:${li}" title="Remove">x</button>
@@ -18351,11 +18402,14 @@ function saveLineDetail() {
   const item = currentProposal.options[lineDetailTarget.oi].items[lineDetailTarget.li];
   if (!item) return;
   item.qty = parseFloat(document.getElementById("ld_qty").value) || 1;
-  item.rate = parseFloat(String(document.getElementById("ld_rate").value).replace(/[^\d.]/g, "")) || 0;
+  const rateRaw = String(document.getElementById("ld_rate").value || "").trim();
+  const parsedRate = parseFloat(rateRaw.replace(/[^\d.]/g, ""));
+  if (rateRaw && !isNaN(parsedRate)) item.rate = parsedRate;
   item.startMonth = document.getElementById("ld_month").value;
   item.status = document.getElementById("ld_status").value;
+  item.statusManual = true;
   item.notes = document.getElementById("ld_notes").value.trim();
-  setRate(item.id, item.rate);
+  if (rateRaw && !isNaN(parsedRate)) setRate(item.id, item.rate);
   saveCurrentProposal();
   document.getElementById("lineDetailBackdrop").classList.remove("show");
   renderOptionColumns();
@@ -18386,11 +18440,12 @@ function renderProposalLogo() {
 }
 const SIZE_RANK = { "Single": 1, "Double": 2, "Triple": 3, "Quad": 4, "6-Panel": 5 };
 function baseAssetName(name) {
-  const m = name.match(/^(.*)\s-\s(Single|Double|Triple|Quad|6-Panel)$/i);
+  const m = String(name || "").match(/^(.*?)(?:\s[-–]\s|\s*)\((Single|Double|Triple|Quad|6-Panel)\)$/i)
+    || String(name || "").match(/^(.*)\s[-–]\s(Single|Double|Triple|Quad|6-Panel)$/i);
   return m ? m[1].trim() : name;
 }
 function sizeRankOf(name) {
-  const m = name.match(/-\s*(Single|Double|Triple|Quad|6-Panel)$/i);
+  const m = String(name || "").match(/(?:[-–]\s*|\()(\bSingle\b|\bDouble\b|\bTriple\b|\bQuad\b|6-Panel)\)?$/i);
   return m ? (SIZE_RANK[m[1]] || 0) : 0;
 }
 function suggestLineStatus(targetIdx, asset, qty) {
@@ -18399,12 +18454,23 @@ function suggestLineStatus(targetIdx, asset, qty) {
   for (let i = 0; i < targetIdx; i++) {
     const opt = currentProposal.options[i];
     const sameId = opt.items.find(it => it.id === asset.id);
-    if (sameId) return (qty || 1) > (sameId.qty || 1) ? `upgrade${Math.min(i + 1, 3)}` : `new${Math.min(i + 1, 3)}`;
+    const keyN = Math.min(i + 1, 4);
+    if (sameId) return (qty || 1) > (sameId.qty || 1) ? `upgrade${keyN}` : "";
     const sizeMatch = opt.items.find(it => baseAssetName(it.asset) === base && it.asset !== asset.asset);
-    if (sizeMatch && rank > sizeRankOf(sizeMatch.asset)) return `upgrade${Math.min(i + 1, 3)}`;
-    if (sizeMatch) return `new${Math.min(i + 1, 3)}`;
+    if (sizeMatch && rank > sizeRankOf(sizeMatch.asset)) return `upgrade${keyN}`;
+    if (sizeMatch) return `new${keyN}`;
   }
+  if (targetIdx > 0) return `new${Math.min(targetIdx, 4)}`;
   return "";
+}
+function refreshAutoLineStatuses() {
+  if (!currentProposal || !Array.isArray(currentProposal.options)) return;
+  currentProposal.options.forEach((opt, idx) => {
+    (opt.items || []).forEach(item => {
+      if (item.statusManual) return;
+      item.status = suggestLineStatus(idx, item, item.qty || 1);
+    });
+  });
 }
 
 function openAssetPicker(idx) {
@@ -19023,13 +19089,13 @@ function renderPicker() {
     // through the line-detail modal. The added row is still clickable if it needs editing later.
     return `
     <div class="picker-row">
-      <div class="picker-row-name"><strong>${esc(a.asset)}</strong><small>${esc(canonicalCategory(a.category))}${a._custom ? " · custom" : ""}</small>${inventoryMetaHTML(a.asset)}</div>
+      <div class="picker-row-name"><strong>${esc(optionAssetLabel(a.asset))}</strong><small>${esc(canonicalCategory(a.category))}${a._custom ? " · custom" : ""}</small>${inventoryMetaHTML(a.asset)}</div>
       <div class="picker-row-fields">
-        <label><span>Rate</span><span class="money-wrap">$<input class="rate-input money-input" type="text" inputmode="numeric" placeholder="0" value="${rate === "" ? "" : Number(rate).toLocaleString("en-US")}" data-id="${esc(a.id)}" ${isFromCard ? 'title="From rate card"' : ""} aria-label="Rate for ${esc(a.asset)}"></span></label>
-        <label><span>Qty</span><input class="pick-qty" type="number" min="1" step="1" value="1" data-q="${esc(a.id)}" aria-label="Quantity of ${esc(a.asset)}"></label>
-        <label><span>Start</span><select class="pick-month" data-m="${esc(a.id)}" aria-label="Start month for ${esc(a.asset)}">${Object.keys(MID_SEASON_RATE).map(m => `<option value="${m}">${m || "No month"}</option>`).join("")}</select></label>
-        <label><span>Status</span><select class="pick-status" data-s="${esc(a.id)}" aria-label="Status for ${esc(a.asset)}">${Object.entries(LINE_STATUS).map(([k, v]) => `<option value="${k}">${esc(v.label)}</option>`).join("")}</select></label>
-        <label class="picker-note-field"><span>Note</span><input class="pick-note" type="text" placeholder="Optional" data-n="${esc(a.id)}" aria-label="Note for ${esc(a.asset)}"></label>
+        <label><span>Rate</span><span class="money-wrap">$<input class="rate-input money-input" type="text" inputmode="numeric" placeholder="0" value="${rate === "" ? "" : Number(rate).toLocaleString("en-US")}" data-id="${esc(a.id)}" ${isFromCard ? 'title="From rate card"' : ""} aria-label="Rate for ${esc(optionAssetLabel(a.asset))}"></span></label>
+        <label><span>Qty</span><input class="pick-qty" type="number" min="1" step="1" value="1" data-q="${esc(a.id)}" aria-label="Quantity of ${esc(optionAssetLabel(a.asset))}"></label>
+        <label><span>Start</span><select class="pick-month" data-m="${esc(a.id)}" aria-label="Start month for ${esc(optionAssetLabel(a.asset))}">${Object.keys(MID_SEASON_RATE).map(m => `<option value="${m}">${m || "No month"}</option>`).join("")}</select></label>
+        <label><span>Status</span><select class="pick-status" data-s="${esc(a.id)}" aria-label="Status for ${esc(optionAssetLabel(a.asset))}">${Object.entries(LINE_STATUS).map(([k, v]) => `<option value="${k}">${esc(v.label)}</option>`).join("")}</select></label>
+        <label class="picker-note-field"><span>Note</span><input class="pick-note" type="text" placeholder="Optional" data-n="${esc(a.id)}" aria-label="Note for ${esc(optionAssetLabel(a.asset))}"></label>
       </div>
       <button class="add-to-option-btn" data-add="${esc(a.id)}">+ Add</button>
     </div>`;
@@ -19081,17 +19147,18 @@ async function addAssetToOption(idx, asset, rate, extras) {
   const opt = currentProposal.options[idx];
   const existing = opt.items.find(i => i.id === asset.id);
   if (existing) {
-    existing.rate = rate;
+    if (rate !== undefined && rate !== null && !isNaN(rate)) existing.rate = rate;
     if (e.qty) existing.qty = e.qty;
     if (e.startMonth) existing.startMonth = e.startMonth;
-    if (e.status !== undefined && e.status !== "") existing.status = e.status;
+    if (e.status !== undefined && e.status !== "") { existing.status = e.status; existing.statusManual = true; }
+    else if (!existing.statusManual) existing.status = suggestLineStatus(idx, asset, existing.qty || 1);
     if (e.notes) existing.notes = e.notes;
     toast("Updated", `${asset.asset} updated`);
   }
   else {
     const qty = e.qty || 1;
     const status = (e.status !== undefined && e.status !== "") ? e.status : suggestLineStatus(idx, asset, qty);
-    opt.items.push({ id: asset.id, asset: asset.asset, category: asset.category, rate: rate || 0, qty, notes: e.notes || "", startMonth: e.startMonth || "", status });
+    opt.items.push({ id: asset.id, asset: asset.asset, category: asset.category, rate: rate || 0, qty, notes: e.notes || "", startMonth: e.startMonth || "", status, statusManual: !!status && e.status !== undefined && e.status !== "" });
     toast("Added", `${asset.asset} added to Option ${idx + 1}${status ? " — tagged " + LINE_STATUS[status].label : ""}`);
   }
   saveCurrentProposal(); renderOptionColumns();
@@ -26587,9 +26654,20 @@ function notifyApproversNeeded(r) {
   // Breakdown approvals get Zack and Cap CC'd (per Tommy). Zack Nicol resolves to a
   // @blueclaws.com address; "Cap" is a nickname with no derivable email, so it rides along as a
   // visible name in the CC field for the sender to complete.
-  const cc = r.type === "create_breakdown"
-    ? ["Zack Nicol", "Cap"].map(n => blueclawsEmail(n) || n).filter(Boolean).join(",")
-    : "";
+  let ccNames = [];
+  if (r.type === "create_breakdown") ccNames = ["Zack Nicol", "Cap"];
+  if (r.type === "custom_options") {
+    const p = loadOptions().find(x => String(x.id || "") === String(r.optionsRef || "") || String(x.sponsorName || "").trim().toLowerCase() === String(r.sponsorName || "").trim().toLowerCase());
+    ccNames = [p && p.salesRep, r.salesRep, r.fields && r.fields.salesRep, r.requestedBy].filter(Boolean);
+  }
+  const toSet = new Set(addrs.map(a => String(a || "").trim().toLowerCase()));
+  const seenCc = new Set();
+  const cc = ccNames.map(n => blueclawsEmail(n) || n).filter(Boolean).filter(addr => {
+    const key = String(addr).trim().toLowerCase();
+    if (!key || toSet.has(key) || seenCc.has(key)) return false;
+    seenCc.add(key);
+    return true;
+  }).join(",");
   openMailDraft(addrs.join(","), `[BlueClaws IQ] Approval needed - ${r.sponsorName} ${typeLabel}`, body, cc);
 }
 function approvalEmailExtra(r) {
@@ -29696,11 +29774,14 @@ function renderSquadView() {
     try {
       if (typeof getAllRecords === "function") {
         getAllRecords().forEach(function(r){
+          if (typeof isActiveForSelectedSeason === "function" && !isActiveForSelectedSeason(r)) return;
           (r.todo || "").split("\n").map(function(t){return t.trim();}).filter(Boolean).forEach(function(){ n++; });
         });
       }
       if (typeof getAllReportRows === "function" && typeof reportCompletedFor === "function") {
         getAllReportRows().forEach(function(r){
+          var sponsorRec = typeof getRecord === "function" ? getRecord(r.id) : null;
+          if (sponsorRec && typeof isActiveForSelectedSeason === "function" && !isActiveForSelectedSeason(sponsorRec)) return;
           if (!reportCompletedFor(r, "mid")) n++;
           if (!reportCompletedFor(r, "annual")) n++;
         });
